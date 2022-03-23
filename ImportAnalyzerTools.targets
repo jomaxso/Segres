@@ -1,0 +1,12 @@
+<Project>
+    <ItemGroup>
+        <!-- Helpers -->
+        <Compile Include="$(SolutionDir)/src/AnalyzerTools/Helpers/*.cs" Visible="false" PrivateAssets="all" />
+        
+        <!-- Models -->
+        <Compile Include="$(SolutionDir)/src/AnalyzerTools/Models/*.cs" Visible="false" PrivateAssets="all"/>
+        
+        <!-- Receiver -->
+        <Compile Include="$(SolutionDir)/src/AnalyzerTools/Receiver/*.cs" Visible="false" PrivateAssets="all"/>
+    </ItemGroup>
+</Project>
