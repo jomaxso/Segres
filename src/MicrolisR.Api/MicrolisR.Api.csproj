@@ -13,6 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\MicrolisR.Data.SourceGenerator\MicrolisR.Data.SourceGenerator.csproj" />
 		<ProjectReference Include="..\MicrolisR.Data\MicrolisR.Data.csproj" />
+		<ProjectReference Include="..\MircrolisR.Logging\MircrolisR.Logging.csproj" />
 	</ItemGroup>
 
 </Project>

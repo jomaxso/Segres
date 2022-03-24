@@ -15,11 +15,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzerTools", "src\Analyz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicrolisR.Data.SourceGenerator", "src\MicrolisR.Data.SourceGenerator\MicrolisR.Data.SourceGenerator.csproj", "{40A09173-2B02-42A5-8336-3A0063C1CF3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrolisR.Api", "src\MicrolisR.Api\MicrolisR.Api.csproj", "{757B6187-1907-4571-B102-5D5F001747D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicrolisR.Api", "src\MicrolisR.Api\MicrolisR.Api.csproj", "{757B6187-1907-4571-B102-5D5F001747D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicrolisR.Api.Test", "test\MicrolisR.Api.Test\MicrolisR.Api.Test.csproj", "{170DF0E1-799A-4952-A571-88AD53AB7178}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrolisR.Data.Test", "test\MicrolisR.Data.Test\MicrolisR.Data.Test.csproj", "{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicrolisR.Data.Test", "test\MicrolisR.Data.Test\MicrolisR.Data.Test.csproj", "{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EEDEEEE-2FBD-43C4-BAC4-BF10D32D3B02}"
+	ProjectSection(SolutionItems) = preProject
+		ImportAnalyzerTools.targets = ImportAnalyzerTools.targets
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", "{353EA1A8-FFCB-4ACB-BEA1-7FF803690BCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MircrolisR.Logging", "src\MircrolisR.Logging\MircrolisR.Logging.csproj", "{6C62102C-18BA-45F2-AA10-4899374AA05A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +65,14 @@ Global
 		{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{353EA1A8-FFCB-4ACB-BEA1-7FF803690BCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{353EA1A8-FFCB-4ACB-BEA1-7FF803690BCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{353EA1A8-FFCB-4ACB-BEA1-7FF803690BCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{353EA1A8-FFCB-4ACB-BEA1-7FF803690BCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C62102C-18BA-45F2-AA10-4899374AA05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C62102C-18BA-45F2-AA10-4899374AA05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C62102C-18BA-45F2-AA10-4899374AA05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C62102C-18BA-45F2-AA10-4899374AA05A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +85,7 @@ Global
 		{757B6187-1907-4571-B102-5D5F001747D3} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 		{170DF0E1-799A-4952-A571-88AD53AB7178} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
 		{6A4E7E3E-D4A0-4721-9C97-5E186A2FE699} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
+		{6C62102C-18BA-45F2-AA10-4899374AA05A} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {72F20086-2AAE-4305-977A-B807839763A8}
