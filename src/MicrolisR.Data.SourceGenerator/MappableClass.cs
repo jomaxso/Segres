@@ -1,31 +1,44 @@
-﻿using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Collections.Generic;
 
-namespace MicrolisR.Data.SourceGenerator
+namespace MicrolisR.Data.SourceGenerator;
+
+internal class MappableClass
 {
-    public class MappableClass
+    public MappableClass(string name, string ns, IReadOnlyList<Property> properties = null, IReadOnlyList<MappableAttributeInfo> mapToClasses = null)
     {
-        private readonly string _name;
-
-        public MappableClass(string name)
-        {
-            this._name = name;
-        }
-
-        public string GetName() => _name;
-
-        public string GetNamespace(GeneratorExecutionContext context)
-        {
-            if (context.SemanticModel.GetDeclaredSymbol(ClassDeclarationSyntax) is INamedTypeSymbol symbol is false)
-                throw new Exception();
-            
-            return symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        }
-        
-        public string GetFullName(GeneratorExecutionContext context) => string.Join(".", GetNamespace(context), GetName());
-        public string GetMapperName(GeneratorExecutionContext context) => $"{GetFullName(context).Replace('.', '_')}MapperExtensions";
-
-        public ClassDeclarationSyntax ClassDeclarationSyntax { get; set; }
+        Name = name;
+        Namespace = ns;
+        Properties = properties;
+        MapToClasses = mapToClasses;
     }
+
+    public string Name { get;  }
+    public string Namespace { get; }
+    
+    public string FullName => $"{Namespace}.{Name}";
+    public string MapperName => FullName.Replace('.', '_');
+
+    public IReadOnlyList<Property> Properties { get; } 
+
+    public IReadOnlyList<MappableAttributeInfo> MapToClasses { get;  } 
+}
+
+internal class Property
+{
+    public Property(string name)
+    {
+        Name = name;
+    }
+
+    public string Name { get;  }
+}
+
+internal class MappableAttributeInfo
+{
+    public MappableAttributeInfo(string name)
+    {
+        Name = name;
+    }
+
+    public string Name { get;  }
 }
