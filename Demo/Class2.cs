@@ -1,16 +1,22 @@
-﻿namespace Demo;
+﻿using MicrolisR.Data.Mapping;
+
+namespace Demo;
+
+public class Class3
+{
+    public int Test { get; set; }
+    public int Test1 { get; set; }
+    public int Test2 { get; set; }
+    
+    
+    
+    
+}
 
 public class Class2
 {
-    public int MyProperty { get; set; }
-    public int MyProperty2 { get; set; }
-    public int MyProperty3 { get; set; }
-
-    public void Ex()
-    {
-        this.MyProperty++;
-    }
-    
-    
+    public int Test { get; set; }
+    public int Test1 { get; set; }
+    public int Test2 { get; set; }
     
 }

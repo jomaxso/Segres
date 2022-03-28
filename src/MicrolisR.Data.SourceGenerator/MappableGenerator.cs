@@ -64,7 +64,7 @@ public class MappableGenerator : IIncrementalGenerator
             return;
 
         var distinctClasses = classes.Distinct();
-
+        
         var parser = new Parser(compilation, context.ReportDiagnostic, context.CancellationToken);
         IReadOnlyList<MappableClass> mappableClasses = parser.GetMappableClasses(distinctClasses);
 
