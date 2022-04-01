@@ -1,13 +1,7 @@
 ﻿namespace MicrolisR.Data.Mapping
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class MappableIgnoreAttribute : Attribute
     {
-        public MappableIgnoreAttribute(Type? type = null)
-        {
-            this.ClassName = type;
-        }
-
-        public Type? ClassName { get; }
     }
 }

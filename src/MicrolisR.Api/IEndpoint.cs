@@ -1,6 +1,6 @@
 ﻿namespace MicrolisR.Api;
 
-public interface IApiEndpoint<TRequest, TResponse> : IEndpointHandler
+public interface IApiEndpoint<in TRequest, TResponse> : IEndpointHandler
 {
     Task<TResponse?> HandleAsync(TRequest? request, CancellationToken cancellationToken = default);
 

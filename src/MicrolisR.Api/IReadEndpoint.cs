@@ -10,7 +10,7 @@ public interface IReadEndpoint<TEntity>
 }
 
 [Route("[endpoint]")]
-public interface IReadEndpoint<TId, TEntity>
+public interface IReadEndpoint<in TId, TEntity>
 {
     [HttpGet("{id}")]
     Task<ActionResult<TEntity?>> GetAsync([FromRoute] TId id);
