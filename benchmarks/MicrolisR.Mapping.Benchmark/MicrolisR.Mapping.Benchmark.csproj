@@ -9,12 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\Mapping\MicrolisR.Mapping.SourceGenerator\MicrolisR.Mapping.SourceGenerator.csproj">
+        <ProjectReference Include="..\..\src\Mapping\MicrolisR.Mapping.SourceGenerator\MicrolisR.Mapping.SourceGenerator.csproj">
             <OutputItemType>Analyzer</OutputItemType>
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
         </ProjectReference>
-
-        <ProjectReference Include="..\..\..\src\Mapping\MicrolisR.Mapping\MicrolisR.Mapping.csproj"/>
+        
+        <ProjectReference Include="..\..\src\Mapping\MicrolisR.Mapping\MicrolisR.Mapping.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,6 @@
-﻿namespace MicrolisR.Mapping;
+﻿using MicrolisR.Mapping.Abstractions;
+
+namespace MicrolisR.Mapping;
 
 public abstract class MapperDefinition<TSource, TTarget> : IMapperDefinition<TSource, TTarget>
 {

@@ -1,4 +1,6 @@
-﻿namespace MicrolisR.Mapping;
+﻿using MicrolisR.Mapping.Abstractions;
+
+namespace MicrolisR.Mapping;
 
 internal class MappableObject
 {

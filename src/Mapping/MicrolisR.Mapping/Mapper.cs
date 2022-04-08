@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using MicrolisR.Mapping.Abstractions;
 
 namespace MicrolisR.Mapping;
 

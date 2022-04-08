@@ -31,15 +31,15 @@ internal class Emitter
         {
             source.AppendLine($"        private class {mappableClass.Name}_{mapToClass.Name}_Mapper :");
             source.AppendLine(
-                $"            MicrolisR.Mapping.IMapperDefinition<{mappableClass.FullName}, {mapToClass.FullName}>,");
+                $"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mappableClass.FullName}, {mapToClass.FullName}>,");
             source.AppendLine(
-                $"            MicrolisR.Mapping.IMapperDefinition<{mapToClass.FullName}, {mappableClass.FullName}>");
+                $"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mapToClass.FullName}, {mappableClass.FullName}>");
             source.AppendLine("         {");
             source.AppendLine();
-            source.AppendLine("             private readonly MicrolisR.Mapping.IMapper _mapper;");
+            source.AppendLine("             private readonly MicrolisR.Mapping.Abstractions.IMapper _mapper;");
             source.AppendLine();
             source.AppendLine(
-                $"             public {mappableClass.Name}_{mapToClass.Name}_Mapper(MicrolisR.Mapping.IMapper mapper)");
+                $"             public {mappableClass.Name}_{mapToClass.Name}_Mapper(MicrolisR.Mapping.Abstractions.IMapper mapper)");
             source.AppendLine("             {");
             source.AppendLine("                 this._mapper = mapper;");
             source.AppendLine("             }");
@@ -92,7 +92,7 @@ internal class Emitter
             source.AppendLine();
 
 
-            source.AppendLine("             public T? Handle<T>(object value)");
+            source.AppendLine("             public T? Handle<T>(object? value)");
             source.AppendLine("             {");
             source.AppendLine("                 return value switch");
             source.AppendLine("                 {");

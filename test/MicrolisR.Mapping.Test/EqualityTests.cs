@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MicrolisR.Mapping.Abstractions;
 using MicrolisR.Mapping.Test.Dbo;
 using MicrolisR.Mapping.Test.Entities;
 using Xunit;
@@ -20,9 +21,7 @@ public class EqualityTests
         var actualCustomer = Sut.Map<Customer>(customerDbo);
         
         // Assert
-        actualCustomer.Age.Should().Be(expectedCustomer.Age);
-        actualCustomer.Surname.Should().Be(expectedCustomer.Surname);
-        actualCustomer.Firstname.Should().Be(expectedCustomer.Firstname);
+        actualCustomer.Should().BeEquivalentTo(expectedCustomer);
     }
     
     [Fact]
@@ -35,9 +34,7 @@ public class EqualityTests
         var actualCustomer = Sut.Map<CustomerDbo>(expectedCustomer);
 
         // Assert
-        actualCustomer.Age.Should().Be(expectedCustomer.Age);
-        actualCustomer.Surname.Should().Be(expectedCustomer.Surname);
-        actualCustomer.Firstname.Should().Be(expectedCustomer.Firstname);
+        actualCustomer.Should().BeEquivalentTo(expectedCustomer);
     }
     
     [Fact]
@@ -51,9 +48,7 @@ public class EqualityTests
         var actualCustomer = Sut.Map<Customer>(customerDbo);
 
         // Assert
-        actualCustomer.Age.Should().Be(expectedCustomer.Age);
-        actualCustomer.Surname.Should().Be(expectedCustomer.Surname);
-        actualCustomer.Firstname.Should().Be(expectedCustomer.Firstname);
+        actualCustomer.Should().BeEquivalentTo(expectedCustomer);
     }
     
     [Fact]
@@ -67,9 +62,7 @@ public class EqualityTests
         var actualCustomer = Sut.Map<Customer>(customerDbo);
 
         // Assert
-        actualCustomer.Age.Should().Be(expectedCustomer.Age);
-        actualCustomer.Surname.Should().Be(expectedCustomer.Surname);
-        actualCustomer.Firstname.Should().Be(expectedCustomer.Firstname);
+        actualCustomer.Should().BeEquivalentTo(expectedCustomer);
     }
     
     [Fact]
@@ -82,8 +75,6 @@ public class EqualityTests
         var actualCustomer = Sut.Map<CustomerDboWithNullableTypes>(expectedCustomer);
 
         // Assert
-        actualCustomer.Age.Should().Be(expectedCustomer.Age);
-        actualCustomer.Surname.Should().Be(expectedCustomer.Surname);
-        actualCustomer.Firstname.Should().Be(expectedCustomer.Firstname);
+        actualCustomer.Should().BeEquivalentTo(expectedCustomer);
     }
 }

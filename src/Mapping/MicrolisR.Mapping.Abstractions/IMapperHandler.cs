@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Mapping;
+﻿namespace MicrolisR.Mapping.Abstractions;
 
 public interface IMapperHandler
 {
