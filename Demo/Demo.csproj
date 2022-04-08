@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>preview</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+<!--		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+	</PropertyGroup>
+
+	<ItemGroup>
+
+<!--		<ProjectReference Include="..\src\MicrolisR.Mapping.SourceGenerator\MicrolisR.Mapping.SourceGenerator.csproj">-->
+<!--			<OutputItemType>Analyzer</OutputItemType>-->
+<!--			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>-->
+<!--		</ProjectReference>-->
+
+<!--		<ProjectReference Include="..\src\MicrolisR.Mapping\MicrolisR.Mapping.csproj" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="11.0.1" />
+	  <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+	  <PackageReference Include="MicrolisR.Mapping" Version="1.0.0" />
+	</ItemGroup>
+
+</Project>
