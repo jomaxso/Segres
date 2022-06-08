@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Data.Abstraction;
+﻿namespace MicrolisR.Api;
 
 public interface IEntity<TId>
     where TId : struct

@@ -1,6 +1,4 @@
-﻿using Logging;
-
-namespace MircrolisR.Logging;
+﻿namespace MircrolisR.Logging;
 
 public class Logger<T> : Logger, ILogger<T>
 {

@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using BenchmarkDotNet.Attributes;
-using ClassLibrary1;
-using ClassLibrary2;
-using MicrolisR.Mapping;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using IMapper = AutoMapper.IMapper;
 using Mapper = AutoMapper.Mapper;
 

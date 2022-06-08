@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Logging;
+namespace MircrolisR.Logging;
 
 public abstract class LoggerBase : MircrolisR.Logging.ILogger
 {
-    private readonly ILogger _logger;
+    private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
     public MircrolisR.Logging.DebugLogger Debug { get; }
     public MircrolisR.Logging.ReleaseLogger Release { get; }
 
-    public LoggerBase(ILogger logger)
+    public LoggerBase(Microsoft.Extensions.Logging.ILogger logger)
     {
         if (logger is null)
             throw new ArgumentNullException(nameof(logger));

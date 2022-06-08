@@ -1,8 +1,7 @@
-﻿using ClassLibrary2;
-using MicrolisR.Mapping;
+﻿using MicrolisR.Mapping;
 using MicrolisR.Mapping.Attributes;
 
-namespace ClassLibrary1;
+namespace Demo;
 
 [Mappable(typeof(Employee))]
 public class EmployeeDbo

@@ -1,6 +1,6 @@
 ﻿using MicrolisR.Mapping.Abstractions;
 
-namespace MicrolisR.Mapping;
+namespace MicrolisR.Mapping.internals;
 
 internal class MappableObject
 {

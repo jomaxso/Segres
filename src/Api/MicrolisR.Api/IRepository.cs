@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Data.Abstraction;
+﻿namespace MicrolisR.Api;
 
 public interface IRepository<TId, TEntity>
     where TEntity : IEntity<TId>

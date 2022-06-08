@@ -1,5 +1,4 @@
-﻿using MicrolisR.Data.Abstraction;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MircrolisR.Logging;
 using System.Text.Json;
 

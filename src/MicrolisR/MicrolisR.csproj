@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MircrolisR.Logging\MircrolisR.Logging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="System\Threading" />
+  </ItemGroup>
+
 </Project>

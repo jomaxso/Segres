@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Mapping.Exceptions;
+﻿namespace MicrolisR.Mapping.internals.Exceptions;
 
 internal class DuplicateMapperRegistrationException : Exception
 {

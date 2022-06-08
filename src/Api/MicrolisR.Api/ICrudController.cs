@@ -1,6 +1,4 @@
-﻿using MicrolisR.Data.Abstraction;
-
-namespace MicrolisR.Api;
+﻿namespace MicrolisR.Api;
 
 [Route("[endpoint]")]
 public interface ICrudController<TId, TEntity> :
