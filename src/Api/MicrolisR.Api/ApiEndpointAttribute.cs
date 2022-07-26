@@ -3,9 +3,9 @@
 namespace MicrolisR.Api;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ApiEndpointAttribute : Attribute
+public class EndpointAttribute : Attribute
 {
-    public ApiEndpointAttribute(string route, RequestKind kind, BindContext bindFrom = BindContext.Default, bool allowAnonymous = true)
+    public EndpointAttribute(string route, RequestKind kind, BindContext bindFrom = BindContext.Default, bool allowAnonymous = true)
     {
         Route = route;
         Kind = kind;

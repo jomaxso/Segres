@@ -3,14 +3,14 @@
 namespace MicrolisR.Api;
 
 [Route("[endpoint]")]
-public interface IReadEndpoint<TEntity>
+public interface IGetEndpoint<TEntity>
 {
     [HttpGet]
     Task<ActionResult<IEnumerable<TEntity>>> GetAsync();
 }
 
 [Route("[endpoint]")]
-public interface IReadEndpoint<in TId, TEntity>
+public interface IGetEndpoint<in TId, TEntity>
 {
     [HttpGet("{id}")]
     Task<ActionResult<TEntity?>> GetAsync([FromRoute] TId id);

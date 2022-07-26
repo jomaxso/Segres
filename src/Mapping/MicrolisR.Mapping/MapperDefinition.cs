@@ -16,7 +16,7 @@ public abstract class MapperDefinition<TSource, TTarget> : IMapperDefinition<TSo
     {
         if (value is not TSource source)
             return default;
-        
+
         return this.Map(source) is T sourceResult ? sourceResult : default;
     }
 }

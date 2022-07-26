@@ -22,7 +22,7 @@ public static class DependencyInjection
         var enpoints = assembly.ExportedTypes
             .Where(type =>
             {
-                var attribute = type.GetCustomAttribute<ApiEndpointAttribute>();
+                var attribute = type.GetCustomAttribute<EndpointAttribute>();
                 return type.IsInterface is false && type.IsAbstract is false && attribute is not null;
             })
             .Select(type =>
@@ -56,7 +56,7 @@ public static class DependencyInjection
 
         foreach (var item in endpointObject.RequestEndpoints)
         {
-            var requestAttribute = item.Value.GetCustomAttribute<ApiEndpointAttribute>();
+            var requestAttribute = item.Value.GetCustomAttribute<EndpointAttribute>();
             var endpointHandler = endpointObject.Resolve(item.Key) as IEndpointHandler;
 
             if (requestAttribute is null || endpointHandler is null)

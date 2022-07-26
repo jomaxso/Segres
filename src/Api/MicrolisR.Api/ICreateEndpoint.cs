@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MicrolisR.Api.Enumeration;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MicrolisR.Api;
 
-[Route("[endpoint]")]
-public interface ICreateEndpoint<in TEntity>
+[Endpoint("[endpoint]", RequestKind.HttpPost)]
+public interface IPostEndpoint<in TRequest>
 {
-    [HttpPost]
-    Task<IActionResult> CreateAsync([FromBody] TEntity entity);
+    Task<IActionResult> CreateAsync([FromBody] TRequest request);
 }

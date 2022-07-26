@@ -14,12 +14,6 @@ internal class Emitter
             return string.Empty;
 
         var source = new StringBuilder();
-        AppendMappableClassSource(source, mappableClass);
-        return source.ToString();
-    }
-
-    private static void AppendMappableClassSource(StringBuilder source, MappableClass mappableClass)
-    {
         source.AppendLine("#nullable enable");
         source.AppendLine();
         source.AppendLine($"namespace {mappableClass.Namespace}");
@@ -29,88 +23,80 @@ internal class Emitter
 
         foreach (var mapToClass in mappableClass.MapToClasses)
         {
-            source.AppendLine($"        private class {mappableClass.Name}_{mapToClass.Name}_Mapper :");
-            source.AppendLine(
-                $"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mappableClass.FullName}, {mapToClass.FullName}>,");
-            source.AppendLine(
-                $"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mapToClass.FullName}, {mappableClass.FullName}>");
-            source.AppendLine("         {");
-            source.AppendLine();
-            source.AppendLine("             private readonly MicrolisR.Mapping.Abstractions.IMapper _mapper;");
-            source.AppendLine();
-            source.AppendLine(
-                $"             public {mappableClass.Name}_{mapToClass.Name}_Mapper(MicrolisR.Mapping.Abstractions.IMapper mapper)");
-            source.AppendLine("             {");
-            source.AppendLine("                 this._mapper = mapper;");
-            source.AppendLine("             }");
-            source.AppendLine();
-            source.AppendLine($"            public {mappableClass.FullName} Map({mapToClass.FullName} value)");
-            source.AppendLine("             {");
-            source.AppendLine($"                return new {mappableClass.FullName}()");
-            source.AppendLine("                 {");
-            foreach (var property in mappableClass.Properties)
-            {
-                var propertyToMap = mapToClass.Properties.FirstOrDefault(p => p.MapName == property.MapName);
-
-                if (propertyToMap is null)
-                    continue;
-
-                var text = GetConvertText(property, propertyToMap);
-
-                if (string.IsNullOrWhiteSpace(text) is false)
-                    source.AppendLine($"                    {text}");
-            }
-
-            source.AppendLine("                 };");
-            source.AppendLine("             }");
-
-
-            source.AppendLine();
-
-
-            source.AppendLine($"            public {mapToClass.FullName} Map({mappableClass.FullName} value)");
-            source.AppendLine("             {");
-            source.AppendLine($"                return new {mapToClass.FullName}()");
-            source.AppendLine("                 {");
-            foreach (var property in mappableClass.Properties)
-            {
-                var propertyToMap = mapToClass.Properties.FirstOrDefault(p => p.MapName == property.MapName);
-
-                if (propertyToMap is null)
-                    continue;
-                
-                var text = GetConvertText(propertyToMap, property);
-
-                if (string.IsNullOrWhiteSpace(text) is false)
-                    source.AppendLine($"                    {text}");
-            }
-
-            source.AppendLine("                 };");
-            source.AppendLine("             }");
-
-
-            source.AppendLine();
-
-
-            source.AppendLine("             public T? Handle<T>(object? value)");
-            source.AppendLine("             {");
-            source.AppendLine("                 return value switch");
-            source.AppendLine("                 {");
-            source.AppendLine(
-                $"                    {mappableClass.FullName} source => this.Map(source) is T sourceResult ? sourceResult : default,");
-            source.AppendLine(
-                $"                    {mapToClass.FullName} target => this.Map(target) is T targetResult ? targetResult : default,");
-            source.AppendLine("                     _ => default");
-            source.AppendLine("                 };");
-            source.AppendLine("             }");
-
-
-            source.AppendLine("         }");
-            source.AppendLine();
+            AppendMappableClassSource(source, mappableClass, mapToClass);
         }
 
         source.AppendLine("     }");
         source.AppendLine("}");
+        return source.ToString();
+    }
+
+    private static void AppendMappableClassSource(StringBuilder source, MappableClass mappableClass, MappableAttribute mapToClass)
+    {
+        source.AppendLine($"        private class {mappableClass.Name}_{mapToClass.Name}_Mapper :");
+        source.AppendLine($"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mappableClass.FullName}, {mapToClass.FullName}>,");
+        source.AppendLine($"            MicrolisR.Mapping.Abstractions.IMapperDefinition<{mapToClass.FullName}, {mappableClass.FullName}>");
+        source.AppendLine("         {");
+        source.AppendLine("             private readonly MicrolisR.Mapping.Abstractions.IMapper _mapper;");
+        source.AppendLine();
+        source.AppendLine($"             public {mappableClass.Name}_{mapToClass.Name}_Mapper(MicrolisR.Mapping.Abstractions.IMapper mapper)");
+        source.AppendLine("             {");
+        source.AppendLine("                 this._mapper = mapper;");
+        source.AppendLine("             }");
+        source.AppendLine();
+        source.AppendLine($"            public {mappableClass.FullName} Map({mapToClass.FullName} value)");
+        source.AppendLine("             {");
+        source.AppendLine($"                return new {mappableClass.FullName}()");
+        source.AppendLine("                 {");
+
+        foreach (var property in mappableClass.Properties)
+        {
+            var propertyToMap = mapToClass.Properties.FirstOrDefault(p => p.MapName == property.MapName);
+
+            if (propertyToMap is null)
+                continue;
+
+            var text = GetConvertText(property, propertyToMap);
+
+            if (string.IsNullOrWhiteSpace(text) is false)
+                source.AppendLine($"                    {text}");
+        }
+
+        source.AppendLine("                 };");
+        source.AppendLine("             }");
+        source.AppendLine();
+        source.AppendLine($"            public {mapToClass.FullName} Map({mappableClass.FullName} value)");
+        source.AppendLine("             {");
+        source.AppendLine($"                return new {mapToClass.FullName}()");
+        source.AppendLine("                 {");
+
+        foreach (var property in mappableClass.Properties)
+        {
+            var propertyToMap = mapToClass.Properties.FirstOrDefault(p => p.MapName == property.MapName);
+
+            if (propertyToMap is null)
+                continue;
+
+            var text = GetConvertText(propertyToMap, property);
+
+            if (string.IsNullOrWhiteSpace(text) is false)
+                source.AppendLine($"                    {text}");
+        }
+
+        source.AppendLine("                 };");
+        source.AppendLine("             }");
+        source.AppendLine();
+        source.AppendLine("             public T? Handle<T>(object? value)");
+        source.AppendLine("             {");
+        source.AppendLine("                 return value switch");
+        source.AppendLine("                 {");
+        source.AppendLine($"                    {mappableClass.FullName} source => this.Map(source) is T sourceResult ? sourceResult : default,");
+        source.AppendLine($"                    {mapToClass.FullName} target => this.Map(target) is T targetResult ? targetResult : default,");
+        source.AppendLine("                     _ => default");
+        source.AppendLine("                 };");
+        source.AppendLine("             }");
+        source.AppendLine("         }");
+        source.AppendLine();
     }
 
 
