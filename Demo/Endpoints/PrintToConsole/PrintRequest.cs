@@ -1,11 +1,13 @@
-﻿using MicrolisR;
+﻿using Demo.Domain.PrintToConsole;
+using MicrolisR;
+using Microsoft.AspNetCore.Mvc;
 
-namespace PrintToConsole;
+namespace Demo.Endpoints.PrintToConsole;
 
 public class PrintRequest : 
-    IRequestable, 
+    IRequestable<PrintResult>, 
     IMappable<PrintCommand>
 {
+    [FromRoute] 
     public int Value { get; set; }
-    public int Value2 { get; set; }
 }

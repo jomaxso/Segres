@@ -1,8 +1,7 @@
-﻿using Demo.Endpoints.PrintToConsole;
+﻿using Demo.Domain.PrintToConsole;
 using MicrolisR;
-using PrintToConsole;
 
-namespace Demo.Validators;
+namespace Demo.Validators.PrintToConsole;
 
 public class PrintCommandValidator : IValidationHandler<PrintCommand>
 {

@@ -1,125 +1,60 @@
-﻿using System.Reflection;
+﻿using Demo.Endpoints.Authentication.User;
+using Demo.Endpoints.PrintToConsole;
 using MicrolisR;
-using PrintToConsole;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Demo;
 
-public static class DependencyInjection
-{
-    public static IServiceCollection AddEndpoints(this IServiceCollection services)
-    {
-        var assemblies = new List<Assembly> {Assembly.GetCallingAssembly()};
-
-        var entryAssembly = Assembly.GetEntryAssembly();
-
-        if (entryAssembly is not null)
-            assemblies.Add(entryAssembly);
-
-        var interfaceType = typeof(IHttpContextRequestResolver);
-
-        foreach (var assembly in assemblies.Distinct())
-        {
-            var endpointResolvers = assembly.GetClassesImplementingInterface(interfaceType);
-
-            foreach (var endpointResolver in endpointResolvers)
-            {
-                services.Add(new ServiceDescriptor(interfaceType, endpointResolver, ServiceLifetime.Singleton));
-            }
-        }
-
-        return services;
-    }
-
-    public static void MapEndpoints(this IEndpointRouteBuilder app)
-    {
-        var httpContextRequestResolvers = app.ServiceProvider
-            .GetServices<IHttpContextRequestResolver>()
-            .DistinctBy(x => x.GetType());
-
-        foreach (var httpContextRequestResolver in httpContextRequestResolvers)
-            httpContextRequestResolver.Initialize(app);
-    }
-    
-    public static void MapEndpoint<TRequest, TResponse>(this IEndpointRouteBuilder app, Http verb, string pattern)
-        where TRequest : IRequestable<TResponse>
-    {
-        string[] verbs = {verb.ToString()};
-
-        var mediator = app.ServiceProvider.GetRequiredService<IMediator>();
-        var httpContextRequestResolver = app.ServiceProvider.GetRequiredService<IHttpContextRequestResolver>();
-
-        app.MapMethods(pattern, verbs, async context =>
-        {
-            var request = await httpContextRequestResolver.ExtractRequest<TRequest>(context.Request, context.RequestAborted);
-
-            mediator.Validate(request);
-
-            if (request is IRequestable withoutResponse)
-            {
-                await mediator.SendAsync(withoutResponse, context.RequestAborted);
-                await context.Response.CompleteAsync();
-                return;
-            }
-
-            var response = await mediator.SendAsync(request, context.RequestAborted);
-
-            if (response is IValidatable validatable)
-                mediator.Validate(validatable);
-
-            await context.Response.WriteAsJsonAsync(response);
-            await context.Response.CompleteAsync();
-        });
-    }
-
-    private static IEnumerable<Type> GetClassesImplementingInterface(this Assembly assembly, Type typeToMatch)
-    {
-        return assembly.DefinedTypes.Where(type =>
-        {
-            var isImplementRequestType = type
-                .GetInterfaces()
-                .Any(x => x.IsAssignableFrom(typeToMatch));
-
-            return !type.IsInterface && !type.IsAbstract && isImplementRequestType;
-        }).ToList();
-    }
-}
-
-public interface IHttpContextRequestResolver
-{
-    internal void Initialize(IEndpointRouteBuilder app);
-
-    Task<TRequest> ExtractRequest<TRequest>(HttpRequest httpRequest, CancellationToken cancellationToken);
-}
-
-public interface IHttpContextRequestResolver<TRequest, TResponse> : IHttpContextRequestResolver
-    where TRequest : IRequestable<TResponse>
-{
-    void IHttpContextRequestResolver.Initialize(IEndpointRouteBuilder app)
-    {
-        var handler = app.ServiceProvider.GetRequiredService(typeof(IRequestHandler<TRequest, TResponse>)); // BUG not found in DI
-        
-        // TODO REfelction get all Attribute infos
-
-        var verb = Http.GET;
-        var pattern = "/";
-        
-        app.MapEndpoint<TRequest, TResponse>(verb, pattern);
-    }
-}
-
-
 /// <summary>
-/// TO GENERATE
+/// TODO: Generate Source
 /// </summary>
-public class HttpContextRequestResolver : IHttpContextRequestResolver<PrintRequest, Unit> //  Generate Source
+public class HttpContextRequestResolver_PrintToConsoleHandler : IHttpContextRequestResolver<PrintRequest, PrintResult>
 {
-    public async Task<TRequest> ExtractRequest<TRequest>(HttpRequest httpRequest, CancellationToken cancellationToken)
+    private readonly bool _shouldValidate;
+    public IRequestHandler<PrintRequest, PrintResult> RequestHandler { get; }
+
+    public HttpContextRequestResolver_PrintToConsoleHandler(IRequestHandler<PrintRequest, PrintResult> requestHandler)
     {
-        var request = await httpRequest.ReadFromJsonAsync<TRequest>(cancellationToken);
-
-        if (request is null)
-            throw new Exception();
-
-        return request;
+        RequestHandler = requestHandler;
+        _shouldValidate = ((IHttpContextRequestResolver) this).Validate;
     }
+
+    public Delegate EndpointDelegate => ([FromServices] IMediator mediator, [FromRoute] int value, CancellationToken cancellationToken) =>
+        mediator.SendAsync(new PrintRequest() {Value = value}, _shouldValidate, cancellationToken);
 }
+
+public class HttpContextRequestResolver_GetUserAuthenticationHandler : IHttpContextRequestResolver<GetUserAuthenticationRequest, UserAuthenticationResponse>
+{
+    private readonly bool _shouldValidate;
+    public IRequestHandler<GetUserAuthenticationRequest, UserAuthenticationResponse> RequestHandler { get; }
+
+    public HttpContextRequestResolver_GetUserAuthenticationHandler(IRequestHandler<GetUserAuthenticationRequest, UserAuthenticationResponse> requestHandler)
+    {
+        RequestHandler = requestHandler;
+        _shouldValidate = ((IHttpContextRequestResolver) this).Validate;
+    }
+
+    public Delegate EndpointDelegate => 
+        ([FromServices] IMediator mediator, [FromRoute] int value, CancellationToken cancellationToken) =>
+        mediator.SendAsync(new GetUserAuthenticationRequest() {Value = value}, _shouldValidate, cancellationToken);
+}
+
+public class HttpContextRequestResolver_GetAllAuthenticationsHandler : IHttpContextRequestResolver<GetAllAuthenticationsRequest, List<UserAuthenticationResponse>>
+{
+    private readonly bool _shouldValidate;
+    public IRequestHandler<GetAllAuthenticationsRequest, List<UserAuthenticationResponse>> RequestHandler { get; }
+
+    public HttpContextRequestResolver_GetAllAuthenticationsHandler(IRequestHandler<GetAllAuthenticationsRequest, List<UserAuthenticationResponse>> requestHandler)
+    {
+        RequestHandler = requestHandler;
+        _shouldValidate = ((IHttpContextRequestResolver) this).Validate;
+    }
+
+    public Delegate EndpointDelegate => ([FromServices] IMediator mediator, CancellationToken cancellationToken) =>
+        mediator.SendAsync(new GetAllAuthenticationsRequest(), _shouldValidate, cancellationToken);
+}
+
+// public class HttpContextRequestResolver_GetAllAuthenticationsHandler : IHttpContextRequestResolver<GetAllAuthenticationsRequest, List<UserAuthenticationResponse>>
+// {
+//     public Delegate EndpointDelegate => ([FromServices] ISender sender, CancellationToken cancellationToken) => sender.SendAsync(new GetAllAuthenticationsRequest(), cancellationToken);
+// }

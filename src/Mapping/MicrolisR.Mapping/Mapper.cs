@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using MicrolisR.Mapping.Abstractions;
 using MicrolisR.Mapping.internals;
 

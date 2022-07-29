@@ -113,7 +113,7 @@ public class SourceGenerator : IIncrementalGenerator
             if (requestType is null)
                 continue;
 
-            requestFullNames.Add($"{requestType.ContainingNamespace.Name}.{requestType.Name}");
+            requestFullNames.Add($"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}");
         }
 
         return requestFullNames;

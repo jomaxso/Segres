@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace MicrolisR.SourceGeneration.ValidationHandler;
+namespace MicrolisRExtension.Endpoint.SourceGeneration;
 
 [Generator]
 public class SourceGenerator : IIncrementalGenerator
@@ -41,7 +41,7 @@ public class SourceGenerator : IIncrementalGenerator
             .BaseList?.Types
             .Select(x => x.Type)
             .OfType<GenericNameSyntax>()
-            .Any(x => x.Identifier.Text == "IValidationHandler");
+            .Any(x => x.Identifier.Text == "IRequestHandler");
 
         return isType is false or null ? null : classDeclarationSyntax;
     }
@@ -60,59 +60,59 @@ public class SourceGenerator : IIncrementalGenerator
             return;
 
         var result = Emitter.Emit(targetClasses, context.CancellationToken);
-        context.AddSource($"AssemblyName.ValidationHandlerResolver.g.cs", SourceText.From(result, Encoding.UTF8));
+        context.AddSource($"AssemblyName.HttpContextRequestResolvers.g.cs", SourceText.From(result, Encoding.UTF8));
     }
 
-    private static IReadOnlyList<HandlerClass> GetClasses(Compilation compilation,
+    private static IReadOnlyList<EndpointClass> GetClasses(Compilation compilation,
         SourceProductionContext context, IEnumerable<TypeDeclarationSyntax> classes)
     {
-        var targetClasses = new List<HandlerClass>();
+        var targetClasses = new List<EndpointClass>();
 
         foreach (var handlerDeclarationSyntax in classes)
         {
             if (context.CancellationToken.IsCancellationRequested)
-                return Array.Empty<HandlerClass>();
+                return Array.Empty<EndpointClass>();
 
-            var requestFullNames = GetKeyClassFullName(compilation, handlerDeclarationSyntax);
+            var requestFullNames = GetRequestClassFullName(compilation, handlerDeclarationSyntax);
             var handlerFullName = GetHandlerClassFullName(compilation, handlerDeclarationSyntax);
-            
+
             if (handlerFullName is null)
                 continue;
 
             var requestHandlerClasses = requestFullNames
                 .Where(x => x is not null)
-                .Select(requestFullName => new HandlerClass(handlerFullName, requestFullName));
-            
+                .Select(requestFullName => new EndpointClass(handlerFullName, requestFullName));
+
             targetClasses.AddRange(requestHandlerClasses);
         }
-
+        
         return targetClasses;
     }
 
-    private static IEnumerable<string> GetKeyClassFullName(Compilation compilation, BaseTypeDeclarationSyntax handlerDeclarationSyntax)
+    private static IEnumerable<string> GetRequestClassFullName(Compilation compilation, BaseTypeDeclarationSyntax handlerDeclarationSyntax)
     {
-        var declarationSyntaxList = handlerDeclarationSyntax
+        var requestDeclarationSyntaxList = handlerDeclarationSyntax
             .BaseList?.Types
             .Select(x => x.Type)
             .OfType<GenericNameSyntax>()
-            .Where(x => x.Identifier.Text == "IValidationHandler")?
+            .Where(x => x.Identifier.Text == "IRequestHandler")?
             .Select(x => x.TypeArgumentList.Arguments.FirstOrDefault()).Where(x => x is not null)
             .OfType<IdentifierNameSyntax>();
 
-        if (declarationSyntaxList is null)
+        if (requestDeclarationSyntaxList is null)
             return Enumerable.Empty<string>();
-        
+
         var classModel = compilation.GetSemanticModel(handlerDeclarationSyntax.SyntaxTree);
-        
+
         var requestFullNames = new List<string>();
 
-        foreach (var requestDeclarationSyntax in declarationSyntaxList)
+        foreach (var requestDeclarationSyntax in requestDeclarationSyntaxList)
         {
             var requestType = classModel.GetTypeInfo(requestDeclarationSyntax).Type;
 
             if (requestType is null)
                 continue;
-
+            
             requestFullNames.Add($"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}");
         }
 
@@ -122,8 +122,12 @@ public class SourceGenerator : IIncrementalGenerator
     private static string? GetHandlerClassFullName(Compilation compilation, BaseTypeDeclarationSyntax declarationSyntax)
     {
         var classModel = compilation.GetSemanticModel(declarationSyntax.SyntaxTree);
-        var symbol = classModel.GetDeclaredSymbol(declarationSyntax);
 
-        return symbol is null ? null : $"{symbol.ContainingNamespace.ToDisplayString()}.{declarationSyntax.Identifier.Text}";
+        if (classModel.GetDeclaredSymbol(declarationSyntax) is not INamedTypeSymbol symbol)
+            return null;
+
+        var className = declarationSyntax.Identifier.Text;
+        var classNamespace = symbol.ContainingNamespace.ToDisplayString();
+        return $"{classNamespace}.{className}";
     }
 }

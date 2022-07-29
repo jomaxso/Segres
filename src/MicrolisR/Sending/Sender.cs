@@ -28,7 +28,7 @@ public sealed class Sender : ISender
                 return responseTask;
         }
 
-        throw new AmbiguousImplementationException("Oje");
+        throw new AmbiguousImplementationException($"No RequestHandlerResolver found for type {request.GetType().Name}");
     }
 
 
@@ -47,7 +47,7 @@ public sealed class Sender : ISender
             return;
         }
 
-        throw new AmbiguousImplementationException("Oje");
+        throw new AmbiguousImplementationException($"No RequestHandlerResolver found for type {request.GetType().Name}");
     }
 
     private object GetHandler<TResponse>(IRequestable<TResponse> request)

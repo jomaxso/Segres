@@ -1,6 +1,6 @@
-﻿using Demo.Endpoints.PrintToConsole;
+﻿using Demo.Domain.PrintToConsole;
+using Demo.Endpoints.PrintToConsole;
 using MicrolisR;
-using PrintToConsole;
 
 namespace Demo.Mappers.PrintToConsole;
 

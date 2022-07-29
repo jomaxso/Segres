@@ -1,5 +1,6 @@
-﻿using MicrolisR;
-using PrintToConsole;
+﻿using Demo.Domain.PrintToConsole;
+using Demo.Endpoints.PrintToConsole;
+using MicrolisR;
 using Utilities;
 
 namespace Demo.Mappers.PrintToConsole;
@@ -11,7 +12,6 @@ public class PrintRequestMapper : IMapHandler<PrintRequest, PrintCommand>
         return new PrintCommand()
         {
             Value = request.Value,
-            Value2 = request.Value2
         };
     }
 }

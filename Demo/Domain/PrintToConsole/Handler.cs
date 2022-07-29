@@ -1,6 +1,6 @@
 ﻿using MicrolisR;
 
-namespace PrintToConsole;
+namespace Demo.Domain.PrintToConsole;
 
 public class Handler : IRequestHandler<PrintCommand, bool>
 {

@@ -16,15 +16,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\src\MicrolisR.Extensions.Microsoft.DependencyInjection\MicrolisR.Extensions.Microsoft.DependencyInjection.csproj" />
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.DependencyInjection\MicrolisR.Extension.DependencyInjection.csproj" />
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.Endpoint\MicrolisR.Extension.Endpoint.csproj" />
         <ProjectReference Include="..\src\MicrolisR\MicrolisR.csproj" />
-
+        
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.Endpoint.SourceGeneration\MicrolisR.Extension.Endpoint.SourceGeneration.csproj" >
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+        
         <ProjectReference Include="..\src\MicrolisR.SourceGeneration\MicrolisR.SourceGeneration.csproj">
             <OutputItemType>Analyzer</OutputItemType>
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
         </ProjectReference>
-
-        <ProjectReference Include="..\src\MircrolisR.Endpoint\MircrolisR.Endpoint.csproj" />
+        
     </ItemGroup>
 
 </Project>

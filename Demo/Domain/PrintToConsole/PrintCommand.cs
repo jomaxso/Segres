@@ -1,8 +1,7 @@
 ﻿using Demo.Endpoints.PrintToConsole;
 using MicrolisR;
 
-
-namespace PrintToConsole;
+namespace Demo.Domain.PrintToConsole;
 
 public record PrintCommand() : 
     IRequestable<bool>,

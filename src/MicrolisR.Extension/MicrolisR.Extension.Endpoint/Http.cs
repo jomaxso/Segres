@@ -1,6 +1,6 @@
 ﻿namespace MicrolisR;
 
-public enum Http : byte
+public enum Http : sbyte
 {
     GET,
     PUT,

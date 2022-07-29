@@ -1,28 +1,30 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Demo.Endpoints.PrintToConsole;
+using Demo.Domain.PrintToConsole;
 using MicrolisR;
-using Microsoft.Extensions.DependencyInjection;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
-using PrintToConsole;
 
 namespace Demo;
 
 [MemoryDiagnoser()]
 public class Benchy
 {
-    private static readonly IMediator Mediator = new ServiceCollection()
+    private static readonly ServiceProvider Provider = new ServiceCollection()
         .AddMicrolisR(typeof(Program))
-        .BuildServiceProvider()
-        .GetRequiredService<IMediator>();
+        .BuildServiceProvider();
 
-    private static PrintCommand obj1 = new PrintCommand();
+    private static readonly IMediator Mediator = Provider.GetRequiredService<IMediator>();
+    private static readonly ISender Sender = Provider.GetRequiredService<ISender>();
+    private static readonly IValidator Validator = Provider.GetRequiredService<IValidator>();
+    private static readonly IMapper Mapper = Provider.GetRequiredService<IMapper>();
+
+    private static PrintCommand obj1 = new();
     
     [Benchmark]
-    public PrintResult? Map() =>  Mediator.Map(obj1);
+    public void Validate() => Validator.Validate(obj1);
+
+    [Benchmark]
+    public async Task<bool> MediatAsync() => await Mediator.SendAsync(obj1);
     
     [Benchmark]
-    public void Validate() => Mediator.Validate(obj1);
-    
-    [Benchmark]
-    public async Task<bool> SendAsync() => await Mediator.SendAsync(obj1);
+    public async Task<bool> SendAsync() => await Sender.SendAsync(obj1);
 }

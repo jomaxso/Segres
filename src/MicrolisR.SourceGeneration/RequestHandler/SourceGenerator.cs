@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -75,17 +76,17 @@ public class SourceGenerator : IIncrementalGenerator
 
             var requestFullNames = GetRequestClassFullName(compilation, handlerDeclarationSyntax);
             var handlerFullName = GetHandlerClassFullName(compilation, handlerDeclarationSyntax);
-            
+
             if (handlerFullName is null)
                 continue;
 
             var requestHandlerClasses = requestFullNames
                 .Where(x => x is not null)
                 .Select(requestFullName => new HandlerClass(handlerFullName, requestFullName));
-            
+
             targetClasses.AddRange(requestHandlerClasses);
         }
-
+        
         return targetClasses;
     }
 
@@ -101,9 +102,9 @@ public class SourceGenerator : IIncrementalGenerator
 
         if (requestDeclarationSyntaxList is null)
             return Enumerable.Empty<string>();
-        
+
         var classModel = compilation.GetSemanticModel(handlerDeclarationSyntax.SyntaxTree);
-        
+
         var requestFullNames = new List<string>();
 
         foreach (var requestDeclarationSyntax in requestDeclarationSyntaxList)
@@ -112,8 +113,8 @@ public class SourceGenerator : IIncrementalGenerator
 
             if (requestType is null)
                 continue;
-
-            requestFullNames.Add($"{requestType.ContainingNamespace.Name}.{requestType.Name}");
+            
+            requestFullNames.Add($"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}");
         }
 
         return requestFullNames;

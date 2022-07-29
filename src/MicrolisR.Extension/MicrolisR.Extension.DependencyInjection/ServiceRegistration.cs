@@ -17,7 +17,18 @@ public static class ServiceRegistration
         // REQUEST_HANDLER
         var handlerDetails = GetHandlerDetails(assemblies, typeof(IRequestHandler<,>))
             .ToDictionary(x => x.Key, y => y.Value);
-        services.TryAdd(handlerDetails.Values.Select(x => new ServiceDescriptor(x, x, ServiceLifetime.Scoped)));
+
+        foreach (var implementationType in handlerDetails.Values)
+        {
+            var serviceDescriptors = implementationType
+                .GetInterfaces()
+                .Where(x => x.Name == (typeof(IRequestHandler<,>).Name))
+                .Select(x => new ServiceDescriptor(x, implementationType, ServiceLifetime.Scoped));
+            
+            services.TryAdd(serviceDescriptors);
+            services.TryAdd(new ServiceDescriptor(implementationType, implementationType, ServiceLifetime.Scoped));
+        }
+
         services.TryAddSingleton<ISender>(x => new Sender(x.GetRequiredService, handlerDetails));
 
         // VALIDATION_HANDLER
@@ -34,7 +45,7 @@ public static class ServiceRegistration
 
             return new Validator(validatorDetails);
         });
-        
+
         // MAP_HANDLER
         var mapperDetails = GetHandlerDetails(assemblies, typeof(IMapHandler<,>)).ToDictionary(x => x.Key, y => y.Value);
         services.TryAdd(mapperDetails.Values.Select(x => new ServiceDescriptor(x, x, ServiceLifetime.Singleton)));
