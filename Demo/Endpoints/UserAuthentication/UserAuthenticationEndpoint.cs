@@ -1,4 +1,5 @@
-﻿using MicrolisR;
+﻿using System.Text.Json;
+using MicrolisR;
 
 namespace Demo.Endpoints.Authentication.User;
 
@@ -12,12 +13,12 @@ public class UserAuthenticationEndpoint :
         _logger = logger;
     }
     
-    [Endpoint(Http.GET, "/{value:int}", false)]
+    [Endpoint(Http.POST, "/", false)]
     public Task<UserAuthenticationResponse> HandleAsync(GetUserAuthenticationRequest request, CancellationToken cancellationToken)
     {
         var response = new UserAuthenticationResponse()
         {
-            Value = request.Value
+            Value = (int)request.Value
         };
         return Task.FromResult(response);
     }

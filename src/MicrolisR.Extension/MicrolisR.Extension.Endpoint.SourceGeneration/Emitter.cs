@@ -49,7 +49,7 @@ internal static class Emitter
     private static (string Description, string Declaration) DelegateBody(EndpointClass endpointClass)
     {
         if (!endpointClass.Properties.Any(x => x.FromAttribute is not null)) 
-            return ($"{endpointClass.RequestClassFullName} obj", "obj");
+            return ($"[FromBodyAttribute] {endpointClass.RequestClassFullName} obj", "obj");
         
         var declaration = new StringBuilder();
         var description = new StringBuilder($"new {endpointClass.RequestClassFullName}() {{ ");
