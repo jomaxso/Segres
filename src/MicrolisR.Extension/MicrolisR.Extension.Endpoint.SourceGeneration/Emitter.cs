@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -22,26 +23,59 @@ internal static class Emitter
         
         foreach (var c in classes)
         {
-            source.AppendLine($"internal class HttpContextRequestResolver_PrintToConsoleHandler : IHttpContextRequestResolver<{c.RequestClassFullName}, {c.ResponseClassFullName}>");
+            var delegateBody = DelegateBody(c);
+            
+            source.AppendLine($"internal class HttpContextRequestResolver_{c.RequestAsName}_{c.ResponseAsName} : IHttpContextRequestResolver<{c.RequestClassFullName}, {c.ResponseClassFullName}>");
             source.AppendLine("{");
-            source.AppendLine("     private readonly bool _shouldValidate;");
-            source.AppendLine($"     public IRequestHandler<{c.RequestClassFullName}, {c.ResponseClassFullName}> RequestHandler {{ get; }}");
+            source.AppendLine("    private readonly bool _shouldValidate;");
+            source.AppendLine($"    public IRequestHandler<{c.RequestClassFullName}, {c.ResponseClassFullName}> RequestHandler {{ get; }}");
             source.AppendLine();
-            source.AppendLine($"     public HttpContextRequestResolver_GetUserAuthenticationHandler(IRequestHandler<{c.RequestClassFullName}, {c.ResponseClassFullName}> requestHandler)");
-            source.AppendLine("      {");
-            source.AppendLine("           RequestHandler = requestHandler;");
-            source.AppendLine("           _shouldValidate = ((IHttpContextRequestResolver) this).Validate;");
-            source.AppendLine("      };");
+            source.AppendLine($"    public HttpContextRequestResolver_{c.RequestAsName}_{c.ResponseAsName}(IRequestHandler<{c.RequestClassFullName}, {c.ResponseClassFullName}> requestHandler)");
+            source.AppendLine("    {");
+            source.AppendLine("        RequestHandler = requestHandler;");
+            source.AppendLine("        _shouldValidate = ((IHttpContextRequestResolver) this).Validate;");
+            source.AppendLine("    }");
             source.AppendLine();
-            source.AppendLine("      public Delegate EndpointDelegate =>");
-            
-            // TODO Customize
-            source.AppendLine("           ([FromServices] IMediator mediator, [FromBody] GetUserAuthenticationRequest obj, CancellationToken cancellationToken) =>");
-            source.AppendLine("           mediator.SendAsync(obj, _shouldValidate, cancellationToken);");
-            
+            source.AppendLine("    public Delegate EndpointDelegate =>");
+            source.AppendLine($"        ([FromServices] IMediator mediator, {delegateBody.Description}, CancellationToken cancellationToken) =>");
+            source.AppendLine($"            mediator.SendAsync({delegateBody.Declaration}, _shouldValidate, cancellationToken);");
             source.AppendLine("}");
+            source.AppendLine();
         }
        
         return source.ToString();
+    }
+
+    private static (string Description, string Declaration) DelegateBody(EndpointClass endpointClass)
+    {
+        if (!endpointClass.Properties.Any(x => x.FromAttribute is not null)) 
+            return ($"{endpointClass.RequestClassFullName} obj", "obj");
+        
+        var declaration = new StringBuilder();
+        var description = new StringBuilder($"new {endpointClass.RequestClassFullName}() {{ ");
+
+        var properties = endpointClass.Properties.ToArray();
+        
+        for (var i = 0; i < properties.Length; i++)
+        {
+            var property = properties[0];
+            var attributeText = property.FromAttribute is null 
+                ? string.Empty 
+                : $"[{property.FromAttribute}]";
+            
+            declaration.Append($"{attributeText} {property.Type} {property.Name.ToLower()}");
+            description.Append($"{property.Name} = {property.Name.ToLower()}");
+
+            if (i > properties.Length - 2) 
+                continue;
+            
+            declaration.Append(", ");
+            description.Append(", ");
+        }
+
+        description.Append(" }");
+            
+        return (declaration.ToString(), description.ToString());
+
     }
 }

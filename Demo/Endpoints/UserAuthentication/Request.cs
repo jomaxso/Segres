@@ -8,12 +8,12 @@ public record GetUserAuthenticationRequest : IRequestable<UserAuthenticationResp
     [FromRoute] public int Value { get; set; }
 } 
 
-public record GetAllAuthenticationsRequest : IRequestable<List<UserAuthenticationResponse>>
-{
-    
-}
+// public record GetAllAuthenticationsRequest : IRequestable<List<UserAuthenticationResponse>>
+// {
+//     
+// }
 
-public record class UserAuthenticationResponse
+public record class UserAuthenticationResponse 
 {
     public int Value { get; set; }
 };

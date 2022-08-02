@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -73,61 +74,85 @@ public class SourceGenerator : IIncrementalGenerator
             if (context.CancellationToken.IsCancellationRequested)
                 return Array.Empty<EndpointClass>();
 
-            var requestFullNames = GetRequestClassFullName(compilation, handlerDeclarationSyntax);
-            var handlerFullName = GetHandlerClassFullName(compilation, handlerDeclarationSyntax);
-
-            if (handlerFullName is null)
-                continue;
-
-            var requestHandlerClasses = requestFullNames
-                .Where(x => x is not null)
-                .Select(requestFullName => new EndpointClass(handlerFullName, requestFullName));
-
-            targetClasses.AddRange(requestHandlerClasses);
+            var handlerClasses = GetEndpointClasses(compilation, handlerDeclarationSyntax);
+            targetClasses.AddRange(handlerClasses);
         }
-        
+
         return targetClasses;
     }
 
-    private static IEnumerable<string> GetRequestClassFullName(Compilation compilation, BaseTypeDeclarationSyntax handlerDeclarationSyntax)
+    private static IEnumerable<Property> GetRequestProperties(Compilation compilation, IEnumerable<GenericNameSyntax>? requestDeclarationSyntaxes)
+    {
+        if (requestDeclarationSyntaxes is null)
+            return Enumerable.Empty<Property>();
+
+        var requestDeclarationSyntaxList = requestDeclarationSyntaxes
+            .Select(x => x.TypeArgumentList.Arguments.FirstOrDefault()).Where(x => x is not null)
+            .OfType<IdentifierNameSyntax>();
+
+        var properties = new List<Property>();
+
+        foreach (var requestDeclarationSyntax in requestDeclarationSyntaxList)
+        {
+            throw new Exception(JsonSerializer.Serialize(requestDeclarationSyntax.Identifier.Text));
+        }
+
+        return properties;
+    }
+
+    private static IEnumerable<EndpointClass> GetEndpointClasses(Compilation compilation, BaseTypeDeclarationSyntax handlerDeclarationSyntax)
     {
         var requestDeclarationSyntaxList = handlerDeclarationSyntax
             .BaseList?.Types
             .Select(x => x.Type)
             .OfType<GenericNameSyntax>()
-            .Where(x => x.Identifier.Text == "IRequestHandler")?
-            .Select(x => x.TypeArgumentList.Arguments.FirstOrDefault()).Where(x => x is not null)
-            .OfType<IdentifierNameSyntax>();
+            .Where(x => x.Identifier.Text == "IRequestHandler");
 
         if (requestDeclarationSyntaxList is null)
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<EndpointClass>();
 
         var classModel = compilation.GetSemanticModel(handlerDeclarationSyntax.SyntaxTree);
 
-        var requestFullNames = new List<string>();
+        var endpointClasses = new List<EndpointClass>();
 
-        foreach (var requestDeclarationSyntax in requestDeclarationSyntaxList)
+        foreach (var syntax in requestDeclarationSyntaxList)
         {
-            var requestType = classModel.GetTypeInfo(requestDeclarationSyntax).Type;
+            // REQUEST
+            if (syntax.TypeArgumentList.Arguments.FirstOrDefault() is not IdentifierNameSyntax requestNameSyntax)
+                continue;
+            
+            var requestType = classModel.GetTypeInfo(requestNameSyntax).Type;
 
             if (requestType is null)
                 continue;
+
+            var requestFullName = $"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}";
             
-            requestFullNames.Add($"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}");
+            // RESPONSE
+            if (syntax.TypeArgumentList.Arguments[1] is not IdentifierNameSyntax responseNameSyntax)
+                continue;
+            
+            var responseType = classModel.GetTypeInfo(responseNameSyntax).Type;
+
+            if (responseType is null)
+                continue;
+
+            var responseFullName = $"{responseType.ContainingNamespace.ToDisplayString()}.{responseType.Name}";
+            
+            // PROPERTIES
+            
+            var requestClassModel = compilation.GetSemanticModel(handlerDeclarationSyntax.SyntaxTree);
+            
+            var requestProperties = new List<Property>();
+            foreach (PropertyDeclarationSyntax declarationSyntax in Array.Empty<PropertyDeclarationSyntax>())
+            {
+                var property = new Property() {FromAttribute = "FromRoute", Name = "Value", Type = "int"};
+                requestProperties.Add(property);
+            }
+
+            endpointClasses.Add(new EndpointClass(requestFullName, responseFullName, requestProperties));
         }
 
-        return requestFullNames;
-    }
-
-    private static string? GetHandlerClassFullName(Compilation compilation, BaseTypeDeclarationSyntax declarationSyntax)
-    {
-        var classModel = compilation.GetSemanticModel(declarationSyntax.SyntaxTree);
-
-        if (classModel.GetDeclaredSymbol(declarationSyntax) is not INamedTypeSymbol symbol)
-            return null;
-
-        var className = declarationSyntax.Identifier.Text;
-        var classNamespace = symbol.ContainingNamespace.ToDisplayString();
-        return $"{classNamespace}.{className}";
+        return endpointClasses;
     }
 }
