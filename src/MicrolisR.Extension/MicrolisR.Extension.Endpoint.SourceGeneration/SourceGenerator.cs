@@ -36,7 +36,7 @@ public class SourceGenerator : IIncrementalGenerator
 
     private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
-        var classDeclarationSyntax = (TypeDeclarationSyntax) context.Node;
+        var classDeclarationSyntax = (TypeDeclarationSyntax)context.Node;
 
         var isType = classDeclarationSyntax
             .BaseList?.Types
@@ -81,7 +81,8 @@ public class SourceGenerator : IIncrementalGenerator
         return targetClasses;
     }
 
-    private static IEnumerable<Property> GetRequestProperties(Compilation compilation, IEnumerable<GenericNameSyntax>? requestDeclarationSyntaxes)
+    private static IEnumerable<Property> GetRequestProperties(Compilation compilation,
+        IEnumerable<GenericNameSyntax>? requestDeclarationSyntaxes)
     {
         if (requestDeclarationSyntaxes is null)
             return Enumerable.Empty<Property>();
@@ -100,7 +101,8 @@ public class SourceGenerator : IIncrementalGenerator
         return properties;
     }
 
-    private static IEnumerable<EndpointClass> GetEndpointClasses(Compilation compilation, BaseTypeDeclarationSyntax handlerDeclarationSyntax)
+    private static IEnumerable<EndpointClass> GetEndpointClasses(Compilation compilation,
+        BaseTypeDeclarationSyntax handlerDeclarationSyntax)
     {
         var requestDeclarationSyntaxList = handlerDeclarationSyntax
             .BaseList?.Types
@@ -117,36 +119,30 @@ public class SourceGenerator : IIncrementalGenerator
 
         foreach (var syntax in requestDeclarationSyntaxList)
         {
-            // REQUEST
-            if (syntax.TypeArgumentList.Arguments.FirstOrDefault() is not IdentifierNameSyntax requestNameSyntax)
-                continue;
-            
-            var requestType = classModel.GetTypeInfo(requestNameSyntax).Type;
+            var requestFullName = GetClassFullName(classModel, syntax.TypeArgumentList.Arguments.FirstOrDefault());
 
-            if (requestType is null)
+            if (requestFullName is null)
                 continue;
 
-            var requestFullName = $"{requestType.ContainingNamespace.ToDisplayString()}.{requestType.Name}";
-            
-            // RESPONSE
-            if (syntax.TypeArgumentList.Arguments[1] is not IdentifierNameSyntax responseNameSyntax)
-                continue;
-            
-            var responseType = classModel.GetTypeInfo(responseNameSyntax).Type;
+            var responseFullName = GetClassFullName(classModel, syntax.TypeArgumentList.Arguments[1]);
 
-            if (responseType is null)
+            if (responseFullName is null)
                 continue;
-
-            var responseFullName = $"{responseType.ContainingNamespace.ToDisplayString()}.{responseType.Name}";
             
             // PROPERTIES
-            
-            var requestClassModel = compilation.GetSemanticModel(handlerDeclarationSyntax.SyntaxTree);
-            
+            var requestClassModel = compilation.GetSemanticModel(requestNameSyntax.SyntaxTree);
+            var members = requestType.GetMembers();
+
+            foreach (var member in members)
+            {
+                if (member.Name == "Value")
+                    throw new Exception(JsonSerializer.Serialize(member.ToDisplayString()));
+            }
+
             var requestProperties = new List<Property>();
             foreach (PropertyDeclarationSyntax declarationSyntax in Array.Empty<PropertyDeclarationSyntax>())
             {
-                var property = new Property() {FromAttribute = "FromRoute", Name = "Value", Type = "int"};
+                var property = new Property() { FromAttribute = "FromRoute", Name = "Value", Type = "int" };
                 requestProperties.Add(property);
             }
 
@@ -154,5 +150,15 @@ public class SourceGenerator : IIncrementalGenerator
         }
 
         return endpointClasses;
+    }
+
+    private static string? GetClassFullName(SemanticModel classModel, TypeSyntax? typeSyntax)
+    {
+        if (typeSyntax is not IdentifierNameSyntax nameSyntax)
+            return null;
+
+        var typeSymbol = classModel.GetTypeInfo(nameSyntax).Type;
+
+        return typeSymbol?.ToDisplayString();
     }
 }
