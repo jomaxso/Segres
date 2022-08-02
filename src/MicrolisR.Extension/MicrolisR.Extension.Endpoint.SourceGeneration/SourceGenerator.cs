@@ -36,7 +36,7 @@ public class SourceGenerator : IIncrementalGenerator
 
     private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
-        var classDeclarationSyntax = (TypeDeclarationSyntax)context.Node;
+        var classDeclarationSyntax = (TypeDeclarationSyntax) context.Node;
 
         var isType = classDeclarationSyntax
             .BaseList?.Types
@@ -77,28 +77,8 @@ public class SourceGenerator : IIncrementalGenerator
             var handlerClasses = GetEndpointClasses(compilation, handlerDeclarationSyntax);
             targetClasses.AddRange(handlerClasses);
         }
-
+        
         return targetClasses;
-    }
-
-    private static IEnumerable<Property> GetRequestProperties(Compilation compilation,
-        IEnumerable<GenericNameSyntax>? requestDeclarationSyntaxes)
-    {
-        if (requestDeclarationSyntaxes is null)
-            return Enumerable.Empty<Property>();
-
-        var requestDeclarationSyntaxList = requestDeclarationSyntaxes
-            .Select(x => x.TypeArgumentList.Arguments.FirstOrDefault()).Where(x => x is not null)
-            .OfType<IdentifierNameSyntax>();
-
-        var properties = new List<Property>();
-
-        foreach (var requestDeclarationSyntax in requestDeclarationSyntaxList)
-        {
-            throw new Exception(JsonSerializer.Serialize(requestDeclarationSyntax.Identifier.Text));
-        }
-
-        return properties;
     }
 
     private static IEnumerable<EndpointClass> GetEndpointClasses(Compilation compilation,
@@ -128,27 +108,12 @@ public class SourceGenerator : IIncrementalGenerator
 
             if (responseFullName is null)
                 continue;
-            
-            // PROPERTIES
-            var requestClassModel = compilation.GetSemanticModel(requestNameSyntax.SyntaxTree);
-            var members = requestType.GetMembers();
 
-            foreach (var member in members)
-            {
-                if (member.Name == "Value")
-                    throw new Exception(JsonSerializer.Serialize(member.ToDisplayString()));
-            }
-
-            var requestProperties = new List<Property>();
-            foreach (PropertyDeclarationSyntax declarationSyntax in Array.Empty<PropertyDeclarationSyntax>())
-            {
-                var property = new Property() { FromAttribute = "FromRoute", Name = "Value", Type = "int" };
-                requestProperties.Add(property);
-            }
+            var requestProperties = GetRequestProperties(classModel, syntax.TypeArgumentList.Arguments.FirstOrDefault());
 
             endpointClasses.Add(new EndpointClass(requestFullName, responseFullName, requestProperties));
         }
-
+        
         return endpointClasses;
     }
 
@@ -160,5 +125,47 @@ public class SourceGenerator : IIncrementalGenerator
         var typeSymbol = classModel.GetTypeInfo(nameSyntax).Type;
 
         return typeSymbol?.ToDisplayString();
+    }
+
+    private static IEnumerable<Property> GetRequestProperties(SemanticModel classModel, TypeSyntax? typeSyntax)
+    {
+        if (typeSyntax is not IdentifierNameSyntax nameSyntax)
+            return Enumerable.Empty<Property>();
+
+        var typeSymbol = classModel.GetTypeInfo(nameSyntax).Type;
+        var members = typeSymbol?
+            .GetMembers()
+            .Where(x => x.Name != "EqualityContract")
+            .Where(x => x.Kind == SymbolKind.Property);
+
+        if (members is null)
+            return Enumerable.Empty<Property>();
+
+        var requestProperties = new List<Property>();
+
+        foreach (var member in members)
+        {
+            if (member.Kind != SymbolKind.Property)
+                continue;
+
+            if (member is not IPropertySymbol propertySymbol)
+                continue;
+
+            var attribute = propertySymbol
+                .GetAttributes()
+                .FirstOrDefault(x => x.AttributeClass?.Name is "FromBodyAttribute" or "FromQueryAttribute" or "FromHeaderAttribute" or "FromRouteAttribute")
+                ?.AttributeClass?.Name;
+
+            var property = new Property()
+            {
+                FromAttribute = attribute,
+                Name = propertySymbol.Name,
+                Type = propertySymbol.Type.ToDisplayString()
+            };
+
+            requestProperties.Add(property);
+        }
+        
+        return requestProperties;
     }
 }

@@ -58,7 +58,7 @@ internal static class Emitter
         
         for (var i = 0; i < properties.Length; i++)
         {
-            var property = properties[0];
+            var property = properties[i];
             var attributeText = property.FromAttribute is null 
                 ? string.Empty 
                 : $"[{property.FromAttribute}]";
