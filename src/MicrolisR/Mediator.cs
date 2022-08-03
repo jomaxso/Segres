@@ -3,7 +3,7 @@
 public sealed class Mediator : IMediator
 {
     private readonly ISender _sender;
-    private readonly IValidator _validator;
+    private readonly IValidator? _validator;
 
     public Mediator(Func<Type, object> serviceResolver)
     {
@@ -11,7 +11,12 @@ public sealed class Mediator : IMediator
         _validator = (IValidator) serviceResolver(typeof(IValidator));
     }
 
-    public Mediator(ISender sender, IValidator validator, IMapper mapper)
+    public Mediator(ISender sender)
+    {
+        _sender = sender;
+    }
+    
+    public Mediator(ISender sender, IValidator validator)
     {
         _sender = sender;
         _validator = validator;
@@ -23,12 +28,12 @@ public sealed class Mediator : IMediator
     public async Task<TResponse> SendAsync<TResponse>(IRequestable<TResponse> request, bool validate, CancellationToken cancellationToken = default)
     {
         if (validate)
-            _validator.Validate(request);
+            _validator?.Validate(request);
 
         var response = await _sender.SendAsync(request, cancellationToken);
 
         if (response is IValidatable validatable && validate)
-            _validator.Validate(validatable);
+            _validator?.Validate(validatable);
 
         return response;
     }
@@ -40,7 +45,7 @@ public sealed class Mediator : IMediator
     public Task SendAsync(IRequestable request, bool validate, CancellationToken cancellationToken = default)
     {
         if (validate)
-            _validator.Validate(request);
+            _validator?.Validate(request);
         
         return _sender.SendAsync(request, cancellationToken);
     }
