@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using MicrolisR.Mapping.Abstractions;
+using MicrolisR.Mapping.internals;
 
 namespace MicrolisR.Mapping;
 
@@ -7,12 +8,13 @@ public sealed class Mapper : IMapper
 {
     private readonly List<MappableObject> _generatedMappers = new();
 
-    public Mapper() : this(Assembly.GetCallingAssembly())
+    public Mapper() 
+        : this(Assembly.GetCallingAssembly())
     {
-       
     }
 
-    public Mapper(params Type[] markerTypes) : this(markerTypes.Select(x => x.Assembly).ToArray())
+    public Mapper(params Type[] markerTypes) 
+        : this(markerTypes.Select(x => x.Assembly).ToArray())
     {
     }
 
@@ -22,63 +24,78 @@ public sealed class Mapper : IMapper
             return;
         
         foreach (var markerAssembly in markerAssemblies)
-        {
             RegisterMapper(markerAssembly);
-        }
     }
 
     public T? Map<T>(object? value)
         where T : new()
     {
-        T? result = default;
-
         if (value is null)
-            return result;
+            return default;
 
         var target = value.GetType();
         var source = typeof(T);
 
-
         for (var i = 0; i < _generatedMappers.Count; i++)
         {
             var mappable = _generatedMappers[i];
             
-            if(mappable.Target != target)
+            if(mappable.Target != target || mappable.Source != source)
                 continue;
-            
-            if (mappable.Source != source)
-                continue;
-            
-            result = mappable.Handler.Handle<T>(value);
-            break;
+
+            return mappable.Handler.Handle<T>(value);
         }
 
-        return result;
+        return default;
     }
-
+    
     public TOut? Map<TIn, TOut>(TIn value)
         where TOut : new()
         where TIn : new()
     {
-        TOut? result = default;
-
         if (value is null)
-            return result;
+            return default;
 
         for (var i = 0; i < _generatedMappers.Count; i++)
         {
-            var mappable = _generatedMappers[i];
-            
-            if (mappable.Handler is not IMapperDefinition<TIn, TOut> mapper)
-                continue;
-        
-            result = mapper.Map(value);
-            break;
+            if (_generatedMappers[i].Handler is IMapperDefinition<TIn, TOut> mapper)
+                return mapper.Map(value);
         }
 
-        return result;
+        return default;
     }
     
+    public IEnumerable<TValue> MapMany<TValue>(IEnumerable<object>? targets) 
+        where TValue : new()
+    {
+        var values = targets?
+            .Select(target => Map<TValue>(target)!)
+            .Where(value => value is not null);
+        
+        return values ?? Enumerable.Empty<TValue>();
+    }
+    
+    public IEnumerable<TValue> MapMany<TSource, TValue>(IEnumerable<TSource>? targets) 
+        where TValue : new() 
+        where TSource : new()
+    {
+        var values = targets?
+            .Select(target => Map<TSource, TValue>(target)!)
+            .Where(value => value is not null);
+        
+        return values ?? Enumerable.Empty<TValue>();
+    }
+
+    internal TValue CheckAndGet<TSource, TValue>(TSource value) where TValue : new() where TSource : new()
+    {
+        if (_generatedMappers.Any(x => x.IsHandler(typeof(TSource), typeof(TValue))) is false)
+        {
+            RegisterMapper(typeof(TSource).Assembly);
+        }
+
+        return this.Map<TSource, TValue>(value)!;
+    }
+
     private void RegisterMapper(Assembly markerAssembly)
     {
         var mappableHandlerTypes = markerAssembly.DefinedTypes.Where(type =>
@@ -98,8 +115,7 @@ public sealed class Mapper : IMapper
                 {
                     var arguments = x.GetGenericArguments();
                     return (arguments[0], arguments[1]);
-                })
-                .ToList();
+                });
 
             foreach (var genericMapperType in genericMapperTypes)
             {

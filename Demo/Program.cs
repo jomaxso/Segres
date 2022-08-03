@@ -1,14 +1,13 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using MicrolisR;
+using MicrolisR.Extensions.Microsoft.DependencyInjection;
 
-using System.Net;
-using BenchmarkDotNet.Running;
-using ClassLibrary1;
-using ClassLibrary2;
-using Demo;
-using MicrolisR.Mapping;
+var builder = WebApplication.CreateBuilder();
+// builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Services.AddMicrolisR(typeof(Program));
+builder.Services.AddEndpoints();
 
-BenchmarkRunner.Run<Benchy>();
-return;
+var app = builder.Build();
 
+app.MapEndpoints();
 
-
+app.Run();

@@ -1,28 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
-		<LangVersion>preview</LangVersion>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-<!--		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    </PropertyGroup>
 
-	<ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
 
-<!--		<ProjectReference Include="..\src\MicrolisR.Mapping.SourceGenerator\MicrolisR.Mapping.SourceGenerator.csproj">-->
-<!--			<OutputItemType>Analyzer</OutputItemType>-->
-<!--			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>-->
-<!--		</ProjectReference>-->
-
-<!--		<ProjectReference Include="..\src\MicrolisR.Mapping\MicrolisR.Mapping.csproj" />-->
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="AutoMapper" Version="11.0.1" />
-	  <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-	  <PackageReference Include="MicrolisR.Mapping" Version="1.0.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.DependencyInjection\MicrolisR.Extension.DependencyInjection.csproj" />
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.Endpoint\MicrolisR.Extension.Endpoint.csproj" />
+        <ProjectReference Include="..\src\MicrolisR\MicrolisR.csproj" />
+        
+        <ProjectReference Include="..\src\MicrolisR.Extension\MicrolisR.Extension.Endpoint.SourceGeneration\MicrolisR.Extension.Endpoint.SourceGeneration.csproj">
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+        
+        <ProjectReference Include="..\src\MicrolisR.SourceGeneration\MicrolisR.SourceGeneration.csproj">
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+        
+    </ItemGroup>
 
 </Project>
