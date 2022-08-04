@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace MicrolisR.UnitTest.Sending;
@@ -14,7 +14,7 @@ internal class RequestHandler : IRequestHandler<Request, int>
     }
 }
 
-public class SenderTest
+public class SenderWithResponseTest
 {
     [Fact]
     public async Task SendAsync_ShouldReturnTrue_WhenCalled()
@@ -79,5 +79,3 @@ public class SenderTest
         await result.Should().ThrowAsync<Exception>();
     }
 }
-
-
