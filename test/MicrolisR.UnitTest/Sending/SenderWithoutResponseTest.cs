@@ -1,12 +1,14 @@
 ﻿using FluentAssertions;
+using MicrolisR.Extensions.Microsoft.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace MicrolisR.UnitTest.Sending;
 
-internal readonly record struct RequestWithoutResponse(int Value) : IRequestable;
-internal readonly record struct RequestWithoutHandlerAndResponse() : IRequestable;
+public readonly record struct RequestWithoutResponse(int Value) : IRequestable;
+public readonly record struct RequestWithoutHandlerAndResponse() : IRequestable;
 
-internal class RequestWithoutResponseHandler : IRequestHandler<RequestWithoutResponse>
+public class RequestWithoutResponseHandler : IRequestHandler<RequestWithoutResponse>
 {
     public Task HandleAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
     {
@@ -20,14 +22,11 @@ public class SenderWithoutResponseTest
     public async Task SendAsync_ShouldReturnTrue_WhenCalled()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestWithoutResponseHandler) ? new RequestWithoutResponseHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(RequestWithoutResponse), typeof(RequestWithoutResponseHandler)}
-        };
+        var serviceProvider = new ServiceCollection()
+            .AddMicrolisR(typeof(MediatorWithResponseTest))
+            .BuildServiceProvider();
 
-        ISender sender = new MicrolisR.Sender(ServiceResolver, handlerDetails);
+        var sender = serviceProvider.GetRequiredService<ISender>();
         var request = new RequestWithoutResponse();
         
         // act
@@ -41,14 +40,11 @@ public class SenderWithoutResponseTest
     public async Task SendAsync_ShouldReturnValueOfRequest_WhenCalled()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestWithoutResponseHandler) ? new RequestWithoutResponseHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(RequestWithoutResponse), typeof(RequestWithoutResponseHandler)}
-        };
+        var serviceProvider = new ServiceCollection()
+            .AddMicrolisR(typeof(MediatorWithResponseTest))
+            .BuildServiceProvider();
 
-        ISender sender = new MicrolisR.Sender(ServiceResolver, handlerDetails);
+        var sender = serviceProvider.GetRequiredService<ISender>();
         var request = new RequestWithoutResponse(4712);
 
         // act
@@ -62,14 +58,11 @@ public class SenderWithoutResponseTest
     public async Task SendAsync_ShouldThrow_WhenNoHandlerFound()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestWithoutResponseHandler) ? new RequestWithoutResponseHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(RequestWithoutResponse), typeof(RequestWithoutResponseHandler)}
-        };
+        var serviceProvider = new ServiceCollection()
+            .AddMicrolisR(typeof(MediatorWithResponseTest))
+            .BuildServiceProvider();
 
-        ISender sender = new Sender(ServiceResolver, handlerDetails);
+        var sender = serviceProvider.GetRequiredService<ISender>();
         var request = new RequestWithoutHandlerAndResponse();
 
         // act
