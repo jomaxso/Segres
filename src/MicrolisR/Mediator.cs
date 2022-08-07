@@ -4,17 +4,20 @@ public sealed class Mediator : IMediator
 {
     private readonly ISender _sender;
     private readonly IValidator _validator;
+    private readonly IPublisher _publisher;
 
     public Mediator(Func<Type, object> serviceResolver)
     {
         _sender = (ISender) serviceResolver(typeof(ISender));
         _validator = (IValidator) serviceResolver(typeof(IValidator));
+        _publisher = (IPublisher) serviceResolver(typeof(IPublisher));
     }
 
-    public Mediator(ISender sender, IValidator validator)
+    public Mediator(ISender sender, IValidator validator, IPublisher publisher)
     {
         _sender = sender;
         _validator = validator;
+        _publisher = publisher;
     }
 
     public Task<TResponse> SendAsync<TResponse>(IRequestable<TResponse> request, CancellationToken cancellationToken = default)
@@ -43,5 +46,16 @@ public sealed class Mediator : IMediator
             _validator?.Validate(request);
         
         return _sender.SendAsync(request, cancellationToken);
+    }
+
+    public Task PublishAsync(IMessage message, CancellationToken cancellationToken = default) 
+        => _publisher.PublishAsync(message, cancellationToken);
+
+    public Task PublishAsync(IMessage message, bool validate, CancellationToken cancellationToken = default) 
+    {
+        if (validate)
+            _validator?.Validate(message);
+        
+        return _publisher.PublishAsync(message, cancellationToken);
     }
 }

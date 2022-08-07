@@ -9,10 +9,6 @@ public class GetUserAuthenticationRequest : IRequestable<UserAuthenticationRespo
      public Guid Id { get; set; }
 }
 
-public record GetAllAuthenticationsRequest : IRequestable<List<UserAuthenticationResponse>>
-{
-}
-
 public record class UserAuthenticationResponse
 {
     public int Value { get; set; }

@@ -50,6 +50,25 @@ public static class ServiceRegistration
         var mapperDetails = GetHandlerDetails(assemblies, typeof(IMapHandler<,>)).ToDictionary(x => x.Key, y => y.Value);
         services.TryAdd(mapperDetails.Values.Select(x => new ServiceDescriptor(x, x, ServiceLifetime.Singleton)));
         services.TryAddSingleton<IMapper>(x => new Mapper(x.GetRequiredService, mapperDetails));
+        
+        // MESSAGE_HANDLER
+        var messageDetailsTypes = GetHandlerDetails(assemblies, typeof(IMessageHandler<>)).ToArray();
+        services.TryAdd(messageDetailsTypes.Select(x => new ServiceDescriptor(x.Value, x.Value, ServiceLifetime.Scoped)));
+        
+        var details = new Dictionary<Type, List<Type>>();
+        
+        foreach (var handlerDetail in GetHandlerDetails(assemblies, typeof(IMessageHandler<>)))
+        {
+            if (details.ContainsKey(handlerDetail.Key))
+            {
+                details[handlerDetail.Key].Add(handlerDetail.Value);
+                continue;
+            }
+            
+            details.Add(handlerDetail.Key, new List<Type>(){ handlerDetail.Value });
+        }
+
+        services.TryAddSingleton<IPublisher>(x => new Publisher(x.GetService, details.ToDictionary(k => k.Key, v => v.Value.ToArray())));
 
         // MEDIATOR
         services.TryAddSingleton<IMediator, Mediator>();

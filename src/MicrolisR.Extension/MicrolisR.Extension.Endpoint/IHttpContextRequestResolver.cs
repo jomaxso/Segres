@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using MicrolisR.Internal;
+using MicrolisR.Throwing;
 
 namespace MicrolisR;
 

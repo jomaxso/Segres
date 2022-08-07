@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Demo.Domain.PrintToConsole;
 using MicrolisR;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
 
@@ -17,14 +16,14 @@ public class Benchy
     private static readonly IValidator Validator = Provider.GetRequiredService<IValidator>();
     private static readonly IMapper Mapper = Provider.GetRequiredService<IMapper>();
 
-    private static PrintCommand obj1 = new();
-    
-    [Benchmark]
-    public void Validate() => Validator.Validate(obj1);
-
-    [Benchmark]
-    public async Task<bool> MediatAsync() => await Mediator.SendAsync(obj1);
-    
-    [Benchmark]
-    public async Task<bool> SendAsync() => await Sender.SendAsync(obj1);
+//     private static PrintMessage obj1 = new("");
+//     
+//     [Benchmark]
+//     public void Validate() => Validator.Validate(obj1);
+//
+//     [Benchmark]
+//     public async Task<bool> MediatAsync() => await Mediator.SendAsync(obj1);
+//     
+//     [Benchmark]
+//     public async Task<bool> SendAsync() => await Sender.SendAsync(obj1);
 }

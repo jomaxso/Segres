@@ -13,7 +13,7 @@ public interface IRequestHandler<in TRequest> : IRequestHandler<TRequest, Unit>
     async Task<Unit> IRequestHandler<TRequest, Unit>.HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
         await HandleAsync(request, cancellationToken);
-        return new Unit();
+        return Unit.NewUnit;
     }
     
     new Task HandleAsync(TRequest request, CancellationToken cancellationToken);

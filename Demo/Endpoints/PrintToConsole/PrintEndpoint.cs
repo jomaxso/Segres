@@ -1,21 +1,24 @@
-﻿using MicrolisR;
+﻿using Demo.Domain.PrintToConsole;
+using MicrolisR;
 
 namespace Demo.Endpoints.PrintToConsole;
 
-public class PrintEndpoint : IRequestHandler<PrintRequest, PrintResult>
+public class PrintEndpoint : IRequestHandler<PrintRequest, bool>
 {
     private readonly IMapper _mapper;
+    private readonly IPublisher _publisher;
 
-    public PrintEndpoint(IMapper mapper)
+    public PrintEndpoint(IMapper mapper, IPublisher publisher)
     {
         this._mapper = mapper;
+        _publisher = publisher;
     }
 
     [Endpoint(Http.GET, "print/{value:int}")]
-    public async Task<PrintResult> HandleAsync(PrintRequest request, CancellationToken cancellationToken = default)
+    public Task<bool> HandleAsync(PrintRequest request, CancellationToken cancellationToken = default)
     {
-        await Task.CompletedTask;
-        var command = _mapper.Map(request)!;
-        return _mapper.Map(command);
+        _publisher.PublishAsync(new PrintMessage(request.ToString()!), cancellationToken);
+        
+        return Task.FromResult(true);
     }
 }
