@@ -24,7 +24,7 @@ public class MediatorWithoutResponseTest
     {
         // arrange 
         var serviceProvider = new ServiceCollection()
-            .AddMicrolisR(typeof(MediatorWithResponseTest))
+            .AddMicrolisR(typeof(MediatorWithResponseTest))     
             .BuildServiceProvider();
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
