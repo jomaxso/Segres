@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -60,8 +59,11 @@ public class SourceGenerator : IIncrementalGenerator
         if (targetClasses.Count < 1)
             return;
 
+        var resourceName = GetAssemblyName(compilation, classes.FirstOrDefault());
+        
         var result = Emitter.Emit(targetClasses, context.CancellationToken);
-        context.AddSource($"AssemblyName.HttpContextRequestResolvers.g.cs", SourceText.From(result, Encoding.UTF8));
+        
+        context.AddSource($"{resourceName}HttpContextRequestResolvers.g.cs", SourceText.From(result, Encoding.UTF8));
     }
 
     private static IReadOnlyList<EndpointClass> GetClasses(Compilation compilation,
@@ -167,5 +169,14 @@ public class SourceGenerator : IIncrementalGenerator
         }
         
         return requestProperties;
+    }
+    
+    private static string GetAssemblyName(Compilation compilation, BaseTypeDeclarationSyntax? typeDeclarationSyntax)
+    {
+        var assemblyName = typeDeclarationSyntax is not null 
+            ? compilation.GetSemanticModel(typeDeclarationSyntax.SyntaxTree).GetDeclaredSymbol(typeDeclarationSyntax)?.ContainingAssembly.Name 
+            : null;
+
+        return assemblyName is null ? string.Empty : $"{assemblyName}.";
     }
 }

@@ -5,5 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MicrolisR.Abstractions\MicrolisR.Abstractions.csproj" />
+      <ProjectReference Include="..\MicrolisR.Validation\MicrolisR.Validation.csproj" />
+    </ItemGroup>
   
 </Project>

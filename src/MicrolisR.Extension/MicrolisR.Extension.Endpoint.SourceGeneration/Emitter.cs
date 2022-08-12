@@ -15,6 +15,9 @@ internal static class Emitter
         var source = new StringBuilder();
         source.AppendLine("#nullable enable");
         source.AppendLine();
+        source.AppendLine("using System;");
+        source.AppendLine("using System.Threading;");
+        source.AppendLine("using System.Threading.Tasks;");
         source.AppendLine("using MicrolisR;");
         source.AppendLine("using Microsoft.AspNetCore.Mvc;");
         source.AppendLine();

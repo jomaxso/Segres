@@ -1,61 +1,125 @@
-﻿namespace MicrolisR;
+﻿using System.Reflection;
+using MicrolisR.Abstractions;
+
+namespace MicrolisR;
 
 public sealed class Mediator : IMediator
 {
-    private readonly ISender _sender;
-    private readonly IValidator _validator;
-    private readonly IPublisher _publisher;
+    private readonly Func<Type, object?> _serviceResolver;
+    private readonly IDictionary<Type, Type> _requestHandlerDetails;
+    private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
 
-    public Mediator(Func<Type, object> serviceResolver)
+    #region Constructors
+
+    
+    public Mediator(params Type[] markers)
+        : this(new DefaultProvider(true), markers)
     {
-        _sender = (ISender) serviceResolver(typeof(ISender));
-        _validator = (IValidator) serviceResolver(typeof(IValidator));
-        _publisher = (IPublisher) serviceResolver(typeof(IPublisher));
+    }
+    
+    public Mediator(params Assembly[] markers)
+        : this(new DefaultProvider(true), markers)
+    {
     }
 
-    public Mediator(ISender sender, IValidator validator, IPublisher publisher)
+    public Mediator(bool asSingleton = true, params Assembly[] markers)
+        : this(new DefaultProvider(asSingleton), markers)
     {
-        _sender = sender;
-        _validator = validator;
-        _publisher = publisher;
+    }
+    
+    public Mediator(bool asSingleton = true, params Type[] markers)
+        : this(new DefaultProvider(asSingleton), markers)
+    {
     }
 
-    public Task<TResponse> SendAsync<TResponse>(IRequestable<TResponse> request, CancellationToken cancellationToken = default)
-        => _sender.SendAsync(request, cancellationToken);
-
-    public async Task<TResponse> SendAsync<TResponse>(IRequestable<TResponse> request, bool validate, CancellationToken cancellationToken = default)
+    public Mediator(IServiceProvider serviceProvider)
+        : this(serviceProvider.GetService, Assembly.GetCallingAssembly())
     {
-        if (validate)
-            _validator.Validate(request);
-
-        var response = await _sender.SendAsync(request, cancellationToken);
-
-        if (response is IValidatable validatable && validate)
-            _validator.Validate(validatable);
-
-        return response;
     }
 
-    public Task SendAsync(IRequestable request, CancellationToken cancellationToken = default)
-        => _sender.SendAsync(request, cancellationToken);
-
-
-    public Task SendAsync(IRequestable request, bool validate, CancellationToken cancellationToken = default)
+    public Mediator(IServiceProvider serviceProvider, params Type[] markers)
+        : this(serviceProvider.GetService, markers)
     {
-        if (validate)
-            _validator?.Validate(request);
-        
-        return _sender.SendAsync(request, cancellationToken);
     }
 
-    public Task PublishAsync(IMessage message, CancellationToken cancellationToken = default) 
-        => _publisher.PublishAsync(message, cancellationToken);
-
-    public Task PublishAsync(IMessage message, bool validate, CancellationToken cancellationToken = default) 
+    public Mediator(IServiceProvider serviceProvider, params Assembly[] markers)
+        : this(serviceProvider.GetService, markers)
     {
-        if (validate)
-            _validator?.Validate(message);
-        
-        return _publisher.PublishAsync(message, cancellationToken);
     }
+
+    public Mediator(Func<Type, object?> serviceResolver)
+        : this(serviceResolver, Assembly.GetCallingAssembly())
+    {
+    }
+
+    public Mediator(Func<Type, object?> serviceResolver, params Type[] markers)
+        : this(serviceResolver, markers.Select(x => x.Assembly).ToArray())
+    {
+    }
+
+    public Mediator(Func<Type, object?> serviceResolver, params Assembly[] markers)
+    {
+        _serviceResolver = serviceResolver;
+        _requestHandlerDetails = markers.GetReceiverDetails();
+        _messageHandlerDetails = markers.GetSubscriberDetails();
+    }
+
+    #endregion
+
+    #region Sender
+
+    public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    {
+        var requestType = request.GetType();
+
+        var handler = GetRequestHandler(requestType);
+
+        return (Task<TResponse>) handler.ReceiverAsync(request, cancellationToken);
+    }
+
+    public Task SendAsync(IRequest request, CancellationToken cancellationToken = default)
+    {
+        var requestType = request.GetType();
+
+        var handler = GetRequestHandler(requestType);
+
+        return handler.ReceiverAsync(request, cancellationToken);
+    }
+
+    private IReceiver GetRequestHandler(Type requestType)
+    {
+        if (!_requestHandlerDetails.ContainsKey(requestType))
+            throw new Exception($"No handler to handle request of type: {requestType.Name}");
+
+        var handlerType = _requestHandlerDetails[requestType];
+
+        return _serviceResolver(handlerType) as IReceiver
+               ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
+    }
+
+    # endregion
+
+    # region Publisher
+
+    public async Task PublishAsync(INotification notification, CancellationToken cancellationToken = default)
+    {
+        var type = notification.GetType();
+
+        if (!_messageHandlerDetails.ContainsKey(type))
+            throw new Exception($"No handler to handle request of type: {type.Name}");
+
+        var handlerTypes = _messageHandlerDetails[type];
+
+        for (var i = 0; i < handlerTypes.Length; i++)
+        {
+            var handlerType = handlerTypes[i];
+            var handler = _serviceResolver(handlerType) as ISubscriber;
+            if (handler is null)
+                continue;
+
+            await handler.SubscribeAsync(notification, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    # endregion
 }

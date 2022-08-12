@@ -13,5 +13,4 @@ public interface IMapper
     TOut? Map<TIn, TOut>(TIn value)
         where TOut : new()
         where TIn : new();
-    
 }

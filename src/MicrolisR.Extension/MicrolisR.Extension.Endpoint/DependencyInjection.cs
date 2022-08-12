@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MicrolisR;
+namespace MicrolisR.Extensions.Endpoint;
 
 public static class DependencyInjection
 {
@@ -24,10 +24,7 @@ public static class DependencyInjection
             var endpointResolvers = assembly.GetClassesImplementingInterface(interfaceType);
 
             foreach (var endpointResolver in endpointResolvers)
-            {
                 services.AddSingleton(interfaceType, endpointResolver);
-                //services.Add(new ServiceDescriptor(interfaceType, endpointResolver, ServiceLifetime.Singleton));
-            }
         }
 
         return services;
@@ -60,7 +57,6 @@ public static class DependencyInjection
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
     }
 
     // public static void MapEndpoint<TRequest>(this IEndpointRouteBuilder app, Http verb, string pattern, bool validate = true)
@@ -68,7 +64,7 @@ public static class DependencyInjection
     // {
     //     app.MapEndpoint<TRequest, Unit>(verb, pattern, validate);
     // }
-    
+
     private static IEnumerable<Type> GetClassesImplementingInterface(this Assembly assembly, Type typeToMatch)
     {
         return assembly.DefinedTypes.Where(type =>

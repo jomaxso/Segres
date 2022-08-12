@@ -1,16 +1,17 @@
 ﻿using FluentAssertions;
+using MicrolisR.Abstractions;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace MicrolisR.UnitTest.Sending;
 
-public readonly record struct RequestWithoutResponse(int Value) : IRequestable;
-public readonly record struct RequestWithoutHandlerAndResponse() : IRequestable;
+public readonly record struct RequestWithoutResponse(int Value) : IRequest;
+public readonly record struct RequestWithoutHandlerAndResponse() : IRequest;
 
-public class RequestWithoutResponseHandler : IRequestHandler<RequestWithoutResponse>
+public class RequestWithoutResponseHandler : IReceiver<RequestWithoutResponse>
 {
-    public Task HandleAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
+    public Task ReceiverAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

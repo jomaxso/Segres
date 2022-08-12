@@ -1,19 +1,20 @@
 ﻿using System.Reflection;
-using MicrolisR.Throwing;
+using MicrolisR.Abstractions;
+using MicrolisR.Utilities;
 
 namespace MicrolisR;
 
 public interface IHttpContextRequestResolver<in TRequest, TResponse> : IHttpContextRequestResolver
-    where TRequest : IRequestable<TResponse>
+    where TRequest : IRequest<TResponse>
 {
-    IRequestHandler<TRequest, TResponse> RequestHandler { get; }
+    IReceiver<TRequest, TResponse> RequestHandler { get; }
     
     MethodInfo IHttpContextRequestResolver.MethodInfo
     {
         get
         {
-            var requestMethod = typeof(IRequestHandler<TRequest, TResponse>)
-                .GetMethod(nameof(IRequestHandler<TRequest, TResponse>.HandleAsync))!;
+            var requestMethod = typeof(IReceiver<TRequest, TResponse>)
+                .GetMethod(nameof(IReceiver<TRequest, TResponse>.ReceiverAsync))!;
             
             var method = RequestHandler
                 .GetType()

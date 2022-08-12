@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\MicrolisR.Extensions.DependencyInjection.Microsoft\MicrolisR.Extensions.DependencyInjection.Microsoft.csproj" />
+        <ProjectReference Include="..\..\src\MicrolisR.Extension\MicrolisR.Extension.DependencyInjection\MicrolisR.Extension.DependencyInjection.csproj" />
+        <ProjectReference Include="..\..\src\MicrolisR\MicrolisR.csproj" />
+        <ProjectReference Include="..\Demo.Lib\Demo.Lib.csproj" />
+
+    </ItemGroup>
+
+</Project>

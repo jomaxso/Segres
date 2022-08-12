@@ -1,14 +1,15 @@
 ﻿using FluentAssertions;
+using MicrolisR.Abstractions;
 using Xunit;
 
 namespace MicrolisR.UnitTest.Sending;
 
-internal readonly record struct Request(int Value) : IRequestable<int>;
-internal readonly record struct RequestWithoutHandler() : IRequestable<int>;
+internal readonly record struct Request(int Value) : IRequest<int>;
+internal readonly record struct RequestWithoutHandler() : IRequest<int>;
 
-internal class RequestHandler : IRequestHandler<Request, int>
+internal class RequestHandler : IReceiver<Request, int>
 {
-    public Task<int> HandleAsync(Request request, CancellationToken cancellationToken)
+    public Task<int> ReceiverAsync(Request request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request.Value);
     }
@@ -20,14 +21,7 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldReturnTrue_WhenCalled()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestHandler) ? new RequestHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(Request), typeof(RequestHandler)}
-        };
-
-        ISender sender = new MicrolisR.Sender(ServiceResolver, handlerDetails);
+        ISender sender = new Mediator(typeof(SenderWithResponseTest));
         var request = new Request();
         
         // act
@@ -41,14 +35,7 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldReturnValueOfRequest_WhenCalled()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestHandler) ? new RequestHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(Request), typeof(RequestHandler)}
-        };
-
-        ISender sender = new MicrolisR.Sender(ServiceResolver, handlerDetails);
+        ISender sender = new Mediator(typeof(SenderWithResponseTest));
         var request = new Request(4712);
 
         // act
@@ -62,14 +49,7 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldThrow_WhenNoHandlerFound()
     {
         // arrange 
-        object ServiceResolver(Type type) => type == typeof(RequestHandler) ? new RequestHandler() : throw new Exception();
-        
-        var handlerDetails = new Dictionary<Type, Type>()
-        {
-            {typeof(Request), typeof(RequestHandler)}
-        };
-
-        ISender sender = new Sender(ServiceResolver, handlerDetails);
+        ISender sender = new Mediator(typeof(SenderWithResponseTest));
         var request = new RequestWithoutHandler();
 
         // act
