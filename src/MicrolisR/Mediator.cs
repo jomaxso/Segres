@@ -3,6 +3,7 @@ using MicrolisR.Abstractions;
 
 namespace MicrolisR;
 
+/// <inheritdoc />
 public sealed class Mediator : IMediator
 {
     private readonly Func<Type, object?> _serviceResolver;
@@ -10,7 +11,6 @@ public sealed class Mediator : IMediator
     private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
 
     #region Constructors
-
     
     public Mediator(params Type[] markers)
         : this(new DefaultProvider(true), markers)
@@ -21,7 +21,7 @@ public sealed class Mediator : IMediator
         : this(new DefaultProvider(true), markers)
     {
     }
-
+    
     public Mediator(bool asSingleton = true, params Assembly[] markers)
         : this(new DefaultProvider(asSingleton), markers)
     {
@@ -31,7 +31,7 @@ public sealed class Mediator : IMediator
         : this(new DefaultProvider(asSingleton), markers)
     {
     }
-
+    
     public Mediator(IServiceProvider serviceProvider)
         : this(serviceProvider.GetService, Assembly.GetCallingAssembly())
     {
@@ -68,22 +68,24 @@ public sealed class Mediator : IMediator
 
     #region Sender
 
+    /// <inheritdoc />
     public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
 
         var handler = GetRequestHandler(requestType);
 
-        return (Task<TResponse>) handler.ReceiverAsync(request, cancellationToken);
+        return (Task<TResponse>) handler.ReceiveAsync(request, cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task SendAsync(IRequest request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
 
         var handler = GetRequestHandler(requestType);
 
-        return handler.ReceiverAsync(request, cancellationToken);
+        return handler.ReceiveAsync(request, cancellationToken);
     }
 
     private IReceiver GetRequestHandler(Type requestType)
@@ -101,6 +103,7 @@ public sealed class Mediator : IMediator
 
     # region Publisher
 
+    /// <inheritdoc />
     public async Task PublishAsync(INotification notification, CancellationToken cancellationToken = default)
     {
         var type = notification.GetType();

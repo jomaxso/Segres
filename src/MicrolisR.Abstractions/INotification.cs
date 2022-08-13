@@ -2,12 +2,9 @@
 
 namespace MicrolisR.Abstractions;
 
-// public interface IMessage : IMessage<Unit>
-// {
-//     
-// }
-
-public interface INotification: IValidatable
+/// <summary>
+/// Marker interface to represent a notification.
+/// </summary>
+public interface INotification : IValidatable
 {
-    
 }

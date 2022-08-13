@@ -14,7 +14,7 @@ public interface IHttpContextRequestResolver<in TRequest, TResponse> : IHttpCont
         get
         {
             var requestMethod = typeof(IReceiver<TRequest, TResponse>)
-                .GetMethod(nameof(IReceiver<TRequest, TResponse>.ReceiverAsync))!;
+                .GetMethod(nameof(IReceiver<TRequest, TResponse>.ReceiveAsync))!;
             
             var method = RequestHandler
                 .GetType()

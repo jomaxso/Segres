@@ -4,31 +4,41 @@ using MicrolisR.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace MicrolisR.UnitTest;
+namespace MicrolisR.UnitTest.Mediator;
 
-public readonly record struct MediatorWithoutResponseRequest() : IRequest;
-public readonly record struct MediatorWithoutResponseRequestWithoutHandler() : IRequest;
+public readonly record struct MediatorRequest(int Value) : IRequest<int>;
+public readonly record struct MediatorRequestWithoutHandler() : IRequest<int>;
 
-public class MediatorRequestWithoutResponseHandler : IReceiver<MediatorWithoutResponseRequest>
+public class MediatorRequestHandler : IReceiver<MediatorRequest, int>
 {
-    public Task ReceiverAsync(MediatorWithoutResponseRequest request, CancellationToken cancellationToken)
+    public Task<int> ReceiveAsync(MediatorRequest request, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(request.Value);
+    }
+}
+public readonly record struct NotificationWithoutResponse(int Value) : INotification;
+public readonly record struct NotificationWithoutHandlerAndResponse() : INotification;
+
+public class RequestWithoutResponseHandler : ISubscriber<NotificationWithoutResponse>
+{
+    public Task SubscribeAsync(NotificationWithoutResponse notification, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 }
 
-public class MediatorWithoutResponseTest
+public class MediatorWithResponseTest
 {
     [Fact]
     public async Task SendAsync_ShouldReturnTrue_WhenCalled()
     {
         // arrange 
         var serviceProvider = new ServiceCollection()
-            .AddMicrolisR(typeof(MediatorWithResponseTest))     
+            .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorWithoutResponseRequest();
+        var request = new MediatorRequest();
         
         // act
         var result = () =>  mediator.SendAsync(request, CancellationToken.None);
@@ -46,13 +56,13 @@ public class MediatorWithoutResponseTest
             .BuildServiceProvider();
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorWithoutResponseRequest();
+        var request = new MediatorRequest(4712);
 
         // act
-        var result = () => mediator.SendAsync(request, CancellationToken.None);
+        var result = await mediator.SendAsync(request, CancellationToken.None);
 
         // assert
-        await result.Should().NotThrowAsync();
+        result.Should().Be(4712);
     }
     
     [Fact]
@@ -64,7 +74,7 @@ public class MediatorWithoutResponseTest
             .BuildServiceProvider();
 
         var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorWithoutResponseRequestWithoutHandler();
+        var request = new MediatorRequestWithoutHandler();
 
         // act
         var result = () => mediator.SendAsync(request, CancellationToken.None);

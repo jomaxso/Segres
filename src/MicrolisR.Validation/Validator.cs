@@ -2,6 +2,7 @@
 
 namespace MicrolisR.Validation;
 
+/// <inheritdoc />
 public class Validator : IValidator
 {
     private readonly IDictionary<Type, IValidation[]> _validatorDetails;
@@ -55,6 +56,7 @@ public class Validator : IValidator
     }
 
 
+    /// <inheritdoc />
     public void Validate<T>(T value)
         where T : IValidatable
     {
