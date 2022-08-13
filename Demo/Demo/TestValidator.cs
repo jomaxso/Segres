@@ -6,8 +6,10 @@ internal class TestValidator : IValidation<RequestMain>
 {
     public void Validate(RequestMain requestMain)
     {
-        var x = requestMain.RuleFor(x => x.Percentage)
-            .IsExclusiveBetween(0, 100);
+        // requestMain.RuleFor().IsNotNull();
+        //
+        // requestMain.RuleFor(x => x.Percentage)
+        //     .IsBetween(0, 100);
         // Console.WriteLine(nameof(Validator));
     }
 }

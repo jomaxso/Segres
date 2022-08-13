@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Abstractions;
+﻿namespace MicrolisR;
 
 /// <summary>
 /// Represents a general result (void).

@@ -1,6 +1,6 @@
 ﻿using MicrolisR.Validation;
 
-namespace MicrolisR.Abstractions;
+namespace MicrolisR;
 
 /// <summary>
 /// Marker interface to represent a notification.

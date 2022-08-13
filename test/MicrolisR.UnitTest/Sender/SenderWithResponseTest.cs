@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using MicrolisR.Abstractions;
 using Xunit;
 
 namespace MicrolisR.UnitTest.Sender;

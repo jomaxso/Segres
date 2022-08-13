@@ -1,6 +1,4 @@
-﻿using MicrolisR.Abstractions;
-
-namespace MicrolisR.Errors;
+﻿namespace MicrolisR.Errors;
 
 public static class SenderExtensions
 {

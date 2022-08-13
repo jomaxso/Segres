@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Abstractions;
+﻿namespace MicrolisR;
 
 /// <summary>
 /// Defines a receiver for a request. (just for internal usage) 

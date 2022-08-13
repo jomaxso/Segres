@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Abstractions;
+﻿namespace MicrolisR;
 
 /// <summary>
 /// Publish a notification or event to be handled by multiple subscribers.

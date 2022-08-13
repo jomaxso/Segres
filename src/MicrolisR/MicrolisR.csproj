@@ -1,8 +1,1 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    
-    <ItemGroup>
-        <ProjectReference Include="..\MicrolisR.Abstractions\MicrolisR.Abstractions.csproj"/>
-        <ProjectReference Include="..\MicrolisR.Validation\MicrolisR.Validation.csproj"/>
-    </ItemGroup>
-
-</Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" />

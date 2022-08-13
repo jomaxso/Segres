@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using MicrolisR.Abstractions;
 using MicrolisR.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

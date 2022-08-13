@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Abstractions;
+﻿namespace MicrolisR;
 
 /// <summary>
 /// Defines a subscriber for a notification. (just for internal usage) 

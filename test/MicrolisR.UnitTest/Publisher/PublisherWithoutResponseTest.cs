@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using MicrolisR.Abstractions;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
 using MicrolisR.UnitTest.Mediator;
 using MicrolisR.UnitTest.Sender;

@@ -1,5 +1,4 @@
 ﻿using MicrolisR;
-using MicrolisR.Abstractions;
 using MicrolisR.Validation;
 
 namespace Demo;
@@ -20,7 +19,7 @@ internal class RequestHandlerMain : IReceiver<RequestMain, bool>
 
     public Task<bool> ReceiveAsync(RequestMain request, CancellationToken cancellationToken)
     {
-        _validator.Validate(request);
+        // _validator.Validate(request);
         return Task.FromResult(true);
     }
 }

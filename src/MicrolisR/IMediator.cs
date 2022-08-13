@@ -1,4 +1,6 @@
-﻿namespace MicrolisR.Abstractions;
+﻿using MicrolisR.Validation;
+
+namespace MicrolisR;
 
 /// <summary>
 /// Defines a mediator to encapsulate request/response and publisher/subscriber patterns as well as providing several common functionalities related to these patterns.
@@ -7,6 +9,7 @@
 /// <seealso cref="IPublisher"/>
 public interface IMediator : 
     ISender, 
-    IPublisher
+    IPublisher,
+    IValidator
 {
 }

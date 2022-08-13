@@ -1,4 +1,4 @@
-﻿namespace MicrolisR.Abstractions;
+﻿namespace MicrolisR;
 
 /// <summary>
 /// Send a request to be handled by a single handler.
