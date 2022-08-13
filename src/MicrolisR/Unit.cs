@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a general result (void).
 /// </summary>
-public readonly record struct Unit
+public readonly record struct None
 {
 };
 

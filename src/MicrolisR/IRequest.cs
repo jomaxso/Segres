@@ -16,6 +16,6 @@ public interface IRequest<T> : IValidatable
 /// Marker interface to represent a request without a response.
 /// </summary>
 /// <seealso cref="IRequest{T}"/>
-public interface IRequest : IRequest<Unit>
+public interface IRequest : IRequest<None>
 {
 }

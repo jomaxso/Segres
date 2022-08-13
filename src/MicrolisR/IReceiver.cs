@@ -46,7 +46,7 @@ public interface IReceiver<in TRequest, TResponse> : IReceiver
 /// <seealso cref="IRequest"/>
 /// <seealso cref="IReceiver{T,T}"/>
 
-public interface IReceiver<in TRequest> : IReceiver<TRequest, Unit>
+public interface IReceiver<in TRequest> : IReceiver<TRequest, None>
     where TRequest : IRequest
 {
     Task IReceiver.ReceiveAsync<T>(T request, CancellationToken cancellationToken)
@@ -57,10 +57,10 @@ public interface IReceiver<in TRequest> : IReceiver<TRequest, Unit>
         throw new ArgumentException($"The request is not of type {typeof(TRequest)}");
     }
 
-    async Task<Unit> IReceiver<TRequest, Unit>.ReceiveAsync(TRequest request, CancellationToken cancellationToken)
+    async Task<None> IReceiver<TRequest, None>.ReceiveAsync(TRequest request, CancellationToken cancellationToken)
     {
         await ReceiveAsync(request, cancellationToken).ConfigureAwait(false);
-        return new Unit();
+        return new None();
     }
 
 
