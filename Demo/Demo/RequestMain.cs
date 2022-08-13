@@ -18,7 +18,7 @@ internal class RequestHandlerMain : IReceiver<RequestMain, bool>
         _validator = validator;
     }
 
-    public Task<bool> ReceiverAsync(RequestMain request, CancellationToken cancellationToken)
+    public Task<bool> ReceiveAsync(RequestMain request, CancellationToken cancellationToken)
     {
         _validator.Validate(request);
         return Task.FromResult(true);
