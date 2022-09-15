@@ -4,16 +4,16 @@ using MicrolisR.Utilities;
 namespace MicrolisR;
 
 public interface IHttpContextRequestResolver<in TRequest, TResponse> : IHttpContextRequestResolver
-    where TRequest : IRequest<TResponse>
+    where TRequest : IQueryRequest<TResponse>
 {
-    IReceiver<TRequest, TResponse> RequestHandler { get; }
+    IQueryRequestHandler<TRequest, TResponse> RequestHandler { get; }
     
     MethodInfo IHttpContextRequestResolver.MethodInfo
     {
         get
         {
-            var requestMethod = typeof(IReceiver<TRequest, TResponse>)
-                .GetMethod(nameof(IReceiver<TRequest, TResponse>.ReceiveAsync))!;
+            var requestMethod = typeof(IQueryRequestHandler<TRequest, TResponse>)
+                .GetMethod(nameof(IQueryRequestHandler<TRequest, TResponse>.HandleAsync))!;
             
             var method = RequestHandler
                 .GetType()

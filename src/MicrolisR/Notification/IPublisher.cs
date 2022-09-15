@@ -4,7 +4,7 @@
 /// Publish a notification or event to be handled by multiple subscribers.
 /// </summary>
 /// <seealso cref="INotification"/>
-/// <seealso cref="ISubscriber{T}"/>
+/// <seealso cref="INotificationHandler{TNotification}"/>
 public interface IPublisher
 {
     /// <summary>

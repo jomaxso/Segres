@@ -6,12 +6,12 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Sender;
 
-public readonly record struct RequestWithoutResponse(int Value) : IRequest;
-public readonly record struct RequestWithoutHandlerAndResponse() : IRequest;
+public readonly record struct RequestWithoutResponse(int Value) : ICommandRequest;
+public readonly record struct RequestWithoutHandlerAndResponse() : ICommandRequest;
 
-public class RequestWithoutResponseHandler : IReceiver<RequestWithoutResponse>
+public class RequestWithoutResponseHandler : ICommandRequestHandler<RequestWithoutResponse>
 {
-    public Task ReceiveAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
+    public Task HandleAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

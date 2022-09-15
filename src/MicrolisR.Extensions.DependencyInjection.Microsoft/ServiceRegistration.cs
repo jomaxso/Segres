@@ -29,9 +29,10 @@ public static class ServiceRegistration
         var serviceLifetime = ServiceLifetime.Singleton; // todo
 
         // HANDLERS
-        services.TryAddHandlers(typeof(IReceiver<,>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(IQueryRequestHandler<,>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(ICommandRequestHandler<>), assemblies, serviceLifetime);
         services.TryAddHandlers(typeof(IValidation<>), assemblies, serviceLifetime);
-        services.TryAddHandlers(typeof(ISubscriber<>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(INotificationHandler<>), assemblies, serviceLifetime);
 
         services.TryAddSingleton<IValidator>(provider => new Validator(provider, assemblies));
         

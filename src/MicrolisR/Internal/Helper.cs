@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
+using MicrolisR.Pipelines;
 
 namespace MicrolisR;
 
 internal static class Helper
 {
-    public static IDictionary<Type, Type> GetReceiverDetails(this Assembly[] assemblies)
+    public static IDictionary<Type, Type> GetRequestHandlerDetails(this Assembly[] assemblies, Type type)
     {
-        return assemblies.GetHandlerDetails(typeof(IReceiver<,>))
+        return assemblies.GetHandlerDetails(type)
             .ToDictionary(x => x.Key, x => x.Value);
     }
     
@@ -14,9 +15,29 @@ internal static class Helper
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
 
-        var subscriberDetails = assemblies.GetHandlerDetails(typeof(ISubscriber<>));
+        var subscriberDetails = assemblies.GetHandlerDetails(typeof(INotificationHandler<>));
 
         foreach (var handlerDetail in subscriberDetails)
+        {
+            if (messageHandlerDetails.ContainsKey(handlerDetail.Key))
+            {
+                messageHandlerDetails[handlerDetail.Key].Add(handlerDetail.Value);
+                continue;
+            }
+
+            messageHandlerDetails.Add(handlerDetail.Key, new List<Type>() {handlerDetail.Value});
+        }
+
+        return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
+    }
+    
+    public static IDictionary<Type, Type[]> GetPipelineDetails(this Assembly[] assemblies)
+    {
+        var messageHandlerDetails = new Dictionary<Type, List<Type>>();
+
+        var pipelines = assemblies.GetHandlerDetails(typeof(IPipelineBehavior<,>));
+
+        foreach (var handlerDetail in pipelines)
         {
             if (messageHandlerDetails.ContainsKey(handlerDetail.Key))
             {

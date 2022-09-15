@@ -3,12 +3,12 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Sender;
 
-internal readonly record struct Request(int Value) : IRequest<int>;
-internal readonly record struct RequestWithoutHandler() : IRequest<int>;
+internal readonly record struct Request(int Value) : IQueryRequest<int>;
+internal readonly record struct RequestWithoutHandler() : IQueryRequest<int>;
 
-internal class RequestHandler : IReceiver<Request, int>
+internal class RequestHandler : IQueryRequestHandler<Request, int>
 {
-    public Task<int> ReceiveAsync(Request request, CancellationToken cancellationToken)
+    public Task<int> HandleAsync(Request request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request.Value);
     }

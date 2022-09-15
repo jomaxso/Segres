@@ -5,12 +5,12 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Mediator;
 
-public readonly record struct MediatorRequest(int Value) : IRequest<int>;
-public readonly record struct MediatorRequestWithoutHandler() : IRequest<int>;
+public readonly record struct MediatorRequest(int Value) : IQueryRequest<int>;
+public readonly record struct MediatorRequestWithoutHandler() : IQueryRequest<int>;
 
-public class MediatorRequestHandler : IReceiver<MediatorRequest, int>
+public class MediatorRequestHandler : IQueryRequestHandler<MediatorRequest, int>
 {
-    public Task<int> ReceiveAsync(MediatorRequest request, CancellationToken cancellationToken)
+    public Task<int> HandleAsync(MediatorRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request.Value);
     }
@@ -18,9 +18,9 @@ public class MediatorRequestHandler : IReceiver<MediatorRequest, int>
 public readonly record struct NotificationWithoutResponse(int Value) : INotification;
 public readonly record struct NotificationWithoutHandlerAndResponse() : INotification;
 
-public class RequestWithoutResponseHandler : ISubscriber<NotificationWithoutResponse>
+public class RequestWithoutResponseHandler : INotificationHandler<NotificationWithoutResponse>
 {
-    public Task SubscribeAsync(NotificationWithoutResponse notification, CancellationToken cancellationToken)
+    public Task HandleAsync(NotificationWithoutResponse notification, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
