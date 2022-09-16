@@ -6,17 +6,9 @@ namespace MicrolisR;
 /// <typeparam name="TRequest">The request type witch implements <see cref="IQueryRequest{T}"/>.</typeparam>
 /// <typeparam name="TResponse">The response type of the request.</typeparam>
 /// <seealso cref="IQueryRequest{T}"/>
-public interface IQueryRequestHandler<in TRequest, TResponse> : IInternalRequestHandler
+public interface IQueryRequestHandler<in TRequest, TResponse> 
     where TRequest : IQueryRequest<TResponse>
 {
-    Task IInternalRequestHandler.HandleAsync<T>(T request, CancellationToken cancellationToken)
-    {
-        if (request is TRequest requestable)
-            return HandleAsync(requestable, cancellationToken);
-
-        throw new ArgumentException($"The request is not of type {typeof(TRequest)}");
-    }
-
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>

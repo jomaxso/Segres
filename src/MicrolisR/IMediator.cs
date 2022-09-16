@@ -9,7 +9,6 @@ namespace MicrolisR;
 /// <seealso cref="IPublisher"/>
 public interface IMediator : 
     ISender, 
-    IPublisher,
-    IValidator
+    IPublisher
 {
 }

@@ -5,12 +5,62 @@ namespace MicrolisR;
 
 internal static class Helper
 {
-    public static IDictionary<Type, Type> GetRequestHandlerDetails(this Assembly[] assemblies, Type type)
+    public static IDictionary<Type, (Type Type, Delegate Del)> GetRequestHandlerDetails(this Assembly[] assemblies)
     {
-        return assemblies.GetHandlerDetails(type)
-            .ToDictionary(x => x.Key, x => x.Value);
+        IDictionary<Type, (Type Type, Delegate Del)> dic = new Dictionary<Type, (Type Type, Delegate Del)>();
+
+        foreach (var requestHandlerDetail in assemblies.GetQueryRequestHandlerDetails_2())
+            dic.Add(requestHandlerDetail);
+
+        foreach (var requestHandlerDetail in assemblies.GetCommandRequestHandlerDetails_2())
+            dic.Add(requestHandlerDetail);
+
+        foreach (var requestHandlerDetail in assemblies.GetCommandRequestHandlerDetails_1())
+            dic.Add(requestHandlerDetail);
+
+        return dic;
     }
-    
+
+    private static IDictionary<Type, (Type Type, Delegate Del)> GetQueryRequestHandlerDetails_2(this Assembly[] assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(IQueryRequestHandler<,>))
+            .ToDictionary(x => x.Key, x =>
+            {
+                var responseType = x.Key.GetInterface(typeof(IQueryRequest<>).Name)!.GetGenericArguments()[0];
+
+                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateQueryDelegate));
+                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
+
+                return (x.Value, del);
+            });
+    }
+
+    private static IDictionary<Type, (Type Type, Delegate Del)> GetCommandRequestHandlerDetails_1(this Assembly[] assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(ICommandRequestHandler<>))
+            .ToDictionary(x => x.Key, x =>
+            {
+                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateCommandDelegate))!;
+                var del = (Delegate) method.Invoke(null, new object?[] {x.Key})!;
+
+                return (x.Value, del);
+            });
+    }
+
+    private static IDictionary<Type, (Type Type, Delegate Del)> GetCommandRequestHandlerDetails_2(this Assembly[] assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(ICommandRequestHandler<,>))
+            .ToDictionary(x => x.Key, x =>
+            {
+                var responseType = x.Key.GetInterface(typeof(ICommandRequest<>).Name)!.GetGenericArguments()[0];
+
+                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateCommandDelegate));
+                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
+
+                return (x.Value, del);
+            });
+    }
+
     public static IDictionary<Type, Type[]> GetSubscriberDetails(this Assembly[] assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
@@ -30,7 +80,7 @@ internal static class Helper
 
         return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
     }
-    
+
     public static IDictionary<Type, Type[]> GetPipelineDetails(this Assembly[] assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
@@ -50,7 +100,7 @@ internal static class Helper
 
         return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
     }
-    
+
     internal static IEnumerable<KeyValuePair<Type, Type>> GetHandlerDetails(this IEnumerable<Assembly> assemblies, Type type)
     {
         var handlerDetails = new List<KeyValuePair<Type, Type>>();

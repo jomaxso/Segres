@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using MicrolisR.Pipelines;
 using MicrolisR.Validation;
@@ -8,9 +9,8 @@ namespace MicrolisR;
 /// <inheritdoc />
 public sealed class Mediator : IMediator
 {
-    private readonly IValidator? _validator;
     private readonly Func<Type, object?> _serviceResolver;
-    private readonly IDictionary<Type, Type> _requestHandlerDetails;
+    private readonly IDictionary<Type, (Type Type, Delegate Del)> _requestHandlerDetails;
     private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
     private readonly IDictionary<Type, Type[]> _pipelineStepsDetails;
 
@@ -111,19 +111,12 @@ public sealed class Mediator : IMediator
     public Mediator(Func<Type, object?> serviceResolver, params Assembly[] markers)
     {
         _serviceResolver = serviceResolver;
+        _requestHandlerDetails = markers.GetRequestHandlerDetails();
         _messageHandlerDetails = markers.GetSubscriberDetails();
         _pipelineStepsDetails = markers.GetPipelineDetails();
         // _validator = serviceResolver(typeof(IValidator)) as IValidator;
         
-        _requestHandlerDetails = markers.GetRequestHandlerDetails(typeof(IQueryRequestHandler<,>));
-        foreach (var requestHandlerDetail in markers.GetRequestHandlerDetails(typeof(ICommandRequestHandler<>)))
-        {
-            _requestHandlerDetails.Add(requestHandlerDetail);
-        }
-        foreach (var requestHandlerDetail in markers.GetRequestHandlerDetails(typeof(ICommandRequestHandler<,>)))
-        {
-            _requestHandlerDetails.Add(requestHandlerDetail);
-        }
+
     }
 
     #endregion
@@ -131,24 +124,22 @@ public sealed class Mediator : IMediator
     #region Sender
 
     /// <inheritdoc />
-    public async Task<TResponse> SendAsync<TResponse>(ICommandRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public Task<TResponse> SendAsync<TResponse>(ICommandRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
         if (!_requestHandlerDetails.ContainsKey(requestType))
             throw new Exception($"No handler to handle request of type: {requestType.Name}");
 
-        var handlerType = _requestHandlerDetails[requestType];
+        var handlerInfo = _requestHandlerDetails[requestType];
 
-        var handler = _serviceResolver(handlerType) as IInternalRequestHandler
+        var handler = _serviceResolver(handlerInfo.Type) 
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        var response = await ((Task<TResponse>) handler.HandleAsync(request, cancellationToken)).ConfigureAwait(false);
-
-        return response;
+        return handlerInfo.Del.InvokeCommandHandler(handler, request, cancellationToken)!;
     }
 
     /// <inheritdoc />
-    public async Task<TResponse> SendAsync<TResponse>(IQueryRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public Task<TResponse> SendAsync<TResponse>(IQueryRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
 
@@ -164,19 +155,17 @@ public sealed class Mediator : IMediator
         if (!_requestHandlerDetails.ContainsKey(requestType))
             throw new Exception($"No handler to handle request of type: {requestType.Name}");
 
-        var handlerType = _requestHandlerDetails[requestType];
+        var handlerInfo = _requestHandlerDetails[requestType];
 
-        var handler = _serviceResolver(handlerType) as IInternalRequestHandler
+        var handler = _serviceResolver(handlerInfo.Type)
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        var response = await ((Task<TResponse>) handler.HandleAsync(request, cancellationToken)).ConfigureAwait(false);
+        return handlerInfo.Del.InvokeQueryHandler(handler, request, cancellationToken)!;
 
         // for (var i = 0; i < length; i++)
         // {
         //     response = await ((Task<TResponse>) pipelines[i].AfterAsync(response, cancellationToken)).ConfigureAwait(false);
         // }
-
-        return response;
     }
 
     /// <inheritdoc />
@@ -187,14 +176,13 @@ public sealed class Mediator : IMediator
         if (!_requestHandlerDetails.ContainsKey(requestType))
             throw new Exception($"No handler to handle request of type: {requestType.Name}");
 
-        var handlerType = _requestHandlerDetails[requestType];
+        var handlerInfo = _requestHandlerDetails[requestType];
 
-        var handler = _serviceResolver(handlerType) as IInternalRequestHandler
-                      ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
+        var handler = _serviceResolver(handlerInfo.Type) 
+               ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        return handler.HandleAsync(request, cancellationToken);
+        return handlerInfo.Del.InvokeCommandHandler(handler, request, cancellationToken)!;
     }
-
 
     private IList<IPipelineBehavior> GetPipelines(Type requestType)
     {
@@ -235,17 +223,11 @@ public sealed class Mediator : IMediator
         for (var i = 0; i < handlerTypes.Length; i++)
         {
             var handlerType = handlerTypes[i];
-            var handler = _serviceResolver(handlerType) as INotificationHandler;
-            if (handler is null)
-                continue;
 
-            await handler.HandleAsync(notification, cancellationToken).ConfigureAwait(false);
+            if (_serviceResolver(handlerType) is INotificationHandler handler)
+                await handler.HandleAsync(notification, cancellationToken).ConfigureAwait(false);
         }
     }
 
     # endregion
-
-    /// <inheritdoc />
-    public void Validate<T>(T value) where T : IValidatable
-        => _validator?.Validate(value);
 }

@@ -6,17 +6,9 @@ namespace MicrolisR;
 /// <typeparam name="TRequest">The request type witch implements <see cref="ICommandRequest"/>.</typeparam>
 /// <seealso cref="ICommandRequest"/>
 /// <seealso cref="ICommandRequestHandler{TRequest}"/>
-public interface ICommandRequestHandler<in TRequest> : IInternalRequestHandler
+public interface ICommandRequestHandler<in TRequest> 
     where TRequest : ICommandRequest
 {
-    Task IInternalRequestHandler.HandleAsync<T>(T request, CancellationToken cancellationToken)
-    {
-        if (request is TRequest requestable)
-            return HandleAsync(requestable, cancellationToken);
-
-        throw new ArgumentException($"The request is not of type {typeof(TRequest)}");
-    }
-    
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>
@@ -35,17 +27,9 @@ public interface ICommandRequestHandler<in TRequest> : IInternalRequestHandler
 /// <typeparam name="TResponse"></typeparam>
 /// <seealso cref="ICommandRequest{TResponse}"/>
 /// <seealso cref="ICommandRequestHandler{TRequest}"/>
-public interface ICommandRequestHandler<in TRequest, TResponse> : IInternalRequestHandler
+public interface ICommandRequestHandler<in TRequest, TResponse> 
     where TRequest : ICommandRequest<TResponse>
 {
-    Task IInternalRequestHandler.HandleAsync<T>(T request, CancellationToken cancellationToken)
-    {
-        if (request is TRequest requestable)
-            return HandleAsync(requestable, cancellationToken);
-
-        throw new ArgumentException($"The request is not of type {typeof(TRequest)}");
-    }
-
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>

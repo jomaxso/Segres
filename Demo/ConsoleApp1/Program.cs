@@ -8,11 +8,43 @@ using WebApplication1.Endpoints;
 using WebApplication1.Endpoints.WeatherForecast;
 using WebApplication1.Models;
 
+var result = await Benchy.SendAsync(new WeatherForecastGetByIdRequest());
+
+Console.WriteLine();
+
 BenchmarkRunner.Run<Benchy>();
+// return;
 // Console.WriteLine();
 //
+// var v = new WeatherForecastGetByIdRequest();
 // IMediator mediator = new Mediator(typeof(Program));
+// await mediator.SendAsync(v);
+// //
+
+// var rr = new WeatherForecastGetByIdRequest();
+// var rType = rr.GetType();
+// var handlerType = typeof(GetByIdEndpoint);
 //
+// var result = await SendAsync(rr, CancellationToken.None);
+//
+// Console.WriteLine();
+//
+//
+// Task<TResponse> SendAsync<TResponse>(IQueryRequest<TResponse> request, CancellationToken cancellationToken = default)
+// {
+//     var requestType = request.GetType();
+//
+//     var handlerType = typeof(GetByIdEndpoint); //_requestHandlerDetails[requestType];
+//     
+//     var handlerAsObject = new GetByIdEndpoint() as object
+//         ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
+//
+//     var handlerDelegate = (object h, object r, CancellationToken c) => ((GetByIdEndpoint) h).HandleAsync(r as WeatherForecastGetByIdRequest, c);
+//     
+//     return (handlerDelegate.Invoke(handlerAsObject, request, cancellationToken) as Task<TResponse>)!;
+// }
+
+
 //
 //
 // public delegate Task<TResponse> PipelineDelegate<TResponse>(PipelineContext<IQueryRequest<TResponse>, TResponse> context);
