@@ -47,7 +47,7 @@ public static class ServiceRegistration
 
     private static void TryAddHandlers(this IServiceCollection services, Type type, IEnumerable<Assembly> assemblies, ServiceLifetime serviceLifetime)
     {
-        var descriptors = GetClassesImplementingInterface(assemblies, type);
+        var descriptors = GetClassesImplementingInterface(assemblies, type).Distinct();
         services.TryAdd(descriptors.Select(x => new ServiceDescriptor(x, x, serviceLifetime)));
     }
 

@@ -28,7 +28,7 @@ internal static class Helper
             {
                 var responseType = x.Key.GetInterface(typeof(IQueryRequest<>).Name)!.GetGenericArguments()[0];
 
-                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateQueryDelegate));
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateQueryDelegate));
                 var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
 
                 return (x.Value, del);
@@ -40,7 +40,7 @@ internal static class Helper
         return assemblies.GetHandlerDetails(typeof(ICommandRequestHandler<>))
             .ToDictionary(x => x.Key, x =>
             {
-                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateCommandDelegate))!;
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandWithoutResponseDelegate))!;
                 var del = (Delegate) method.Invoke(null, new object?[] {x.Key})!;
 
                 return (x.Value, del);
@@ -54,7 +54,7 @@ internal static class Helper
             {
                 var responseType = x.Key.GetInterface(typeof(ICommandRequest<>).Name)!.GetGenericArguments()[0];
 
-                var method = typeof(DynamicHandler).GetMethod(nameof(DynamicHandler.CreateCommandDelegate));
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandDelegate));
                 var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
 
                 return (x.Value, del);

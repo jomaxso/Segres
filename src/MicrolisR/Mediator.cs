@@ -1,8 +1,5 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Reflection;
 using MicrolisR.Pipelines;
-using MicrolisR.Validation;
 
 namespace MicrolisR;
 
@@ -115,8 +112,6 @@ public sealed class Mediator : IMediator
         _messageHandlerDetails = markers.GetSubscriberDetails();
         _pipelineStepsDetails = markers.GetPipelineDetails();
         // _validator = serviceResolver(typeof(IValidator)) as IValidator;
-        
-
     }
 
     #endregion
@@ -135,7 +130,7 @@ public sealed class Mediator : IMediator
         var handler = _serviceResolver(handlerInfo.Type) 
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        return handlerInfo.Del.InvokeCommandHandler(handler, request, cancellationToken)!;
+        return ((CommandDelegate<TResponse>)handlerInfo.Del).Invoke(handler, request, cancellationToken)!;
     }
 
     /// <inheritdoc />
@@ -160,7 +155,7 @@ public sealed class Mediator : IMediator
         var handler = _serviceResolver(handlerInfo.Type)
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        return handlerInfo.Del.InvokeQueryHandler(handler, request, cancellationToken)!;
+        return ((QueryDelegate<TResponse>)handlerInfo.Del).Invoke(handler, request, cancellationToken);
 
         // for (var i = 0; i < length; i++)
         // {
@@ -181,7 +176,7 @@ public sealed class Mediator : IMediator
         var handler = _serviceResolver(handlerInfo.Type) 
                ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        return handlerInfo.Del.InvokeCommandHandler(handler, request, cancellationToken)!;
+        return ((CommandDelegate)handlerInfo.Del).Invoke(handler, request, cancellationToken)!;
     }
 
     private IList<IPipelineBehavior> GetPipelines(Type requestType)

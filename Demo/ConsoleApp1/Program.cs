@@ -1,25 +1,27 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using ConsoleApp1;
 using MicrolisR;
-using MicrolisR.Pipelines;
-using WebApplication1.Endpoints;
 using WebApplication1.Endpoints.WeatherForecast;
-using WebApplication1.Models;
 
-var result = await Benchy.SendAsync(new WeatherForecastGetByIdRequest());
+// var result = await Benchy.SendAsync(new WeatherForecastGetByIdRequest());
 
-Console.WriteLine();
-
-BenchmarkRunner.Run<Benchy>();
+ // BenchmarkRunner.Run<Benchy>();
 // return;
 // Console.WriteLine();
 //
-// var v = new WeatherForecastGetByIdRequest();
-// IMediator mediator = new Mediator(typeof(Program));
-// await mediator.SendAsync(v);
-// //
+WeatherForecastGetByIdRequest v1 = 1;
+
+IMediator mediator = new Mediator(typeof(Program));
+
+var response1 = await mediator.SendAsync(v1);
+
+
+
+
+//
 
 // var rr = new WeatherForecastGetByIdRequest();
 // var rType = rr.GetType();

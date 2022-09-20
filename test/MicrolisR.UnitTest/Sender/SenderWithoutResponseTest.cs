@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Reflection;
+using FluentAssertions;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
 using MicrolisR.UnitTest.Mediator;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ public class SenderWithoutResponseTest
     {
         // arrange 
         var serviceProvider = new ServiceCollection()
-            .AddMicrolisR(typeof(MediatorWithResponseTest))
+            .AddMicrolisR(Assembly.GetExecutingAssembly())
             .BuildServiceProvider();
 
         var sender = serviceProvider.GetRequiredService<ISender>();
