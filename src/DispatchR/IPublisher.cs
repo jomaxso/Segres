@@ -10,7 +10,7 @@ namespace DispatchR;
 public interface IPublisher
 {
     /// <summary>
-    /// Send a notification to multiple subscribers.
+    /// Send a message to multiple subscribers.
     /// </summary>
     /// <param name="message">The message object</param>
     /// <returns>A task that represents the publish operation.</returns>
@@ -18,10 +18,10 @@ public interface IPublisher
         where TMessage : IMessage;
 
     /// <summary>
-    /// Asynchronously send a notification to multiple subscribers.
+    /// Asynchronously send a message to multiple subscribers.
     /// </summary>
     /// <param name="message">The message object</param>
-    /// <param name="cancellationToken">An optional cancellation token</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A task that represents the publish operation.</returns>
     Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         where TMessage : IMessage;

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using DispatchR.Contracts;
 
 namespace DispatchR;
@@ -7,8 +8,9 @@ namespace DispatchR;
 public sealed class Dispatcher : IDispatcher
 {
     private readonly ServiceResolver _serviceResolver;
-    private readonly IHandlerCache _requestHandlerCache;
-    private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
+    private readonly IHandlerCache<HandlerInfo> _requestHandlerCache;
+    private readonly IHandlerCache<HandlerInfo[]> _messageHandlerCache;
+    // private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
 
     #region Constructors
 
@@ -128,7 +130,7 @@ public sealed class Dispatcher : IDispatcher
     {
         _serviceResolver = serviceResolver;
         _requestHandlerCache = markers.GetRequestHandlerDetails();
-        _messageHandlerDetails = markers.GetSubscriberDetails();
+        _messageHandlerCache = markers.GetSubscriberDetails();
     }
 
     #endregion
@@ -194,25 +196,31 @@ public sealed class Dispatcher : IDispatcher
         return handlerDelegate.Invoke(handler, query, cancellationToken);
     }
 
-    public void Publish<TMessage>(TMessage message) where TMessage : IMessage
-        => PublishAsync(message).Wait();
+    /// <inheritdoc />
+    public void Publish<TMessage>(TMessage message) where TMessage : IMessage 
+        => PublishAsync(message).GetAwaiter().GetResult();
 
+    /// <inheritdoc />
     public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage
     {
         var type = message.GetType();
 
-        if (!_messageHandlerDetails.ContainsKey(type))
-            throw new Exception($"No handler to handle request of type: {type.Name}");
-
-        var handlerTypes = _messageHandlerDetails[type];
+        if (!_messageHandlerCache.TryFindHandler(type, out var h)) 
+            return Task.CompletedTask;
+        
+        var handlerTypes = h.AsSpan();
 
         for (var i = 0; i < handlerTypes.Length; i++)
         {
-            var handlerType = handlerTypes[i];
-
-            // _serviceResolver(handlerType)
-            //     await handler.HandleAsync(message, cancellationToken).ConfigureAwait(false);
+            var handlerInfo = handlerTypes[i];
+            
+            var handler = _serviceResolver(handlerInfo.Type) 
+                          ?? throw new Exception($"No handler registered to handle message of type: {type.Name}");
+            
+            var handlerDelegate = handlerInfo.ResolveMethod<MessageDelegate>();
+            handlerDelegate.Invoke(handler, message, cancellationToken);
         }
+
 
         return Task.CompletedTask;
     }

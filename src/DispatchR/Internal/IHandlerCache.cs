@@ -1,10 +1,11 @@
 ﻿namespace DispatchR;
 
-internal interface IHandlerCache
+internal interface IHandlerCache<TValue>
 {
-    HandlerInfo FindHandler(Type key);
-    HandlerInfo FindHandler<T>(T _);
+    TValue FindHandler(Type key);
+    TValue FindHandler<T>(T _);
+    bool TryFindHandler(Type key, out TValue? value);
 
-    void Add(KeyValuePair<Type, HandlerInfo> keyValuePair);
-    void Add(Type key, HandlerInfo value);
+    void Add(KeyValuePair<Type, TValue> keyValuePair);
+    void Add(Type key, TValue value);
 }

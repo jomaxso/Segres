@@ -1,4 +1,5 @@
 ﻿using DispatchR.Benchmarks.Contracts;
+using DispatchR.Contracts;
 
 namespace DispatchR.Benchmarks.Handlers;
 

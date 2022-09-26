@@ -5,9 +5,9 @@ namespace DispatchR;
 
 internal static class Helper
 {
-    public static HandlerCache GetRequestHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
+    public static HandlerCache<HandlerInfo> GetRequestHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
     {
-        var dic = new HandlerCache();
+        var dic = new HandlerCache<HandlerInfo>();
 
         foreach (var requestHandlerDetail in assemblies.GetQueryRequestHandlerDetails_2())
             dic.Add(requestHandlerDetail);
@@ -22,8 +22,8 @@ internal static class Helper
 
         return dic;
     }
-    
-    public static IDictionary<Type, Type[]> GetSubscriberDetails(this ReadOnlySpan<Assembly> assemblies)
+
+    public static HandlerCache<HandlerInfo[]> GetSubscriberDetails(this ReadOnlySpan<Assembly> assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
 
@@ -40,10 +40,23 @@ internal static class Helper
             messageHandlerDetails.Add(handlerDetail.Key, new List<Type>() {handlerDetail.Value});
         }
 
-        return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
+        return messageHandlerDetails.ToHandlerCache((x, values) =>
+        {
+            List<HandlerInfo> results = new();
+
+            foreach (var value in values)
+            {
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateMessageDelegate))!;
+                var del = (Delegate) method.Invoke(null, new object?[] {x})!;
+
+                results.Add(new HandlerInfo(value, del));
+            }
+
+            return results.ToArray();
+        });
     }
 
-    private static HandlerCache GetQueryRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
+    private static HandlerCache<HandlerInfo> GetQueryRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
     {
         return assemblies.GetHandlerDetails(typeof(IQueryHandler<,>))
             .ToHandlerCache((requestType, handlerType) =>
@@ -57,7 +70,7 @@ internal static class Helper
             });
     }
 
-    private static HandlerCache GetCommandRequestHandlerDetails_1(this ReadOnlySpan<Assembly> assemblies)
+    private static HandlerCache<HandlerInfo> GetCommandRequestHandlerDetails_1(this ReadOnlySpan<Assembly> assemblies)
     {
         return assemblies.GetHandlerDetails(typeof(ICommandHandler<>))
             .ToHandlerCache((requestType, handlerType) =>
@@ -69,7 +82,7 @@ internal static class Helper
             });
     }
 
-    private static HandlerCache GetCommandRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
+    private static HandlerCache<HandlerInfo> GetCommandRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
     {
         return assemblies.GetHandlerDetails(typeof(ICommandHandler<,>))
             .ToHandlerCache((requestType, handlerType) =>
@@ -83,7 +96,7 @@ internal static class Helper
             });
     }
 
-    
+
     internal static IEnumerable<KeyValuePair<Type, Type>> GetHandlerDetails(this ReadOnlySpan<Assembly> assemblies, Type type)
     {
         var handlerDetails = new List<KeyValuePair<Type, Type>>();

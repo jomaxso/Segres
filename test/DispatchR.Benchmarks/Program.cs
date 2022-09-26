@@ -8,6 +8,6 @@ var b = new Benchmarks();
 
 b.GlobalSetup();
 
-b.SendAsync_Command();
+b.PublishAsync();
 
 BenchmarkRunner.Run<Benchmarks>();
