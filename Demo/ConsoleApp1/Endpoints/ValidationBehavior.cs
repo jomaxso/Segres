@@ -6,10 +6,10 @@ using WebApplication1.Endpoints.WeatherForecast;
 namespace WebApplication1.Endpoints;
 
 /// <inheritdoc />
-public class ValidationBehavior : IPipelineBehavior<WeatherForecastGetByIdRequest, Models.WeatherForecast>
+public class ValidationBehavior : IPipelineBehavior<WeatherForecastGetById, Models.WeatherForecast>
 {
     /// <inheritdoc />
-    public async Task<IQueryRequest<Models.WeatherForecast>> BeforeAsync(WeatherForecastGetByIdRequest request, CancellationToken cancellationToken)
+    public async Task<IQuery<Models.WeatherForecast>> BeforeAsync(WeatherForecastGetById request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         return request;

@@ -1,4 +1,6 @@
-﻿namespace MicrolisR;
+﻿using System.Runtime.InteropServices;
+
+namespace MicrolisR;
 
 internal class DefaultProvider : IServiceProvider
 {
@@ -29,7 +31,7 @@ internal class DefaultProvider : IServiceProvider
         var implementation = Activator.CreateInstance(serviceType, constructor);
         SingletonServices.Add(serviceType, implementation);
 
-        return SingletonServices[serviceType];
+        return implementation;
     }
 
     private static object? GetTransientService(Type serviceType)
@@ -46,13 +48,14 @@ internal class DefaultProvider : IServiceProvider
             TransientServices.Add(serviceType, parameterTypes);
         }
 
-        var parameterTypesSpan = TransientServices[serviceType];
+        var parameterTypesSpan = TransientServices[serviceType].AsSpan();
         var length = parameterTypesSpan.Length;
-
+        
         var parameters = new object?[length];
 
         for (var i = 0; i < length; i++)
         {
+            
             parameters[i] = GetTransientService(parameterTypesSpan[i]);
         }
 

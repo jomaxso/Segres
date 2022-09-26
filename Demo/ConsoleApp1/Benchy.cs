@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using MediatR;
 using MicrolisR;
 using MicrolisR.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,26 +14,26 @@ public class Benchy
 {
     private static readonly ServiceProvider ServiceProvider = new ServiceCollection()
         .AddMicrolisR(typeof(Program))
+        .AddMediatR(typeof(Program))
         .AddSingleton<ValidationBehavior>()
         .BuildServiceProvider();
 
-    private static readonly IMediator Mediator1 = ServiceProvider.GetRequiredService<IMediator>();
-    private static readonly IMediator Mediator2 = new Mediator(typeof(Program));
+    private static readonly IDispatcher Dispatcher = ServiceProvider.GetRequiredService<IDispatcher>();
+    private static readonly IMediator Mediator = ServiceProvider.GetRequiredService<IMediator>();
     
-    private static readonly WeatherForecastGetByIdRequest Request = new();
-    private static readonly GetByIdEndpoint handler = ServiceProvider.GetRequiredService<GetByIdEndpoint>();
+    private static readonly WeatherForecastGetById Request = new();
 
     [Benchmark]
-    public async Task<WeatherForecast?> SendAsync_ASPNET()
+    public async Task<WeatherForecast?> SendAsync_DispatchR()
     {
-        var x = await Mediator1.SendAsync(Request, CancellationToken.None);
+        var x = await Dispatcher.SendAsync(Request, CancellationToken.None);
         return x;
     }
 
     [Benchmark]
-    public async Task<WeatherForecast?> SendAsync_MANUEL()
+    public async Task<WeatherForecast?> SendAsync_MediatR()
     {
-        var x = await Mediator2.SendAsync(Request, CancellationToken.None);
+        var x = await Mediator.Send(Request, CancellationToken.None);
         return x;
     }
 

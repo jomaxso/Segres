@@ -5,12 +5,12 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Mediator;
 
-public readonly record struct MediatorRequest(int Value) : IQueryRequest<int>;
-public readonly record struct MediatorRequestWithoutHandler() : IQueryRequest<int>;
+public readonly record struct Mediator(int Value) : IQuery<int>;
+public readonly record struct MediatorWithoutHandler() : IQuery<int>;
 
-public class MediatorRequestHandler : IQueryRequestHandler<MediatorRequest, int>
+public class MediatorHandler : IQueryHandler<Mediator, int>
 {
-    public Task<int> HandleAsync(MediatorRequest request, CancellationToken cancellationToken)
+    public Task<int> HandleAsync(Mediator request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request.Value);
     }
@@ -36,8 +36,8 @@ public class MediatorWithResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorRequest();
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
+        var request = new Mediator();
         
         // act
         var result = () =>  mediator.SendAsync(request, CancellationToken.None);
@@ -54,8 +54,8 @@ public class MediatorWithResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorRequest(4712);
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
+        var request = new Mediator(4712);
 
         // act
         var result = await mediator.SendAsync(request, CancellationToken.None);
@@ -72,8 +72,8 @@ public class MediatorWithResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var request = new MediatorRequestWithoutHandler();
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
+        var request = new MediatorWithoutHandler();
 
         // act
         var result = () => mediator.SendAsync(request, CancellationToken.None);

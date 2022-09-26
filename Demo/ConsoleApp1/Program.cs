@@ -8,17 +8,15 @@ using WebApplication1.Endpoints.WeatherForecast;
 
 // var result = await Benchy.SendAsync(new WeatherForecastGetByIdRequest());
 
- // BenchmarkRunner.Run<Benchy>();
+BenchmarkRunner.Run<Benchy>();
 // return;
 // Console.WriteLine();
 //
-WeatherForecastGetByIdRequest v1 = 1;
+WeatherForecastGetById v1 = 1;
 
-IMediator mediator = new Mediator(typeof(Program));
+IDispatcher dispatcher = new Dispatcher(typeof(Program));
 
-var response1 = await mediator.SendAsync(v1);
-
-
+var response1 = await dispatcher.SendAsync(v1);
 
 
 //

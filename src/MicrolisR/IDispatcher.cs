@@ -7,8 +7,9 @@ namespace MicrolisR;
 /// </summary>
 /// <seealso cref="ISender"/>
 /// <seealso cref="IPublisher"/>
-public interface IMediator : 
-    ISender, 
+public interface IDispatcher : 
+    IQuerySender,
+    ICommandSender,
     IPublisher
 {
 }

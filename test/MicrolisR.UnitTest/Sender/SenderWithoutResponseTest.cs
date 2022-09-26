@@ -7,10 +7,10 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Sender;
 
-public readonly record struct RequestWithoutResponse(int Value) : ICommandRequest;
-public readonly record struct RequestWithoutHandlerAndResponse() : ICommandRequest;
+public readonly record struct RequestWithoutResponse(int Value) : ICommand;
+public readonly record struct RequestWithoutHandlerAndResponse() : ICommand;
 
-public class RequestWithoutResponseHandler : ICommandRequestHandler<RequestWithoutResponse>
+public class WithoutResponseHandler : ICommandHandler<RequestWithoutResponse>
 {
     public Task HandleAsync(RequestWithoutResponse request, CancellationToken cancellationToken)
     {
@@ -28,7 +28,7 @@ public class SenderWithoutResponseTest
             .AddMicrolisR(Assembly.GetExecutingAssembly())
             .BuildServiceProvider();
 
-        var sender = serviceProvider.GetRequiredService<ISender>();
+        var sender = serviceProvider.GetRequiredService<ICommandSender>();
         var request = new RequestWithoutResponse();
         
         // act
@@ -46,7 +46,7 @@ public class SenderWithoutResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var sender = serviceProvider.GetRequiredService<ISender>();
+        var sender = serviceProvider.GetRequiredService<ICommandSender>();
         var request = new RequestWithoutResponse(4712);
 
         // act
@@ -64,7 +64,7 @@ public class SenderWithoutResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var sender = serviceProvider.GetRequiredService<ISender>();
+        var sender = serviceProvider.GetRequiredService<ICommandSender>();
         var request = new RequestWithoutHandlerAndResponse();
 
         // act

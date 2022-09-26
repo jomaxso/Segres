@@ -23,11 +23,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.MapGet("/", (IMediator mediator, CancellationToken cancellationToken) => mediator.SendAsync(new WeatherForecastGetRequest(), cancellationToken));
-app.MapGet("/{id:int}", (IMediator mediator, int id, CancellationToken cancellationToken) => mediator.SendAsync(new WeatherForecastGetByIdRequest(){Id = id}, cancellationToken));
-app.MapPost("/", (IMediator mediator, CreateWeatherForecastRequest request, CancellationToken cancellationToken) => mediator.SendAsync(request, cancellationToken));
-app.MapPut("/{id:int}", (IMediator mediator, int id, UpdateWeatherForecastRequest request, CancellationToken cancellationToken) =>
+app.MapGet("/", (IDispatcher mediator, CancellationToken cancellationToken) => mediator.SendAsync(new GetAll(), cancellationToken));
+app.MapGet("/{id:int}", (IDispatcher mediator, int id, CancellationToken cancellationToken) => mediator.SendAsync(new GetById(){Id = id}, cancellationToken));
+app.MapPost("/", (IDispatcher mediator, CreateRequest request, CancellationToken cancellationToken) => mediator.SendAsync(request, cancellationToken));
+app.MapPut("/{id:int}", (IDispatcher mediator, int id, Update request, CancellationToken cancellationToken) =>
 {
     request.Id = id;
     return mediator.SendAsync(request, cancellationToken);

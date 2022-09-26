@@ -26,32 +26,41 @@ public static class ServiceRegistration
 
     public static IServiceCollection AddMicrolisR(this IServiceCollection services, params Assembly[] assemblies)
     {
-        var serviceLifetime = ServiceLifetime.Singleton; // todo
+        return services.AddMicrolisR(assemblies.AsSpan());
+    }
+    
+    public static IServiceCollection AddMicrolisR(this IServiceCollection services, ReadOnlySpan<Assembly> assemblies)
+    {
+        const ServiceLifetime serviceLifetime = ServiceLifetime.Transient; // todo
 
         // HANDLERS
-        services.TryAddHandlers(typeof(IQueryRequestHandler<,>), assemblies, serviceLifetime);
-        services.TryAddHandlers(typeof(ICommandRequestHandler<>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(IQueryHandler<,>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(ICommandHandler<>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(ICommandHandler<,>), assemblies, serviceLifetime);
         services.TryAddHandlers(typeof(IValidation<>), assemblies, serviceLifetime);
         services.TryAddHandlers(typeof(INotificationHandler<>), assemblies, serviceLifetime);
 
-        services.TryAddSingleton<IValidator>(provider => new Validator(provider, assemblies));
+        var assemblyArray = assemblies.ToArray();
+        services.TryAddSingleton<IValidator>(provider => new Validator(provider, assemblyArray));
         
         // MEDIATORS
-        services.TryAddSingleton<IMediator>(provider => new Mediator(provider, assemblies));
-        services.TryAddSingleton<ISender>(x => x.GetRequiredService<IMediator>());
-        services.TryAddSingleton<IPublisher>(x => x.GetRequiredService<IMediator>());
+        services.TryAddSingleton<IDispatcher>(provider => new Dispatcher(provider, assemblyArray));
+        services.TryAddSingleton<IQuerySender>(x => x.GetRequiredService<IDispatcher>());
+        services.TryAddSingleton<ICommandSender>(x => x.GetRequiredService<IDispatcher>());
+        services.TryAddSingleton<IPublisher>(x => x.GetRequiredService<IDispatcher>());
 
+        services.BuildServiceProvider().GetService<IDispatcher>();
 
         return services;
     }
 
-    private static void TryAddHandlers(this IServiceCollection services, Type type, IEnumerable<Assembly> assemblies, ServiceLifetime serviceLifetime)
+    private static void TryAddHandlers(this IServiceCollection services, Type type, ReadOnlySpan<Assembly> assemblies, ServiceLifetime serviceLifetime)
     {
         var descriptors = GetClassesImplementingInterface(assemblies, type).Distinct();
         services.TryAdd(descriptors.Select(x => new ServiceDescriptor(x, x, serviceLifetime)));
     }
 
-    private static IEnumerable<Type> GetClassesImplementingInterface(IEnumerable<Assembly> assemblies, Type typeToMatch)
+    private static IEnumerable<Type> GetClassesImplementingInterface(ReadOnlySpan<Assembly> assemblies, Type typeToMatch)
     {
         List<Type> list = new();
 

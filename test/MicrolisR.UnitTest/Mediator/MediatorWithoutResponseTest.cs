@@ -5,10 +5,10 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Mediator;
 
-public readonly record struct MediatorWithoutResponseRequest() : ICommandRequest;
-public readonly record struct MediatorWithoutResponseRequestWithoutHandler() : ICommandRequest;
+public readonly record struct MediatorWithoutResponseRequest() : ICommand;
+public readonly record struct MediatorWithoutResponseRequestWithoutHandler() : ICommand;
 
-public class MediatorRequestWithoutResponseHandler : ICommandRequestHandler<MediatorWithoutResponseRequest>
+public class MediatorWithoutResponseHandler : ICommandHandler<MediatorWithoutResponseRequest>
 {
     public Task HandleAsync(MediatorWithoutResponseRequest request, CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class MediatorWithoutResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))     
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new MediatorWithoutResponseRequest();
         
         // act
@@ -44,7 +44,7 @@ public class MediatorWithoutResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new MediatorWithoutResponseRequest();
 
         // act
@@ -62,7 +62,7 @@ public class MediatorWithoutResponseTest
             .AddMicrolisR(typeof(MediatorWithResponseTest))
             .BuildServiceProvider();
 
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
+        var mediator = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new MediatorWithoutResponseRequestWithoutHandler();
 
         // act

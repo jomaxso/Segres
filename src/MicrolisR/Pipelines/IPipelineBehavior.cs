@@ -16,7 +16,7 @@ public interface IPipelineBehavior
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
 public interface IPipelineBehavior<in TRequest, TResponse> : IPipelineBehavior
-    where TRequest : IQueryRequest<TResponse>
+    where TRequest : IQuery<TResponse>
 {
     Task IPipelineBehavior.BeforeAsync<T>(T request, CancellationToken cancellationToken)
         where T : default
@@ -45,7 +45,7 @@ public interface IPipelineBehavior<in TRequest, TResponse> : IPipelineBehavior
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IQueryRequest<TResponse>> BeforeAsync(TRequest request, CancellationToken cancellationToken);
+    Task<IQuery<TResponse>> BeforeAsync(TRequest request, CancellationToken cancellationToken);
 
     /// <summary>
     /// 

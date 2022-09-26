@@ -3,11 +3,11 @@ namespace MicrolisR;
 /// <summary>
 /// Defines a receiver (fire-and-forget) for a request.
 /// </summary>
-/// <typeparam name="TRequest">The request type witch implements <see cref="ICommandRequest"/>.</typeparam>
-/// <seealso cref="ICommandRequest"/>
-/// <seealso cref="ICommandRequestHandler{TRequest}"/>
-public interface ICommandRequestHandler<in TRequest> 
-    where TRequest : ICommandRequest
+/// <typeparam name="TRequest">The request type witch implements <see cref="ICommand"/>.</typeparam>
+/// <seealso cref="ICommand"/>
+/// <seealso cref="ICommandHandler{TRequest}"/>
+public interface ICommandHandler<in TRequest> 
+    where TRequest : ICommand
 {
     /// <summary>
     /// Asynchronously receive and handle a request.
@@ -16,19 +16,19 @@ public interface ICommandRequestHandler<in TRequest>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation.</returns>
     /// <seealso cref="ISender"/>
-    /// <seealso cref="ICommandRequest"/>
+    /// <seealso cref="ICommand"/>
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
 /// <summary>
 /// Defines a receiver (fire-and-forget) for a request.
 /// </summary>
-/// <typeparam name="TRequest">The request type witch implements <see cref="ICommandRequest"/>.</typeparam>
+/// <typeparam name="TRequest">The request type witch implements <see cref="ICommand"/>.</typeparam>
 /// <typeparam name="TResponse"></typeparam>
-/// <seealso cref="ICommandRequest{TResponse}"/>
-/// <seealso cref="ICommandRequestHandler{TRequest}"/>
-public interface ICommandRequestHandler<in TRequest, TResponse> 
-    where TRequest : ICommandRequest<TResponse>
+/// <seealso cref="ICommand{TResponse}"/>
+/// <seealso cref="ICommandHandler{TRequest}"/>
+public interface ICommandHandler<in TRequest, TResponse> 
+    where TRequest : ICommand<TResponse>
 {
     /// <summary>
     /// Asynchronously receive and handle a request.
@@ -37,6 +37,6 @@ public interface ICommandRequestHandler<in TRequest, TResponse>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
     /// <seealso cref="ISender"/>
-    /// <seealso cref="IQueryRequest{T}"/>
+    /// <seealso cref="IQuery{T}"/>
     Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }

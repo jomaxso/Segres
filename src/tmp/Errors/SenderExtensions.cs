@@ -2,7 +2,7 @@
 
 public static class SenderExtensions
 {
-    public static async ValueTask<Result<TResponse>> TrySendAsync<TResponse>(this ISender sender, IQueryRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public static async ValueTask<Result<TResponse>> TrySendAsync<TResponse>(this IQuerySender sender, IQuery<TResponse> request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -15,7 +15,7 @@ public static class SenderExtensions
         }
     }
     
-    public static async ValueTask<Result> TrySendAsync(this ISender sender, ICommandRequest request, CancellationToken cancellationToken = default)
+    public static async ValueTask<Result> TrySendAsync(this ICommandSender sender, ICommand request, CancellationToken cancellationToken = default)
     {
         try
         {

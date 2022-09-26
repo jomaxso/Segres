@@ -1,8 +1,9 @@
 ﻿namespace MicrolisR;
 
-internal delegate Task<T> QueryDelegate<T>(object handler, IQueryRequest<T> queryRequest, CancellationToken cancellationToken);
-internal delegate Task CommandDelegate(object handler, ICommandRequest commandRequest, CancellationToken cancellationToken);
-internal delegate Task<T> CommandDelegate<T>(object handler, ICommandRequest<T> commandRequest, CancellationToken cancellationToken);
+internal delegate object? ServiceResolver(Type type);
+internal delegate Task<T> QueryDelegate<T>(object handler, IQuery<T> query, CancellationToken cancellationToken);
+internal delegate Task CommandDelegate(object handler, ICommand commandRequest, CancellationToken cancellationToken);
+internal delegate Task<T> CommandDelegate<T>(object handler, ICommand<T> command, CancellationToken cancellationToken);
 
 
 internal static class Delegates

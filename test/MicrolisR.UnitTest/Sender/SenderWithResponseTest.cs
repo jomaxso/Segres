@@ -3,10 +3,10 @@ using Xunit;
 
 namespace MicrolisR.UnitTest.Sender;
 
-internal readonly record struct Request(int Value) : IQueryRequest<int>;
-internal readonly record struct RequestWithoutHandler() : IQueryRequest<int>;
+internal readonly record struct Request(int Value) : IQuery<int>;
+internal readonly record struct WithoutHandler() : IQuery<int>;
 
-internal class RequestHandler : IQueryRequestHandler<Request, int>
+internal class Handler : IQueryHandler<Request, int>
 {
     public Task<int> HandleAsync(Request request, CancellationToken cancellationToken)
     {
@@ -20,7 +20,7 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldReturnTrue_WhenCalled()
     {
         // arrange 
-        ISender sender = new MicrolisR.Mediator(typeof(SenderWithResponseTest));
+        IQuerySender sender = new MicrolisR.Dispatcher(typeof(SenderWithResponseTest));
         var request = new Request();
         
         // act
@@ -34,7 +34,7 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldReturnValueOfRequest_WhenCalled()
     {
         // arrange 
-        ISender sender = new MicrolisR.Mediator(typeof(SenderWithResponseTest));
+        IQuerySender sender = new MicrolisR.Dispatcher(typeof(SenderWithResponseTest));
         var request = new Request(4712);
 
         // act
@@ -48,8 +48,8 @@ public class SenderWithResponseTest
     public async Task SendAsync_ShouldThrow_WhenNoHandlerFound()
     {
         // arrange 
-        ISender sender = new MicrolisR.Mediator(typeof(SenderWithResponseTest));
-        var request = new RequestWithoutHandler();
+        IQuerySender sender = new MicrolisR.Dispatcher(typeof(SenderWithResponseTest));
+        var request = new WithoutHandler();
 
         // act
         var result = () => sender.SendAsync(request, CancellationToken.None);

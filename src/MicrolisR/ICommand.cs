@@ -5,15 +5,15 @@ namespace MicrolisR;
 /// <summary>
 /// Marker interface to represent a request without a response.
 /// </summary>
-/// <seealso cref="ICommandRequestHandler{T}"/>
-public interface ICommandRequest : IValidatable
+/// <seealso cref="ICommandHandler{TRequest}"/>
+public interface ICommand : IValidatable
 {
 }
 
 /// <summary>
 /// Marker interface to represent a request without a response.
 /// </summary>
-/// <seealso cref="ICommandRequestHandler{T}"/>
-public interface ICommandRequest<TResponse> : IValidatable
+/// <seealso cref="ICommandHandler{TRequest}"/>
+public interface ICommand<TResponse> : IValidatable
 {
 }

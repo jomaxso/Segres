@@ -5,9 +5,9 @@ namespace MicrolisR;
 
 internal static class Helper
 {
-    public static IDictionary<Type, (Type Type, Delegate Del)> GetRequestHandlerDetails(this Assembly[] assemblies)
+    public static HandlerCache GetRequestHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
     {
-        IDictionary<Type, (Type Type, Delegate Del)> dic = new Dictionary<Type, (Type Type, Delegate Del)>();
+        var dic = new HandlerCache();
 
         foreach (var requestHandlerDetail in assemblies.GetQueryRequestHandlerDetails_2())
             dic.Add(requestHandlerDetail);
@@ -18,50 +18,12 @@ internal static class Helper
         foreach (var requestHandlerDetail in assemblies.GetCommandRequestHandlerDetails_1())
             dic.Add(requestHandlerDetail);
 
+        // ValidateRegistrations(assemblies, dic);
+
         return dic;
     }
-
-    private static IDictionary<Type, (Type Type, Delegate Del)> GetQueryRequestHandlerDetails_2(this Assembly[] assemblies)
-    {
-        return assemblies.GetHandlerDetails(typeof(IQueryRequestHandler<,>))
-            .ToDictionary(x => x.Key, x =>
-            {
-                var responseType = x.Key.GetInterface(typeof(IQueryRequest<>).Name)!.GetGenericArguments()[0];
-
-                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateQueryDelegate));
-                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
-
-                return (x.Value, del);
-            });
-    }
-
-    private static IDictionary<Type, (Type Type, Delegate Del)> GetCommandRequestHandlerDetails_1(this Assembly[] assemblies)
-    {
-        return assemblies.GetHandlerDetails(typeof(ICommandRequestHandler<>))
-            .ToDictionary(x => x.Key, x =>
-            {
-                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandWithoutResponseDelegate))!;
-                var del = (Delegate) method.Invoke(null, new object?[] {x.Key})!;
-
-                return (x.Value, del);
-            });
-    }
-
-    private static IDictionary<Type, (Type Type, Delegate Del)> GetCommandRequestHandlerDetails_2(this Assembly[] assemblies)
-    {
-        return assemblies.GetHandlerDetails(typeof(ICommandRequestHandler<,>))
-            .ToDictionary(x => x.Key, x =>
-            {
-                var responseType = x.Key.GetInterface(typeof(ICommandRequest<>).Name)!.GetGenericArguments()[0];
-
-                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandDelegate));
-                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {x.Key})!;
-
-                return (x.Value, del);
-            });
-    }
-
-    public static IDictionary<Type, Type[]> GetSubscriberDetails(this Assembly[] assemblies)
+    
+    public static IDictionary<Type, Type[]> GetSubscriberDetails(this ReadOnlySpan<Assembly> assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
 
@@ -81,7 +43,7 @@ internal static class Helper
         return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
     }
 
-    public static IDictionary<Type, Type[]> GetPipelineDetails(this Assembly[] assemblies)
+    public static IDictionary<Type, Type[]> GetPipelineDetails(this ReadOnlySpan<Assembly> assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
 
@@ -101,7 +63,77 @@ internal static class Helper
         return messageHandlerDetails.ToDictionary(x => x.Key, x => x.Value.ToArray());
     }
 
-    internal static IEnumerable<KeyValuePair<Type, Type>> GetHandlerDetails(this IEnumerable<Assembly> assemblies, Type type)
+
+    // private static void ValidateRegistrations(Assembly[] assemblies, IDictionary<Type, (Type Type, Delegate Del)> dic)
+    // {
+    //     var missingRequestRegistrations = new List<Type>();
+    //
+    //     foreach (var assembly in assemblies)
+    //     {
+    //         var typeInfos = assembly.DefinedTypes
+    //             .Where(xx =>
+    //                 xx.ImplementedInterfaces.Contains(typeof(IQueryRequest<>)) ||
+    //                 xx.ImplementedInterfaces.Contains(typeof(ICommandRequest)) ||
+    //                 xx.ImplementedInterfaces.Contains(typeof(ICommandRequest<>))
+    //             );
+    //
+    //         foreach (var typeInfo in typeInfos)
+    //         {
+    //             if (dic.ContainsKey(typeInfo))
+    //                 continue;
+    //
+    //             missingRequestRegistrations.Add(typeInfo);
+    //         }
+    //     }
+    //
+    //     if (missingRequestRegistrations.Count > 0)
+    //     {
+    //         throw new Exception("not all types ar found");
+    //     }
+    // }
+
+    private static HandlerCache GetQueryRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(IQueryHandler<,>))
+            .ToHandlerCache((requestType, handlerType) =>
+            {
+                var responseType = requestType.GetInterface(typeof(IQuery<>).Name)!.GetGenericArguments()[0];
+
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateQueryDelegate));
+                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {requestType})!;
+
+                return new HandlerInfo(handlerType, del);
+            });
+    }
+
+    private static HandlerCache GetCommandRequestHandlerDetails_1(this ReadOnlySpan<Assembly> assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(ICommandHandler<>))
+            .ToHandlerCache((requestType, handlerType) =>
+            {
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandWithoutResponseDelegate))!;
+                var del = (Delegate) method.Invoke(null, new object?[] {requestType})!;
+
+                return new HandlerInfo(handlerType, del);
+            });
+    }
+
+    private static HandlerCache GetCommandRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(ICommandHandler<,>))
+            .ToHandlerCache((requestType, handlerType) =>
+            {
+                var responseType = requestType.GetInterface(typeof(ICommand<>).Name)!.GetGenericArguments()[0];
+
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateCommandDelegate));
+                var del = (Delegate) method!.MakeGenericMethod(responseType).Invoke(null, new object?[] {requestType})!;
+
+                return new HandlerInfo(handlerType, del);
+            });
+    }
+
+    
+    internal static IEnumerable<KeyValuePair<Type, Type>> GetHandlerDetails(this ReadOnlySpan<Assembly> assemblies, Type type)
     {
         var handlerDetails = new List<KeyValuePair<Type, Type>>();
 

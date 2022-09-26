@@ -3,11 +3,11 @@ namespace MicrolisR;
 /// <summary>
 /// Defines a receiver (fire-and-forget) for a request.
 /// </summary>
-/// <typeparam name="TRequest">The request type witch implements <see cref="IQueryRequest{T}"/>.</typeparam>
+/// <typeparam name="TRequest">The request type witch implements <see cref="IQuery{T}"/>.</typeparam>
 /// <typeparam name="TResponse">The response type of the request.</typeparam>
-/// <seealso cref="IQueryRequest{T}"/>
-public interface IQueryRequestHandler<in TRequest, TResponse> 
-    where TRequest : IQueryRequest<TResponse>
+/// <seealso cref="IQuery{T}"/>
+public interface IQueryHandler<in TRequest, TResponse> 
+    where TRequest : IQuery<TResponse>
 {
     /// <summary>
     /// Asynchronously receive and handle a request.
@@ -16,6 +16,6 @@ public interface IQueryRequestHandler<in TRequest, TResponse>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
     /// <seealso cref="ISender"/>
-    /// <seealso cref="IQueryRequest{T}"/>
+    /// <seealso cref="IQuery{T}"/>
     Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }

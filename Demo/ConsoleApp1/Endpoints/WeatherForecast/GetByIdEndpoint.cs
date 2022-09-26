@@ -1,22 +1,23 @@
-﻿using MicrolisR;
+﻿using MediatR;
+using MicrolisR;
 
 namespace WebApplication1.Endpoints.WeatherForecast;
 
 /// <summary>
 /// 
 /// </summary>
-public class WeatherForecastGetByIdRequest : IQueryRequest<Models.WeatherForecast?>
+public class WeatherForecastGetById : IQuery<Models.WeatherForecast?>, IRequest<Models.WeatherForecast?>
 {
     public int Id { get; init; }
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static implicit operator WeatherForecastGetByIdRequest(int id)
+    public static implicit operator WeatherForecastGetById(int id)
     {
-        return new WeatherForecastGetByIdRequest()
+        return new WeatherForecastGetById()
         {
             Id = id
         };
@@ -26,16 +27,9 @@ public class WeatherForecastGetByIdRequest : IQueryRequest<Models.WeatherForecas
 /// <summary>
 /// 
 /// </summary>
-public record struct WeatherForecastGetAllRequest : IQueryRequest<List<Models.WeatherForecast>>
-{
-}
-
-/// <summary>
-/// 
-/// </summary>
 public class GetByIdEndpoint :
-    IQueryRequestHandler<WeatherForecastGetByIdRequest, Models.WeatherForecast?>,
-    IQueryRequestHandler<WeatherForecastGetAllRequest, List<Models.WeatherForecast>>
+    IQueryHandler<WeatherForecastGetById, Models.WeatherForecast?>,
+    IRequestHandler<WeatherForecastGetById, Models.WeatherForecast?>
 {
     private static List<Models.WeatherForecast> db = new()
     {
@@ -63,14 +57,14 @@ public class GetByIdEndpoint :
     };
 
     /// <inheritdoc />
-    public async Task<Models.WeatherForecast?> HandleAsync(WeatherForecastGetByIdRequest request, CancellationToken cancellationToken)
+    public async Task<Models.WeatherForecast?> HandleAsync(WeatherForecastGetById request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         return null;
     }
 
     /// <inheritdoc />
-    public async Task<List<Models.WeatherForecast>> HandleAsync(WeatherForecastGetAllRequest request, CancellationToken cancellationToken)
+    public async Task<Models.WeatherForecast?> Handle(WeatherForecastGetById request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         return null;

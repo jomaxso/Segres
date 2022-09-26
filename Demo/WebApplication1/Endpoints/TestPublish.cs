@@ -6,7 +6,10 @@ using WebApplication1.Endpoints.WeatherForecast;
 
 namespace WebApplication1.Endpoints;
 
-public record struct WeatherForecastChanged(Models.WeatherForecast Value) : INotification;
+public record struct WeatherForecastChanged(Models.WeatherForecast Value) : INotification
+{
+    public static implicit operator WeatherForecastChanged(Models.WeatherForecast value) => new WeatherForecastChanged(value);
+};
 
 public class WeatherForecastChangedEvent : INotificationHandler<WeatherForecastChanged>
 {
@@ -28,9 +31,9 @@ public class WeatherForecastChangedEvent2 : INotificationHandler<WeatherForecast
     }
 }
 
-public class ValidationBehavior : IPipelineBehavior<WeatherForecastGetByIdRequest, Models.WeatherForecast>
+public class ValidationBehavior : IPipelineBehavior<GetById, Models.WeatherForecast>
 {
-    public async Task<IQueryRequest<Models.WeatherForecast>> BeforeAsync(WeatherForecastGetByIdRequest request, CancellationToken cancellationToken)
+    public async Task<IQuery<Models.WeatherForecast>> BeforeAsync(GetById request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         

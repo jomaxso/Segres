@@ -4,18 +4,18 @@ using MicrolisR.Utilities;
 namespace MicrolisR;
 
 public interface IHttpContextRequestResolver<in TRequest, TResponse> : IHttpContextRequestResolver
-    where TRequest : IQueryRequest<TResponse>
+    where TRequest : IQuery<TResponse>
 {
-    IQueryRequestHandler<TRequest, TResponse> RequestHandler { get; }
+    IQueryHandler<TRequest, TResponse> Handler { get; }
     
     MethodInfo IHttpContextRequestResolver.MethodInfo
     {
         get
         {
-            var requestMethod = typeof(IQueryRequestHandler<TRequest, TResponse>)
-                .GetMethod(nameof(IQueryRequestHandler<TRequest, TResponse>.HandleAsync))!;
+            var requestMethod = typeof(IQueryHandler<TRequest, TResponse>)
+                .GetMethod(nameof(IQueryHandler<TRequest, TResponse>.HandleAsync))!;
             
-            var method = RequestHandler
+            var method = Handler
                 .GetType()
                 .GetMethods()
                 .First(x => x.Name == requestMethod.Name && x.GetParameters()[0].ParameterType == typeof(TRequest));
