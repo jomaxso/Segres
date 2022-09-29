@@ -1,7 +1,10 @@
-﻿namespace DispatchR;
+﻿using System.Runtime.CompilerServices;
+
+namespace DispatchR;
 
 internal static class HandlerCacheExtensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HandlerCache<TValue> ToHandlerCache<TSource, TValue>(this IEnumerable<KeyValuePair<Type, TSource>> source, Func<Type, TSource, TValue> elementSelector)
     {
         var context = new HandlerCache<TValue>();

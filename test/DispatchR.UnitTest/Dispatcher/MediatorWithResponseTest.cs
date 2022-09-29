@@ -16,10 +16,10 @@ public class MediatorHandler : IQueryHandler<Mediator, int>
         return Task.FromResult(request.Value);
     }
 }
-public readonly record struct NotificationWithoutResponse(int Value) : IMessage;
-public readonly record struct NotificationWithoutHandlerAndResponse() : IMessage;
+public readonly record struct NotificationWithoutResponse(int Value) : IEvent;
+public readonly record struct NotificationWithoutHandlerAndResponse() : IEvent;
 
-public class RequestWithoutResponseHandler : IMessageHandler<NotificationWithoutResponse>
+public class RequestWithoutResponseHandler : IEventHandler<NotificationWithoutResponse>
 {
     public Task HandleAsync(NotificationWithoutResponse notification, CancellationToken cancellationToken)
     {
@@ -41,7 +41,7 @@ public class MediatorWithResponseTest
         var request = new Mediator();
         
         // act
-        var result = () =>  mediator.SendAsync(request, CancellationToken.None);
+        var result = () =>  mediator.QueryAsync(request, CancellationToken.None);
 
         // assert
         await result.Should().NotThrowAsync();
@@ -59,7 +59,7 @@ public class MediatorWithResponseTest
         var request = new Mediator(4712);
 
         // act
-        var result = await mediator.SendAsync(request, CancellationToken.None);
+        var result = await mediator.QueryAsync(request, CancellationToken.None);
 
         // assert
         result.Should().Be(4712);
@@ -77,7 +77,7 @@ public class MediatorWithResponseTest
         var request = new MediatorWithoutHandler();
 
         // act
-        var result = () => mediator.SendAsync(request, CancellationToken.None);
+        var result = () => mediator.QueryAsync(request, CancellationToken.None);
 
         // assert
         await result.Should().ThrowAsync<Exception>();

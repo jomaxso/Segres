@@ -3,11 +3,11 @@
 namespace DispatchR;
 
 internal static class DynamicMessageHandler<TMessage>
-    where TMessage : IMessage
+    where TMessage : IEvent
 {
-    public static Task? HandleDynamicAsync(object obj, IMessage message, CancellationToken cancellationToken)
+    public static Task? HandleDynamicAsync(object obj, IEvent message, CancellationToken cancellationToken)
     {
-        var handler = obj as IMessageHandler<TMessage>;
+        var handler = obj as IEventHandler<TMessage>;
         return handler?.HandleAsync((TMessage) message, cancellationToken);
     }
 }

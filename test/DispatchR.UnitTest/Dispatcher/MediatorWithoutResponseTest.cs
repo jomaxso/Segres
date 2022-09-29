@@ -31,7 +31,7 @@ public class MediatorWithoutResponseTest
         var request = new MediatorWithoutResponseRequest();
         
         // act
-        var result = () =>  mediator.SendAsync(request, CancellationToken.None);
+        var result = () =>  mediator.CommandAsync(request, CancellationToken.None);
 
         // assert
         await result.Should().NotThrowAsync();
@@ -49,7 +49,7 @@ public class MediatorWithoutResponseTest
         var request = new MediatorWithoutResponseRequest();
 
         // act
-        var result = () => mediator.SendAsync(request, CancellationToken.None);
+        var result = () => mediator.CommandAsync(request, CancellationToken.None);
 
         // assert
         await result.Should().NotThrowAsync();
@@ -67,7 +67,7 @@ public class MediatorWithoutResponseTest
         var request = new MediatorWithoutResponseRequestWithoutHandler();
 
         // act
-        var result = () => mediator.SendAsync(request, CancellationToken.None);
+        var result = () => mediator.CommandAsync(request, CancellationToken.None);
 
         // assert
         await result.Should().ThrowAsync<Exception>();

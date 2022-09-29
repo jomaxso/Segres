@@ -5,11 +5,11 @@ namespace DispatchR;
 /// <summary>
 /// Defines a receiver (fire-and-forget) for a request.
 /// </summary>
-/// <typeparam name="TRequest">The request type witch implements <see cref="IQuery{T}"/>.</typeparam>
-/// <typeparam name="TResponse">The response type of the request.</typeparam>
+/// <typeparam name="TQuery">The request type witch implements <see cref="IQuery{T}"/>.</typeparam>
+/// <typeparam name="TResult">The response type of the request.</typeparam>
 /// <seealso cref="IQuery{T}"/>
-public interface IQueryHandler<in TRequest, TResponse> 
-    where TRequest : IQuery<TResponse>
+public interface IQueryHandler<in TQuery, TResult>
+    where TQuery : IQuery<TResult>
 {
     /// <summary>
     /// Asynchronously receive and handle a request.
@@ -17,7 +17,6 @@ public interface IQueryHandler<in TRequest, TResponse>
     /// <param name="request">The request object</param>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
-    /// <seealso cref="ISender"/>
     /// <seealso cref="IQuery{T}"/>
-    Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
+    Task<TResult> HandleAsync(TQuery request, CancellationToken cancellationToken = default);
 }

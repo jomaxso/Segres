@@ -5,9 +5,9 @@ namespace DispatchR;
 /// <summary>
 /// Defines a subscriber for a notification.
 /// </summary>
-/// <seealso cref="IMessage"/>
-public interface IMessageHandler<in TMessage> 
-    where TMessage : IMessage
+/// <seealso cref="IEvent"/>
+public interface IEventHandler<in TEvent> 
+    where TEvent : IEvent
 {
     /// <summary>
     /// Asynchronously subscribe and handle a message.
@@ -15,6 +15,6 @@ public interface IMessageHandler<in TMessage>
     /// <param name="message">The message object</param>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A Task</returns>
-    /// <seealso cref="IMessage"/>
-    Task HandleAsync(TMessage message, CancellationToken cancellationToken);
+    /// <seealso cref="IEvent"/>
+    Task HandleAsync(TEvent message, CancellationToken cancellationToken = default);
 }
