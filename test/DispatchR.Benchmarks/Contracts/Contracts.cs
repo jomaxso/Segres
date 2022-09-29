@@ -1,11 +1,13 @@
 ﻿using DispatchR.Contracts;
+using MediatR;
 
 namespace DispatchR.Benchmarks.Contracts;
 
-public record QueryReturningObject : IQuery<object>;
+public record GetUsers : IQuery<int>, IRequest<int>;
 
-public record Command : ICommand;
+public record CreateUser : ICommand, IRequest;
+public record UserStream : IStream<int?>, IStreamRequest<int?>;
 
-public record CommandReturningObject : ICommand<object>;
+public record CreateUserWithResult : ICommand<int>, IRequest<int>;
 
-public record Event : IMessage;
+public record UserCreated : IMessage, INotification;

@@ -3,14 +3,11 @@ using DispatchR.Contracts;
 
 namespace DispatchR;
 
-internal static class Helper
+internal static class InternalRegistration
 {
-    public static HandlerCache<HandlerInfo> GetRequestHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
+    public static HandlerCache<HandlerInfo> GetCommandHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
     {
         var dic = new HandlerCache<HandlerInfo>();
-
-        foreach (var requestHandlerDetail in assemblies.GetQueryRequestHandlerDetails_2())
-            dic.Add(requestHandlerDetail);
 
         foreach (var requestHandlerDetail in assemblies.GetCommandRequestHandlerDetails_2())
             dic.Add(requestHandlerDetail);
@@ -18,12 +15,31 @@ internal static class Helper
         foreach (var requestHandlerDetail in assemblies.GetCommandRequestHandlerDetails_1())
             dic.Add(requestHandlerDetail);
 
-        // ValidateRegistrations(assemblies, dic);
-
         return dic;
-    }
+    }    
+    
+    public static HandlerCache<HandlerInfo> GetQueryHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
+    {
+        return assemblies.GetQueryRequestHandlerDetails_2();
+    }    
+    
+    public static HandlerCache<HandlerInfo> GetStreamHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
+    {
+        return assemblies.GetHandlerDetails(typeof(IStreamHandler<,>))
+            .ToHandlerCache((streamType, handlerType) =>
+            {
+                var resultType = streamType.GetInterface(typeof(IStream<>).Name)!.GetGenericArguments()[0];
 
-    public static HandlerCache<HandlerInfo[]> GetSubscriberDetails(this ReadOnlySpan<Assembly> assemblies)
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateStreamDelegate));
+                var del = (Delegate) method!.MakeGenericMethod(resultType).Invoke(null, new object?[] {streamType})!;
+
+                return new HandlerInfo(handlerType, del);
+            });
+    }
+    
+    
+
+    public static HandlerCache<HandlerInfo[]> GetEventHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
     {
         var messageHandlerDetails = new Dictionary<Type, List<Type>>();
 
@@ -46,7 +62,7 @@ internal static class Helper
 
             foreach (var value in values)
             {
-                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateMessageDelegate))!;
+                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateEventDelegate))!;
                 var del = (Delegate) method.Invoke(null, new object?[] {x})!;
 
                 results.Add(new HandlerInfo(value, del));

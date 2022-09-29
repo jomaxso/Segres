@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DispatchR.UnitTest", "test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DispatchR.Benchmarks", "test\DispatchR.Benchmarks\DispatchR.Benchmarks.csproj", "{7898BF28-A616-4F41-A191-805BBFFC754F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DispatchR.Contracts", "src\DispatchR.Contracts\DispatchR.Contracts.csproj", "{F3EA4DFD-391D-4C9C-9071-8C0F62937218}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{7898BF28-A616-4F41-A191-805BBFFC754F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7898BF28-A616-4F41-A191-805BBFFC754F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7898BF28-A616-4F41-A191-805BBFFC754F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3EA4DFD-391D-4C9C-9071-8C0F62937218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3EA4DFD-391D-4C9C-9071-8C0F62937218}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3EA4DFD-391D-4C9C-9071-8C0F62937218}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3EA4DFD-391D-4C9C-9071-8C0F62937218}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,7 +46,6 @@ Global
 		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
 		{7898BF28-A616-4F41-A191-805BBFFC754F} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
-		{F3EA4DFD-391D-4C9C-9071-8C0F62937218} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {72F20086-2AAE-4305-977A-B807839763A8}

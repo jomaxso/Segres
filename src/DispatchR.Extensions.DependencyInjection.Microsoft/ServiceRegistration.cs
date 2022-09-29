@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -14,79 +13,72 @@ public static class ServiceRegistration
     /// 
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddDispatchR(this IServiceCollection services, Action<RegistrationOption>? options = null)
+        => services.AddDispatchR(Assembly.GetCallingAssembly()!.GetExportedTypes(), options);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="options"></param>
     /// <typeparam name="TMarker"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddDispatchR<TMarker>(this IServiceCollection services)
-        => services.AddDispatchR(typeof(TMarker));
+    public static IServiceCollection AddDispatchR<TMarker>(this IServiceCollection services, Action<RegistrationOption>? options = null)
+        => services.AddDispatchR(new[] {typeof(TMarker)}, options);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="options"></param>
     /// <typeparam name="TMarkerOne"></typeparam>
     /// <typeparam name="TMarkerTwo"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddDispatchR<TMarkerOne, TMarkerTwo>(this IServiceCollection services)
-        => services.AddDispatchR(typeof(TMarkerOne), typeof(TMarkerTwo));
+    public static IServiceCollection AddDispatchR<TMarkerOne, TMarkerTwo>(this IServiceCollection services, Action<RegistrationOption>? options = null)
+        => services.AddDispatchR(new[] {typeof(TMarkerOne), typeof(TMarkerTwo)}, options);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="options"></param>
     /// <typeparam name="TMarkerOne"></typeparam>
     /// <typeparam name="TMarkerTwo"></typeparam>
     /// <typeparam name="TMarkerThree"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddDispatchR<TMarkerOne, TMarkerTwo, TMarkerThree>(this IServiceCollection services)
-        => services.AddDispatchR(typeof(TMarkerOne), typeof(TMarkerTwo), typeof(TMarkerThree));
+    public static IServiceCollection AddDispatchR<TMarkerOne, TMarkerTwo, TMarkerThree>(this IServiceCollection services, Action<RegistrationOption>? options = null)
+        => services.AddDispatchR(new[] {typeof(TMarkerOne), typeof(TMarkerTwo), typeof(TMarkerThree)}, options);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="types"></param>
+    /// <param name="markers"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDispatchR(this IServiceCollection services, params Type[] types)
-    {
-        var assemblies = types.Select(x => x.Assembly).ToArray();
-        return services.AddDispatchR(assemblies);
-    }
+    public static IServiceCollection AddDispatchR(this IServiceCollection services, params Type[] markers) 
+        => services.AddDispatchR(markers, null);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="assemblies"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddDispatchR(this IServiceCollection services, params Assembly[] assemblies)
+    public static IServiceCollection AddDispatchR(this IServiceCollection services, IEnumerable<Type> markers, Action<RegistrationOption>? options = null)
     {
-        return services.AddDispatchR(assemblies.AsSpan());
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="assemblies"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddDispatchR(this IServiceCollection services, ReadOnlySpan<Assembly> assemblies)
-    {
-        const ServiceLifetime serviceLifetime = ServiceLifetime.Transient; // todo
+        var types = markers.Distinct().ToArray();
+        var assemblies = types.Select(x => x.Assembly).Distinct().ToArray();
+        
+        var registrationOption = new RegistrationOption();
+        options?.Invoke(registrationOption);
 
         // HANDLERS
-        services.TryAddHandlers(typeof(IQueryHandler<,>), assemblies, serviceLifetime);
-        services.TryAddHandlers(typeof(ICommandHandler<>), assemblies, serviceLifetime);
-        services.TryAddHandlers(typeof(ICommandHandler<,>), assemblies, serviceLifetime);
-        services.TryAddHandlers(typeof(IMessageHandler<>), assemblies, serviceLifetime);
+        services.TryAddHandlers(typeof(IQueryHandler<,>), assemblies, registrationOption.QueryHandlerLifetime);
+        services.TryAddHandlers(typeof(ICommandHandler<>), assemblies, registrationOption.CommandHandlerLifetime);
+        services.TryAddHandlers(typeof(ICommandHandler<,>), assemblies, registrationOption.CommandHandlerLifetime);
+        services.TryAddHandlers(typeof(IMessageHandler<>), assemblies, registrationOption.MessageHandlerLifetime);
+        services.TryAddHandlers(typeof(IStreamHandler<,>), assemblies, registrationOption.StreamHandlerLifetime);
 
-        var assemblyArray = assemblies.ToArray();
 
         // MEDIATORS
-        services.TryAddSingleton<IDispatcher>(provider => new Dispatcher(provider, assemblyArray));
-        services.TryAddSingleton<ISender>(x => x.GetRequiredService<IDispatcher>());
-
+        services.TryAddSingleton<IDispatcher>(provider => new Dispatcher(provider.GetRequiredService, types));
         services.BuildServiceProvider().GetService<IDispatcher>();
-
         return services;
     }
 

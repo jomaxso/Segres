@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.InteropServices;
 using DispatchR.Contracts;
 
 namespace DispatchR;
@@ -8,95 +7,18 @@ namespace DispatchR;
 public sealed class Dispatcher : IDispatcher
 {
     private readonly ServiceResolver _serviceResolver;
-    private readonly IHandlerCache<HandlerInfo> _requestHandlerCache;
+
+    private readonly IHandlerCache<HandlerInfo> _commandHandlerCache;
     private readonly IHandlerCache<HandlerInfo[]> _messageHandlerCache;
-    // private readonly IDictionary<Type, Type[]> _messageHandlerDetails;
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(params Type[] markers)
-        : this(new DefaultProvider(true), markers)
-    {
-    }
-
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(params Assembly[] markers)
-        : this(new DefaultProvider(true), markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="asSingleton"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(bool asSingleton = true, params Assembly[] markers)
-        : this(new DefaultProvider(asSingleton), markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="asSingleton"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(bool asSingleton = true, params Type[] markers)
-        : this(new DefaultProvider(asSingleton), markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceProvider"></param>
-    public Dispatcher(IServiceProvider serviceProvider)
-        : this(serviceProvider.GetService, Assembly.GetCallingAssembly())
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceProvider"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(IServiceProvider serviceProvider, params Type[] markers)
-        : this(serviceProvider.GetService, markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceProvider"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(IServiceProvider serviceProvider, params Assembly[] markers)
-        : this(serviceProvider.GetService, markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceResolver"></param>
-    public Dispatcher(Func<Type, object?> serviceResolver)
-        : this(serviceResolver, Assembly.GetCallingAssembly())
-    {
-    }
-
+    private readonly IHandlerCache<HandlerInfo> _streamHandlerCache;
+    private readonly IHandlerCache<HandlerInfo> _queryHandlerCache;
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="Dispatcher"/> class.
     /// </summary>
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(Func<Type, object?> serviceResolver, params Type[] markers)
+    public Dispatcher(ServiceResolver serviceResolver, params Type[] markers)
         : this(serviceResolver, markers.Select(x => x.Assembly).ToArray())
     {
     }
@@ -106,122 +28,110 @@ public sealed class Dispatcher : IDispatcher
     /// </summary>
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(Func<Type, object?> serviceResolver, params Assembly[] markers)
-        : this(serviceResolver, markers.AsSpan())
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceResolver"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    public Dispatcher(Func<Type, object?> serviceResolver, ReadOnlySpan<Assembly> markers)
-        : this(new ServiceResolver(serviceResolver), markers)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dispatcher"/> class.
-    /// </summary>
-    /// <param name="serviceResolver"></param>
-    /// <param name="markers">The markers for assembly scanning.</param>
-    internal Dispatcher(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers)
+    public Dispatcher(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers)
     {
         _serviceResolver = serviceResolver;
-        _requestHandlerCache = markers.GetRequestHandlerDetails();
-        _messageHandlerCache = markers.GetSubscriberDetails();
+        _commandHandlerCache = markers.GetCommandHandlerDetails();
+        _queryHandlerCache = markers.GetQueryHandlerDetails();
+        _messageHandlerCache = markers.GetEventHandlerDetails();
+        _streamHandlerCache = markers.GetStreamHandlerDetails();
     }
 
-    #endregion
-
     /// <inheritdoc />
-    public void Send(ICommand command)
-        => SendAsync(command).Wait();
-
-    /// <inheritdoc />
-    public TResponse Send<TResponse>(ICommand<TResponse> command)
-    {
-        var response = SendAsync(command);
-
-        response.Wait();
-        return response.Result;
-    }
-    
-    /// <inheritdoc />
-    public Task SendAsync(ICommand command, CancellationToken cancellationToken = default)
+    public Task CommandAsync(ICommand command, CancellationToken cancellationToken = default)
     {
         var requestType = command.GetType();
-        var handlerInfo = _requestHandlerCache.FindHandler(requestType);
+        var handlerInfo = _commandHandlerCache.FindHandler(requestType);
 
         var handler = _serviceResolver(handlerInfo.Type)
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        var handlerDelegate = handlerInfo.ResolveMethod<CommandDelegate>();
+        var handlerDelegate = handlerInfo.ResolveAsyncMethod<CommandDelegate>();
         return handlerDelegate.Invoke(handler, command, cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<TResponse> SendAsync<TResponse>(ICommand<TResponse> command, CancellationToken cancellationToken = default)
+    public Task<TResult> CommandAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         var requestType = command.GetType();
-        var handlerInfo = _requestHandlerCache.FindHandler(requestType);
+        var handlerInfo = _commandHandlerCache.FindHandler(requestType);
 
         var handler = _serviceResolver(handlerInfo.Type)
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
-        
-        var handlerDelegate = handlerInfo.ResolveMethod<CommandDelegate<TResponse>>();
+
+        var handlerDelegate = handlerInfo.ResolveAsyncMethod<CommandDelegate<TResult>>();
         return handlerDelegate.Invoke(handler, command, cancellationToken);
     }
 
     /// <inheritdoc />
-    public TResponse Send<TResponse>(IQuery<TResponse> query)
+    public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+        where TMessage : IMessage
     {
-        var response = SendAsync(query);
-        
-        response.Wait();
-        return response.Result;
+        var type = message.GetType();
+
+        if (!_messageHandlerCache.TryGetValue(type, out var handlerInfos))
+            return Task.CompletedTask;
+
+        return _serviceResolver.CorePublishAsync(handlerInfos, message, Strategy.WhenAll, cancellationToken);
     }
-    
+
     /// <inheritdoc />
-    public Task<TResponse> SendAsync<TResponse>(IQuery<TResponse> query, CancellationToken cancellationToken = default)
+    public Task PublishAsync<TMessage>(TMessage message, Strategy strategy, CancellationToken cancellationToken = default)
+        where TMessage : IMessage
+    {
+        var type = message.GetType();
+
+        if (!_messageHandlerCache.TryGetValue(type, out var handlerInfos))
+            return Task.CompletedTask;
+
+        return _serviceResolver.CorePublishAsync(handlerInfos, message, strategy, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
     {
         var requestType = query.GetType();
-        var handlerInfo = _requestHandlerCache.FindHandler(requestType);
+        var handlerInfo = _queryHandlerCache.FindHandler(requestType);
 
         var handler = _serviceResolver(handlerInfo.Type)
                       ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
 
-        var handlerDelegate = handlerInfo.ResolveMethod<QueryDelegate<TResponse>>();
+        var handlerDelegate = handlerInfo.ResolveAsyncMethod<QueryDelegate<TResult>>();
         return handlerDelegate.Invoke(handler, query, cancellationToken);
     }
 
     /// <inheritdoc />
-    public void Publish<TMessage>(TMessage message) where TMessage : IMessage 
-        => PublishAsync(message).GetAwaiter().GetResult();
+    public IAsyncEnumerable<TResult> CreateStreamAsync<TResult>(IStream<TResult> stream, CancellationToken cancellationToken)
+    {
+        var requestType = stream.GetType();
+        var handlerInfo = _streamHandlerCache.FindHandler(requestType);
+
+        var handler = _serviceResolver(handlerInfo.Type)
+                      ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
+
+        var handlerDelegate = handlerInfo.ResolveAsyncMethod<StreamDelegate<TResult>>();
+        return handlerDelegate.Invoke(handler, stream, cancellationToken);
+    }
 
     /// <inheritdoc />
-    public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage
+    public async Task StreamAsync<TResult>(IStream<TResult> stream, StreamContext<TResult> context, CancellationToken cancellationToken)
     {
-        var type = message.GetType();
+        var s = this.CreateStreamAsync(stream, cancellationToken);
 
-        if (!_messageHandlerCache.TryFindHandler(type, out var h)) 
-            return Task.CompletedTask;
-        
-        var handlerTypes = h.AsSpan();
-
-        for (var i = 0; i < handlerTypes.Length; i++)
+        await foreach (var item in s.WithCancellation(cancellationToken))
         {
-            var handlerInfo = handlerTypes[i];
-            
-            var handler = _serviceResolver(handlerInfo.Type) 
-                          ?? throw new Exception($"No handler registered to handle message of type: {type.Name}");
-            
-            var handlerDelegate = handlerInfo.ResolveMethod<MessageDelegate>();
-            handlerDelegate.Invoke(handler, message, cancellationToken);
+            await context.Invoke(item);
         }
+    }
 
+    /// <inheritdoc />
+    public async Task StreamAsync<TResult>(IStream<TResult> stream, CancelableStreamContext<TResult> context, CancellationToken cancellationToken)
+    {
+        var s = this.CreateStreamAsync(stream, cancellationToken);
 
-        return Task.CompletedTask;
+        await foreach (var item in s.WithCancellation(cancellationToken))
+        {
+            await context.Invoke(item, cancellationToken);
+        }
     }
 }

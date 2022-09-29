@@ -14,6 +14,6 @@ internal sealed class HandlerInfo
     
 
     
-    public TDelegate ResolveMethod<TDelegate>()
+    public TDelegate ResolveAsyncMethod<TDelegate>()
         where TDelegate : Delegate => (TDelegate)_method;
 }
