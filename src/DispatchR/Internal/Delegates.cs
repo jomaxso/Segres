@@ -4,9 +4,9 @@ namespace DispatchR;
 
 public delegate object ServiceResolver(Type type);
 
-public delegate ValueTask StreamContext<in TResult>(TResult streamItem);
+public delegate ValueTask StreamCallback<in TResult>(TResult streamItem);
 
-public delegate ValueTask CancelableStreamContext<in TResult>(TResult streamItem, CancellationToken cancellationToken);
+public delegate ValueTask CancelableStreamCallback<in TResult>(TResult streamItem, CancellationToken cancellationToken);
 
 internal delegate Task EventDelegate(object handler, IMessage message, CancellationToken cancellationToken);
 

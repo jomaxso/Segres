@@ -12,7 +12,7 @@ public sealed class Dispatcher : IDispatcher
     private readonly IHandlerCache<HandlerInfo[]> _messageHandlerCache;
     private readonly IHandlerCache<HandlerInfo> _streamHandlerCache;
     private readonly IHandlerCache<HandlerInfo> _queryHandlerCache;
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Dispatcher"/> class.
     /// </summary>
@@ -101,7 +101,7 @@ public sealed class Dispatcher : IDispatcher
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<TResult> CreateStreamAsync<TResult>(IStream<TResult> stream, CancellationToken cancellationToken)
+    public IAsyncEnumerable<TResult> CreateStreamAsync<TResult>(IStream<TResult> stream, CancellationToken cancellationToken = default)
     {
         var requestType = stream.GetType();
         var handlerInfo = _streamHandlerCache.FindHandler(requestType);
@@ -114,7 +114,7 @@ public sealed class Dispatcher : IDispatcher
     }
 
     /// <inheritdoc />
-    public async Task StreamAsync<TResult>(IStream<TResult> stream, StreamContext<TResult> context, CancellationToken cancellationToken)
+    public async Task StreamAsync<TResult>(IStream<TResult> stream, StreamCallback<TResult> context, CancellationToken cancellationToken = default)
     {
         var s = this.CreateStreamAsync(stream, cancellationToken);
 
@@ -125,7 +125,7 @@ public sealed class Dispatcher : IDispatcher
     }
 
     /// <inheritdoc />
-    public async Task StreamAsync<TResult>(IStream<TResult> stream, CancelableStreamContext<TResult> context, CancellationToken cancellationToken)
+    public async Task StreamAsync<TResult>(IStream<TResult> stream, CancelableStreamCallback<TResult> context, CancellationToken cancellationToken = default)
     {
         var s = this.CreateStreamAsync(stream, cancellationToken);
 

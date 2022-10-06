@@ -36,10 +36,9 @@ internal static class DispatcherExtension
     {
         return strategy switch
         {
-            Strategy.Default => BlockedPublishAsync(serviceResolver, handlerInfos, message, cancellationToken),
             Strategy.WhenAll => WhenAllPublishAsync(serviceResolver, handlerInfos, message, cancellationToken),
             Strategy.WhenAny => WhenAnyPublishAsync(serviceResolver, handlerInfos, message, cancellationToken),
-            _ => throw new NotImplementedException()
+            _ or Strategy.Sequential => BlockedPublishAsync(serviceResolver, handlerInfos, message, cancellationToken),
         };
     }
 
@@ -63,7 +62,7 @@ internal static class DispatcherExtension
     {
         var length = handlerInfos.Count;
         for (var i = 0; i < length; i++)
-            await PublishSingleAsync(serviceResolver, handlerInfos[i], message, cancellationToken);
+            await PublishSingleAsync(serviceResolver, handlerInfos[i], message, cancellationToken).ConfigureAwait(false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -84,7 +83,7 @@ internal static class DispatcherExtension
         }
 
         if (all.Exception is not null)
-            throw new Exception("One or more errors appeared while publishing message" + all.Exception.InnerExceptions);
+            throw new Exception("One or more errors appeared while publishing message " + all.Exception.InnerExceptions);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,19 +91,6 @@ internal static class DispatcherExtension
         where TMessage : IMessage
     {
         var tasks = CreatePublishTasks(serviceResolver, handlerInfos, message, cancellationToken);
-        var any = Task.WhenAny(tasks);
-
-        try
-        {
-            await any.ConfigureAwait(false);
-            return;
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-
-        if (any.Exception is not null)
-            throw new Exception("One or more errors appeared while publishing message" + any.Exception.InnerExceptions);
+        await Task.WhenAny(tasks).ConfigureAwait(false);
     }
 }

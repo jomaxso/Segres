@@ -77,21 +77,21 @@ public interface IDispatcher
     /// Asynchronously receive a stream from a single handler.
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="context"></param>
+    /// <param name="callback"></param>
     /// <param name="cancellationToken">An optional cancellation token to observe while waiting for the task to complete.</param>
     /// <typeparam name="TResult"></typeparam>
     /// <returns>A stream as <see cref="IAsyncEnumerable{T}"/>.</returns>
     /// <seealso cref="IStreamHandler{TStream,TResult}"/>
-    Task StreamAsync<TResult>(IStream<TResult> stream, StreamContext<TResult> context, CancellationToken cancellationToken);
+    Task StreamAsync<TResult>(IStream<TResult> stream, StreamCallback<TResult> callback, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Asynchronously receive a stream from a single handler.
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="context"></param>
+    /// <param name="callback"></param>
     /// <param name="cancellationToken">An optional cancellation token to observe while waiting for the task to complete.</param>
     /// <typeparam name="TResult"></typeparam>
     /// <returns>A stream as <see cref="IAsyncEnumerable{T}"/>.</returns>
     /// <seealso cref="IStreamHandler{TStream,TResult}"/>
-    Task StreamAsync<TResult>(IStream<TResult> stream, CancelableStreamContext<TResult> context, CancellationToken cancellationToken);
+    Task StreamAsync<TResult>(IStream<TResult> stream, CancelableStreamCallback<TResult> callback, CancellationToken cancellationToken = default);
 }

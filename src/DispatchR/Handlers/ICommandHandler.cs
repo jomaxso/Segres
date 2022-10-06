@@ -14,11 +14,11 @@ public interface ICommandHandler<in TCommand>
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>
-    /// <param name="request">The request object</param>
+    /// <param name="command">The request object</param>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation.</returns>
     /// <seealso cref="ICommand"/>
-    Task HandleAsync(TCommand request, CancellationToken cancellationToken = default);
+    Task HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -34,9 +34,9 @@ public interface ICommandHandler<in TCommand, TResult>
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>
-    /// <param name="request">The request object</param>
+    /// <param name="command">The request object</param>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
     /// <seealso cref="IQuery{T}"/>
-    Task<TResult> HandleAsync(TCommand request, CancellationToken cancellationToken = default);
+    Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }

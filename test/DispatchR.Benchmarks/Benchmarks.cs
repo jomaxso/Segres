@@ -48,7 +48,10 @@ public class Benchmarks
 
     
     [Benchmark]
-    public async Task PublishAsync_DispatchR() => await _dispatcher.PublishAsync(UserCreated, Strategy.Default, CancellationToken.None);
+    public async Task PublishAsync_DispatchR() => await _dispatcher.PublishAsync(UserCreated, Strategy.WhenAll, CancellationToken.None);
+    
+    [Benchmark]
+    public async Task PublishAsync_DispatchR_Any() => await _dispatcher.PublishAsync(UserCreated, Strategy.WhenAny, CancellationToken.None);
     //
     // [Benchmark]
     // public Task<int> Querysync_WithResponse_DispatchR() => _dispatcher.QueryAsync(GetUsers, CancellationToken.None);

@@ -14,9 +14,9 @@ public interface IQueryHandler<in TQuery, TResult>
     /// <summary>
     /// Asynchronously receive and handle a request.
     /// </summary>
-    /// <param name="request">The request object</param>
+    /// <param name="query">The request object</param>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
     /// <seealso cref="IQuery{T}"/>
-    Task<TResult> HandleAsync(TQuery request, CancellationToken cancellationToken = default);
+    Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
 }

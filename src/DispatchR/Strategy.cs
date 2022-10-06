@@ -2,7 +2,7 @@
 
 public enum Strategy : byte
 {
-    Default,
+    Sequential,
     WhenAll,
     WhenAny
 }
