@@ -3,6 +3,9 @@ using Segres.Handlers;
 
 namespace Segres;
 
+/// <summary>
+/// 
+/// </summary>
 public interface ISender
 {
     /// <summary>

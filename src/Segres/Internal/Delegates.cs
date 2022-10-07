@@ -5,10 +5,6 @@ namespace Segres.Internal;
 
 public delegate object ServiceResolver(Type type);
 
-public delegate ValueTask StreamCallback<in TResult>(TResult streamItem);
-
-public delegate ValueTask CancelableStreamCallback<in TResult>(TResult streamItem, CancellationToken cancellationToken);
-
 internal delegate Task EventDelegate(object handler, IMessage message, CancellationToken cancellationToken);
 
 internal delegate IAsyncEnumerable<T> StreamDelegate<T>(object handler, IStream<T> stream, CancellationToken cancellationToken);
