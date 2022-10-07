@@ -1,12 +1,11 @@
-# Welcome to MicrolisR
-
+# Welcome to CequrS
 Clean coding should be simple and quick but also type save.
 
-Information about MicrolisR comming soon !!!
 
-| #   | Feature      | Object            | Handler | Description |
-|-----|--------------|-------------------|---------|-------------|
-| 1   | PublishAsync | ```IMessage<T>``` |||
-| 2   | CommandAsync | ```IMessage<T>``` |||
-| 3   | QueryAsync   |                   |||
-| 4   | StreamAsync  |                   |||
+
+| #   | Feature      | Object                                  | Handler                                                                   | Description |
+|-----|--------------|-----------------------------------------|---------------------------------------------------------------------------|-------------|
+| 1   | PublishAsync | ```IMessage<TResult>```                 | ```IMessageHandler<TMessage>```                                           ||
+| 2   | CommandAsync | ```ICommand```, ```ICommand<TResult>``` | ```ICommandHandler<TCommand>```, ```ICommandHandler<TCommand, TResult>``` ||
+| 3   | QueryAsync   | ```IQuery<TResult>```                   | ```IQueryHandler<TQuery, TResult>```                                      ||
+| 4   | StreamAsync  | ```IStream<TResult>```                  | ```IStreamHandler<TStream, TResult>```                                    ||

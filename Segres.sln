@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A023E111-7951-4C0B-855B-B167FAB1DED0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DF948BE3-4DC4-408F-8CBA-91A372074B95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres", "src\Segres\Segres.csproj", "{E1711B90-5C9A-403F-83C5-19C9916C2045}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.Extensions.DependencyInjection.Microsoft", "src\Segres.Extensions.DependencyInjection.Microsoft\Segres.Extensions.DependencyInjection.Microsoft.csproj", "{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.UnitTest", "test\Segres.UnitTest\Segres.UnitTest.csproj", "{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.Benchmarks", "test\Segres.Benchmarks\Segres.Benchmarks.csproj", "{7898BF28-A616-4F41-A191-805BBFFC754F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1711B90-5C9A-403F-83C5-19C9916C2045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1711B90-5C9A-403F-83C5-19C9916C2045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1711B90-5C9A-403F-83C5-19C9916C2045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1711B90-5C9A-403F-83C5-19C9916C2045}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7898BF28-A616-4F41-A191-805BBFFC754F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7898BF28-A616-4F41-A191-805BBFFC754F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7898BF28-A616-4F41-A191-805BBFFC754F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7898BF28-A616-4F41-A191-805BBFFC754F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E1711B90-5C9A-403F-83C5-19C9916C2045} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
+		{2D255F65-96B7-4BEB-BEDF-6B30D5AB3406} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
+		{61A6D8E8-50E2-4C8A-8F69-A2F1BD9BAB33} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
+		{7898BF28-A616-4F41-A191-805BBFFC754F} = {DF948BE3-4DC4-408F-8CBA-91A372074B95}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72F20086-2AAE-4305-977A-B807839763A8}
+	EndGlobalSection
+EndGlobal
