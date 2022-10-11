@@ -21,7 +21,7 @@ public sealed class Mediator : IMediator
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
     public Mediator(ServiceResolver serviceResolver, params Type[] markers)
-        : this(serviceResolver, markers.Select(x => x.Assembly).ToArray())
+        : this(serviceResolver, markers.Select(x => x.Assembly).Distinct().ToArray())
     {
     }
 
