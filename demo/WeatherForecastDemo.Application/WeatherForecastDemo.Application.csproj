@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Segres\Segres.csproj" />
       <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Segres" Version="1.0.1-preview" />
     </ItemGroup>
 
 </Project>

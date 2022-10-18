@@ -7,12 +7,13 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <Authors>Johannes-Max Sorge</Authors>
-        <Version>0.1.0</Version>
+        <Authors>jomaxso</Authors>
+        <Version>1.0.1-preview</Version>
         <Company>jomaxso</Company>
-        <Copyright>Copyright Johannes-Max Sorge</Copyright>
+        <Copyright>Copyright jomaxso</Copyright>
 <!--        <PackageIcon>gradient_128x128.png</PackageIcon>-->
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/jomaxso/Segres</RepositoryUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>

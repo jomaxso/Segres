@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Segres.Extensions.DependencyInjection.Microsoft" Version="1.0.1-preview" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Segres.Extensions.DependencyInjection.Microsoft\Segres.Extensions.DependencyInjection.Microsoft.csproj" />
       <ProjectReference Include="..\WeatherForecastDemo.Application\WeatherForecastDemo.Application.csproj" />
       <ProjectReference Include="..\WeatherForecastDemo.Infrastructure\WeatherForecastDemo.Infrastructure.csproj" />
     </ItemGroup>
