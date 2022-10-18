@@ -1,12 +1,13 @@
 ﻿using Segres;
-using Segres.Endpoint;
+using Segres.Contracts;
+using Segres.Handlers;
 using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal record struct GetByIdRequest(Guid Id) : IGetRequest;
+internal record struct GetByIdRequest(Guid Id) : IQuery<IResult>;
 
-internal sealed class GetByIdEndpoint : IGetEndpoint<GetByIdRequest>
+internal sealed class GetByIdEndpoint : IQueryHandler<GetByIdRequest, IResult>
 {
     private readonly ISender _sender;
 
@@ -15,9 +16,8 @@ internal sealed class GetByIdEndpoint : IGetEndpoint<GetByIdRequest>
     {
         _sender = sender;
     }
-
-    [EndpointRoute("WeatherForecast/{id}")]
-    public async Task<IResult> ExecuteAsync(GetByIdRequest request, CancellationToken cancellationToken)
+    
+    public async Task<IResult> HandleAsync(GetByIdRequest request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
 

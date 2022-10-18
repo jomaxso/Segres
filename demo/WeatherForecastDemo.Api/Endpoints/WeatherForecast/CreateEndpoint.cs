@@ -1,14 +1,13 @@
 ﻿using Segres;
 using Segres.Contracts;
-using Segres.Endpoint;
 using Segres.Handlers;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal record struct CreateRequest(int TemperatureC, string? Summary) : IPostRequest;
+internal record struct CreateRequest(int TemperatureC, string? Summary) : ICommand<IResult>;
 
-internal sealed class CreateEndpoint : IPostEndpoint<CreateRequest>
+internal sealed class CreateEndpoint : ICommandHandler<CreateRequest, IResult>
 {
     private readonly ISender _sender;
 
@@ -16,9 +15,8 @@ internal sealed class CreateEndpoint : IPostEndpoint<CreateRequest>
     {
         _sender = sender;
     }
-
-    [EndpointRoute("WeatherForecast")]
-    public async Task<IResult> ExecuteAsync(CreateRequest request, CancellationToken cancellationToken)
+    
+    public async Task<IResult> HandleAsync(CreateRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWeatherForecastCommand()
         {

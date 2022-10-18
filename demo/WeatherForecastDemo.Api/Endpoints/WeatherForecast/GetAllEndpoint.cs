@@ -1,12 +1,13 @@
 ﻿using Segres;
-using Segres.Endpoint;
+using Segres.Contracts;
+using Segres.Handlers;
 using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal record struct GetAllRequest : IGetRequest;
+internal record struct GetAllRequest : IQuery<IResult>;
 
-internal sealed class GetAllEndpoint : IGetEndpoint<GetAllRequest>
+internal sealed class GetAllEndpoint : IQueryHandler<GetAllRequest, IResult>
 {
     private readonly ISender _sender;
 
@@ -15,8 +16,7 @@ internal sealed class GetAllEndpoint : IGetEndpoint<GetAllRequest>
         _sender = sender;
     }
 
-    [EndpointRoute("WeatherForecast")]
-    public async Task<IResult> ExecuteAsync(GetAllRequest request, CancellationToken cancellationToken)
+    public async Task<IResult> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
     {
         var query = new GetAllWeatherForecastQuery();
         var result = await _sender.SendAsync(query, cancellationToken);

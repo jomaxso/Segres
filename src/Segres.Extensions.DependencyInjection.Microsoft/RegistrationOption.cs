@@ -2,8 +2,14 @@
 
 namespace Segres.Extensions.DependencyInjection.Microsoft;
 
+/// <summary>
+/// 
+/// </summary>
 public record class RegistrationOption
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public RegistrationOption()
     {
         QueryHandlerLifetime = ServiceLifetime.Transient;
@@ -24,6 +30,9 @@ public record class RegistrationOption
     internal ServiceLifetime MessageHandlerLifetime { get; private set; }
     internal ServiceLifetime StreamHandlerLifetime { get; private set; }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void AsTransient()
     {
         QueryHandlerLifetime = ServiceLifetime.Transient;
@@ -32,6 +41,9 @@ public record class RegistrationOption
         StreamHandlerLifetime = ServiceLifetime.Transient;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void AsScoped()
     {
         QueryHandlerLifetime = ServiceLifetime.Scoped;
@@ -40,6 +52,9 @@ public record class RegistrationOption
         StreamHandlerLifetime = ServiceLifetime.Scoped;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void AsSingleton()
     {
         QueryHandlerLifetime = ServiceLifetime.Singleton;

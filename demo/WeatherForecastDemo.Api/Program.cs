@@ -1,8 +1,8 @@
 using Segres;
-using Segres.Endpoint;
 using Segres.Extensions.DependencyInjection.Microsoft;
 using WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
+using WeatherForecastDemo.Domain.Entities;
 using WeatherForecastDemo.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,19 +28,21 @@ var app = builder.Build();
 
     app.UseHttpsRedirection();
     app.UseAuthorization();
-    
-    app.MapGet("p/{id:guid}", (ISender sender, Guid id, CancellationToken cancellationToken) 
+
+    app.MapGet("p/{id:guid}", (ISender sender, Guid id, CancellationToken cancellationToken)
         => sender.SendAsync(new GetByIdRequest(id), cancellationToken));
-    
-    app.MapGet("p", (ISender sender, CancellationToken cancellationToken) 
+
+    app.MapGet("p", (ISender sender, CancellationToken cancellationToken)
         => sender.SendAsync(new GetAllRequest(), cancellationToken));
 
-    app.MapPost<CreateRequest>("p");
-    app.MapPut<UpdateRequest>("p/{id}");
-    app.MapDelete<DeleteRequest>("p");
+    app.MapPost("p", (ISender sender, CreateRequest request, CancellationToken cancellationToken)
+        => sender.SendAsync(request, cancellationToken));
+
+    app.MapPut("p/{id:guid}", (ISender sender, Guid id, WeatherForecast weatherForecast, CancellationToken cancellationToken)
+        => sender.SendAsync(new UpdateRequest(id, weatherForecast), cancellationToken));
+
+    app.MapDelete("p/{id}", (ISender sender, Guid id, CancellationToken cancellationToken)
+        => sender.SendAsync(new DeleteRequest(id), cancellationToken));
 }
 
 app.Run();
-
-
-
