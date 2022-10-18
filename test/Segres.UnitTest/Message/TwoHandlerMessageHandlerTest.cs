@@ -19,7 +19,7 @@ public class TwoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new TwoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message);
@@ -36,7 +36,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message);
@@ -53,7 +53,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message);
@@ -67,7 +67,7 @@ public class TwoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new TwoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -84,7 +84,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -101,7 +101,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -115,7 +115,7 @@ public class TwoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new TwoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
@@ -129,7 +129,7 @@ public class TwoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new TwoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);
@@ -146,7 +146,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);
@@ -163,7 +163,7 @@ public class TwoHandlerMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);

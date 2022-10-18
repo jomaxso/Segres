@@ -4,7 +4,7 @@ using Segres.Handlers;
 namespace Segres;
 
 /// <summary>
-/// 
+/// Send a command or a query to be handled by a single handler.
 /// </summary>
 public interface ISender
 {

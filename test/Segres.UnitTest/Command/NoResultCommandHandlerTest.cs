@@ -18,7 +18,7 @@ public class NoResultCommandHandlerTest
     {
         // Arrange
         var command = new NoResultCommand();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = () => dispatcher.SendAsync(command);
@@ -35,7 +35,7 @@ public class NoResultCommandHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(command);
@@ -52,7 +52,7 @@ public class NoResultCommandHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(command);

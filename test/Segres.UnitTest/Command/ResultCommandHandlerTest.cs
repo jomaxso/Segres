@@ -18,7 +18,7 @@ public class Dispatcher_ResultCommandHandlerTest
     {
         // Arrange
         var command = new ResultCommand();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         
         // Act
@@ -36,7 +36,7 @@ public class Dispatcher_ResultCommandHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(command);
@@ -53,7 +53,7 @@ public class Dispatcher_ResultCommandHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(command);

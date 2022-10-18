@@ -2,6 +2,9 @@
 
 namespace Segres;
 
+/// <summary>
+/// Publish a message or event to be handled by multiple handlers.
+/// </summary>
 public interface IPublisher
 {
     /// <summary>

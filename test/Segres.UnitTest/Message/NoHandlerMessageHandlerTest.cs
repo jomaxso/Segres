@@ -18,7 +18,7 @@ public class NoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message);
@@ -32,7 +32,7 @@ public class NoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -46,7 +46,7 @@ public class NoHandlerMessageHandlerTest
     {
         // Arrange
         var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
