@@ -1,13 +1,13 @@
-﻿name: Release
+﻿name: Release preview
 
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-preview"
 
 env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
-#  NUGET_SOURCE_URL: <TODO>
+  NUGET_SOURCE_URL: https://api.nuget.org/v3/index.json
 
 jobs:
   build:
@@ -34,12 +34,11 @@ jobs:
       - name: Set VERSION variable from tag
         run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
 
-      - name: Pack
+      - name: Pack Segres
         run: dotnet pack src/Segres/Segres.csproj --configuration Release --no-restore --no-build --include-symbols /p:Version=${VERSION} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
       - name: Pack Segres.Extensions.DependencyInjection.Microsoft
         run: dotnet pack src/Segres.Extensions.DependencyInjection.Microsoft/Segres.Extensions.DependencyInjection.Microsoft.csproj --configuration Release --no-restore --no-build --include-symbols /p:Version=${VERSION} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
-
-#      - name: Push 
-#        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+      - name: Push 
+        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
