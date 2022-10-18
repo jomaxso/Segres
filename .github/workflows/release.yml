@@ -38,11 +38,14 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-restore --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65
 
-      - name: Set VERSION variable from tag
-        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Set VERSION variable 
+        run: if [ $IS_PREVIEW ]; then echo "VERSION=$PACKAGE_VERSION-preview" >> $GITHUB_ENV else echo "VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV; fi
+        env:
+          PACKAGE_VERSION: ${{ inputs.version }}
+          IS_PREVIEW: ${{ inputs.preview }}
 
       - name: Pack
-        run: dotnet pack src/Segres/Segres.csproj --configuration Release --no-restore --no-build --include-symbols /p:Version=${VERSION} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}  
-   
+        run: dotnet pack src/Segres/Segres.csproj --configuration Release --no-restore --no-build --include-symbols /p:Version=${VERSION} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+
 #      - name: Push 
 #        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
