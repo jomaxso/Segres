@@ -61,6 +61,13 @@ public static class ServiceRegistration
     public static IServiceCollection AddSegres(this IServiceCollection services, params Type[] markers) 
         => services.AddSegres(markers, null);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="markers"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
     public static IServiceCollection AddSegres(this IServiceCollection services, IEnumerable<Type> markers, Action<RegistrationOption>? options = null)
     {
         var types = markers.Distinct().ToArray();
@@ -77,11 +84,11 @@ public static class ServiceRegistration
         services.TryAddHandlers(typeof(IMessageHandler<>), assemblies, registrationOption.MessageHandlerLifetime);
         services.TryAddHandlers(typeof(IStreamHandler<,>), assemblies, registrationOption.StreamHandlerLifetime);
         
-        // MEDIATORS
-        services.TryAddSingleton<IMediator>(provider => new Mediator(provider.GetRequiredService, types));
-        services.TryAddSingleton<ISender>(provider => provider.GetRequiredService<IMediator>());
-        services.TryAddSingleton<IPublisher>(provider => provider.GetRequiredService<IMediator>());
-        services.TryAddSingleton<IStreamer>(provider => provider.GetRequiredService<IMediator>());
+        // CORE SERVICES
+        services.TryAddSingleton<IServiceBroker>(provider => new ServiceBroker(provider.GetRequiredService, types));
+        services.TryAddSingleton<ISender>(provider => provider.GetRequiredService<IServiceBroker>());
+        services.TryAddSingleton<IPublisher>(provider => provider.GetRequiredService<IServiceBroker>());
+        services.TryAddSingleton<IStreamer>(provider => provider.GetRequiredService<IServiceBroker>());
         
         return services;
     }

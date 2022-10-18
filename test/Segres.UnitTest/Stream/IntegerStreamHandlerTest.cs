@@ -18,7 +18,7 @@ public class IntegerStreamHandlerTest
     {
         // Arrange
         var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
 
         var last = 0;
 
@@ -32,48 +32,4 @@ public class IntegerStreamHandlerTest
             last++;
         }
     }
-    
-    [Fact]
-    public async Task StreamAsyncWithCancellation_ShouldReturnIntegersFrom0To10_WhenIterated()
-    {
-        // Arrange
-        var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
-
-        var last = 0;
-
-        // Act
-        await dispatcher.StreamAsync(streamOption, Callback, CancellationToken.None);
-
-        //Assert
-        Task Callback(int item, CancellationToken ct)
-        {
-            item.Should().Be(last);
-            last++;
-            return Task.CompletedTask;
-        }
-    }
-    
-    [Fact]
-    public async Task StreamAsyncWithoutCancellation_ShouldReturnIntegersFrom0To10_WhenIterated()
-    {
-        // Arrange
-        var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
-
-        var last = 0;
-
-        // Act
-        await dispatcher.StreamAsync(streamOption, Callback, CancellationToken.None);
-
-        //Assert
-        Task Callback(int item)
-        {
-            item.Should().Be(last);
-            last++;
-            return Task.CompletedTask;
-        }
-    }
-
-   
 }

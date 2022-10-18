@@ -6,7 +6,7 @@ using Segres.Internal.Cache;
 namespace Segres;
 
 /// <inheritdoc />
-public sealed class Mediator : IMediator
+public sealed class ServiceBroker : IServiceBroker
 {
     private readonly ServiceResolver _serviceResolver;
 
@@ -16,21 +16,21 @@ public sealed class Mediator : IMediator
     private readonly IHandlerCache<HandlerInfo> _queryHandlerCache;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Mediator"/> class.
+    /// Initializes a new instance of the <see cref="ServiceBroker"/> class.
     /// </summary>
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
-    public Mediator(ServiceResolver serviceResolver, params Type[] markers)
+    public ServiceBroker(ServiceResolver serviceResolver, params Type[] markers)
         : this(serviceResolver, markers.Select(x => x.Assembly).Distinct().ToArray())
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Mediator"/> class.
+    /// Initializes a new instance of the <see cref="ServiceBroker"/> class.
     /// </summary>
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
-    public Mediator(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers)
+    public ServiceBroker(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers)
     {
         _serviceResolver = serviceResolver;
         _commandHandlerCache = markers.GetCommandHandlerDetails();
@@ -113,27 +113,5 @@ public sealed class Mediator : IMediator
 
         var handlerDelegate = handlerInfo.ResolveAsyncMethod<StreamDelegate<TResult>>();
         return handlerDelegate.Invoke(handler, stream, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task StreamAsync<TResult>(IStream<TResult> stream, Func<TResult, Task> callback, CancellationToken cancellationToken = default)
-    {
-        var s = this.CreateStreamAsync(stream, cancellationToken);
-
-        await foreach (var item in s.WithCancellation(cancellationToken))
-        {
-            await callback.Invoke(item);
-        }
-    }
-
-    /// <inheritdoc />
-    public async Task StreamAsync<TResult>(IStream<TResult> stream, Func<TResult, CancellationToken, Task> callback, CancellationToken cancellationToken = default)
-    {
-        var s = this.CreateStreamAsync(stream, cancellationToken);
-
-        await foreach (var item in s.WithCancellation(cancellationToken))
-        {
-            await callback.Invoke(item, cancellationToken);
-        }
     }
 }

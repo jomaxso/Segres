@@ -2,12 +2,12 @@
 
 internal sealed class HandlerInfo
 {
-    private readonly Delegate _method;
+    public Delegate Method { get; }
     
     public HandlerInfo(Type type, Delegate method)
     {
         Type = type;
-        this._method = method;
+        Method = method;
     }
 
     public Type Type { get; }
@@ -15,5 +15,5 @@ internal sealed class HandlerInfo
 
     
     public TDelegate ResolveAsyncMethod<TDelegate>()
-        where TDelegate : Delegate => (TDelegate)_method;
+        where TDelegate : Delegate => (TDelegate)Method;
 }

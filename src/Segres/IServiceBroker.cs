@@ -14,6 +14,6 @@ namespace Segres;
 /// <seealso cref="ICommandHandler{TCommand,TResult}"/>
 /// <seealso cref="IMessage"/>
 /// <seealso cref="IMessageHandler{TEvent}"/>
-public interface IMediator : ISender, IPublisher, IStreamer
+public interface IServiceBroker : ISender, IPublisher, IStreamer
 {
 }

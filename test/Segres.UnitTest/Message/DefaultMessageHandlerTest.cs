@@ -19,7 +19,7 @@ public class DefaultMessageHandlerTest
     {
         // Arrange
         var message = new DefaultMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message);
@@ -36,7 +36,7 @@ public class DefaultMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message);
@@ -53,7 +53,7 @@ public class DefaultMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message);
@@ -67,7 +67,7 @@ public class DefaultMessageHandlerTest
     {
         // Arrange
         var message = new DefaultMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -84,7 +84,7 @@ public class DefaultMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -101,7 +101,7 @@ public class DefaultMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
@@ -115,7 +115,7 @@ public class DefaultMessageHandlerTest
     {
         // Arrange
         var message = new DefaultMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
@@ -132,7 +132,7 @@ public class DefaultMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
@@ -149,7 +149,7 @@ public class DefaultMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
@@ -163,7 +163,7 @@ public class DefaultMessageHandlerTest
     {
         // Arrange
         var message = new DefaultMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var task = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);
@@ -180,7 +180,7 @@ public class DefaultMessageHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);
@@ -197,7 +197,7 @@ public class DefaultMessageHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.PublishAsync(message, Strategy.Sequential);

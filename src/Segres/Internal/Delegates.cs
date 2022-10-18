@@ -3,6 +3,9 @@ using Segres.Internal.DynamicHandler;
 
 namespace Segres.Internal;
 
+/// <summary>
+/// A delegate for providing services.
+/// </summary>
 public delegate object ServiceResolver(Type type);
 
 internal delegate Task EventDelegate(object handler, IMessage message, CancellationToken cancellationToken);

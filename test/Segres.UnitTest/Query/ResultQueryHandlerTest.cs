@@ -17,7 +17,7 @@ public class ResultQueryHandlerTest
     {
         // Arrange
         var command = new ResultQuery();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
 
         // Act
         var numberAsString = await dispatcher.SendAsync(command);
@@ -34,7 +34,7 @@ public class ResultQueryHandlerTest
         {
             Number = 100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(query);
@@ -51,7 +51,7 @@ public class ResultQueryHandlerTest
         {
             Number = -100
         };
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
         
         // Act
         var result = async () => await dispatcher.SendAsync(query);

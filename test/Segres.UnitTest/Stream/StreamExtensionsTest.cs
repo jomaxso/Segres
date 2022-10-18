@@ -19,7 +19,7 @@ public class StreamExtensionsTest
     {
         // Arrange
         var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
 
         var last = 6;
 
@@ -39,7 +39,7 @@ public class StreamExtensionsTest
     {
         // Arrange
         var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IMediator>();
+        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
 
         var last = 0;
 
