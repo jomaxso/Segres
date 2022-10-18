@@ -13,7 +13,7 @@ public class DispatchRMessageHandler1 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -28,7 +28,7 @@ public class DispatchRMessageHandler2 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -43,7 +43,7 @@ public class DispatchRMessageHandler3 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -58,7 +58,7 @@ public class DispatchRMessageHandler4 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -73,7 +73,7 @@ public class DispatchRMessageHandler5 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -88,7 +88,7 @@ public class DispatchRMessageHandler6 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -103,7 +103,7 @@ public class DispatchRMessageHandler7 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -118,7 +118,7 @@ public class DispatchRMessageHandler8 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -133,7 +133,7 @@ public class DispatchRMessageHandler9 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -148,7 +148,7 @@ public class DispatchRMessageHandler10 : IMessageHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }

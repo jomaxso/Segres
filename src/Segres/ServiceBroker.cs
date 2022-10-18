@@ -1,7 +1,10 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Segres.Contracts;
+using Segres.Handlers;
 using Segres.Internal;
 using Segres.Internal.Cache;
+
 
 namespace Segres;
 
@@ -9,9 +12,9 @@ namespace Segres;
 public sealed class ServiceBroker : IServiceBroker
 {
     private readonly ServiceResolver _serviceResolver;
+    private readonly Strategy _publishStrategy;
 
     private readonly IHandlerCache<HandlerInfo> _commandHandlerCache;
-    private readonly IHandlerCache<HandlerInfo[]> _messageHandlerCache;
     private readonly IHandlerCache<HandlerInfo> _streamHandlerCache;
     private readonly IHandlerCache<HandlerInfo> _queryHandlerCache;
 
@@ -30,12 +33,24 @@ public sealed class ServiceBroker : IServiceBroker
     /// </summary>
     /// <param name="serviceResolver"></param>
     /// <param name="markers">The markers for assembly scanning.</param>
-    public ServiceBroker(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers)
+    /// <param name="publishStrategy">The strategy to publish events or messages.</param>
+    public ServiceBroker(ServiceResolver serviceResolver, IEnumerable<Type> markers, Strategy publishStrategy = Strategy.WhenAll) 
+        : this(serviceResolver, markers.Select(x => x.Assembly).ToArray().AsSpan(), publishStrategy)
+    {
+    }
+    
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServiceBroker"/> class.
+    /// </summary>
+    /// <param name="serviceResolver"></param>
+    /// <param name="markers">The markers for assembly scanning.</param>
+    /// <param name="publishStrategy">The strategy to publish events or messages.</param>
+    public ServiceBroker(ServiceResolver serviceResolver, ReadOnlySpan<Assembly> markers, Strategy publishStrategy = Strategy.WhenAll)
     {
         _serviceResolver = serviceResolver;
+        _publishStrategy = publishStrategy;
         _commandHandlerCache = markers.GetCommandHandlerDetails();
         _queryHandlerCache = markers.GetQueryHandlerDetails();
-        _messageHandlerCache = markers.GetEventHandlerDetails();
         _streamHandlerCache = markers.GetStreamHandlerDetails();
     }
 
@@ -66,27 +81,29 @@ public sealed class ServiceBroker : IServiceBroker
     }
 
     /// <inheritdoc />
-    public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
-        where TMessage : IMessage
-    {
-        var type = message.GetType();
-
-        if (!_messageHandlerCache.TryGetValue(type, out var handlerInfos))
-            return Task.CompletedTask;
-
-        return _serviceResolver.CorePublishAsync(handlerInfos, message, Strategy.WhenAll, cancellationToken);
-    }
+    public async ValueTask PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+        where TMessage : IMessage => await PublishAsync(message, _publishStrategy, cancellationToken);
 
     /// <inheritdoc />
-    public Task PublishAsync<TMessage>(TMessage message, Strategy strategy, CancellationToken cancellationToken = default)
+    public ValueTask PublishAsync<TMessage>(TMessage message, Strategy strategy, CancellationToken cancellationToken = default)
         where TMessage : IMessage
     {
-        var type = message.GetType();
+        var handlerType = typeof(IEnumerable<IMessageHandler<TMessage>>);
+        var handlers = (IMessageHandler<TMessage>[]) _serviceResolver.Invoke(handlerType);
 
-        if (!_messageHandlerCache.TryGetValue(type, out var handlerInfos))
-            return Task.CompletedTask;
+        var length = handlers.Length;
 
-        return _serviceResolver.CorePublishAsync(handlerInfos, message, strategy, cancellationToken);
+        return length switch
+        {
+            0 => ValueTask.CompletedTask,
+            1 => handlers[0].HandleAsync(message, cancellationToken),
+            _ => strategy switch
+            {
+                Strategy.WhenAll => handlers.PublishWhenAll(length, message, cancellationToken),
+                Strategy.WhenAny => handlers.PublishWhenAny(length, message, cancellationToken),
+                _ => handlers.PublishSequential(message, cancellationToken)
+            }
+        };
     }
 
     /// <inheritdoc />

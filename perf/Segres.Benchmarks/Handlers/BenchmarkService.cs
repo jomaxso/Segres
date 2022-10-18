@@ -6,7 +6,7 @@ public class BenchmarkService
     public static readonly int?[] ListOfNumbers = {null};
     private const int number = 0;
 
-    public async Task<int> RunAsync()
+    public async ValueTask<int> RunAsync()
     {
         await Task.Delay(100);
         return number;

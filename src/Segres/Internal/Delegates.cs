@@ -8,8 +8,6 @@ namespace Segres.Internal;
 /// </summary>
 public delegate object ServiceResolver(Type type);
 
-internal delegate Task EventDelegate(object handler, IMessage message, CancellationToken cancellationToken);
-
 internal delegate IAsyncEnumerable<T> StreamDelegate<T>(object handler, IStream<T> stream, CancellationToken cancellationToken);
 
 internal delegate Task<T> QueryDelegate<T>(object handler, IQuery<T> query, CancellationToken cancellationToken);
@@ -21,7 +19,6 @@ internal delegate Task<T> CommandDelegate<T>(object handler, ICommand<T> command
 internal static class Delegates
 {
     private const string MethodName = "HandleDynamicAsync";
-    private static readonly Type DynamicMessageHandlerTypeWithOneParameter = typeof(DynamicMessageHandler<>);
     private static readonly Type DynamicCommandHandlerTypeWithOneParameter = typeof(DynamicCommandHandler<>);
     private static readonly Type DynamicCommandHandlerTypeWithTwoParameter = typeof(DynamicCommandHandler<,>);
     private static readonly Type DynamicQueryHandlerTypeWithTwoParameter = typeof(DynamicQueryHandler<,>);
@@ -29,9 +26,6 @@ internal static class Delegates
 
     public static StreamDelegate<T> CreateStreamDelegate<T>(Type requestType)
         => CreateDelegate<StreamDelegate<T>>(DynamicStreamHandlerTypeWithTwoParameter, requestType, typeof(T));
-
-    public static EventDelegate CreateEventDelegate(Type requestType)
-        => CreateDelegate<EventDelegate>(DynamicMessageHandlerTypeWithOneParameter, requestType);
 
     public static QueryDelegate<T> CreateQueryDelegate<T>(Type requestType)
         => CreateDelegate<QueryDelegate<T>>(DynamicQueryHandlerTypeWithTwoParameter, requestType, typeof(T));

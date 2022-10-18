@@ -13,9 +13,9 @@ public class DispatchRCommandHandler : ICommandHandler<CreateUser>
         _benchmarkService = benchmarkService;
     }
 
-    public Task HandleAsync(CreateUser request, CancellationToken cancellationToken)
+    public async Task HandleAsync(CreateUser request, CancellationToken cancellationToken)
     {
-        return _benchmarkService.RunAsync();
+        await _benchmarkService.RunAsync();
     }
 }
 

@@ -7,7 +7,7 @@ namespace Segres.UnitTest.Event.Handlers;
 
 public class DefaultMessageHandler : IMessageHandler<DefaultMessage>
 {
-    public async Task HandleAsync(DefaultMessage message, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(DefaultMessage message, CancellationToken cancellationToken = default)
     {
         await Task.Delay(100, cancellationToken);
 

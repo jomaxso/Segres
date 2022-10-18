@@ -38,41 +38,6 @@ internal static class InternalRegistration
                 return new HandlerInfo(handlerType, del);
             });
     }
-    
-    
-
-    public static HandlerCache<HandlerInfo[]> GetEventHandlerDetails(this ReadOnlySpan<Assembly> assemblies)
-    {
-        var messageHandlerDetails = new Dictionary<Type, List<Type>>();
-
-        var subscriberDetails = assemblies.GetHandlerDetails(typeof(IMessageHandler<>));
-
-        foreach (var handlerDetail in subscriberDetails)
-        {
-            if (messageHandlerDetails.ContainsKey(handlerDetail.Key))
-            {
-                messageHandlerDetails[handlerDetail.Key].Add(handlerDetail.Value);
-                continue;
-            }
-
-            messageHandlerDetails.Add(handlerDetail.Key, new List<Type>() {handlerDetail.Value});
-        }
-
-        return messageHandlerDetails.ToHandlerCache((x, values) =>
-        {
-            List<HandlerInfo> results = new();
-
-            foreach (var value in values)
-            {
-                var method = typeof(Delegates).GetMethod(nameof(Delegates.CreateEventDelegate))!;
-                var del = (Delegate) method.Invoke(null, new object?[] {x})!;
-
-                results.Add(new HandlerInfo(value, del));
-            }
-
-            return results.ToArray();
-        });
-    }
 
     private static HandlerCache<HandlerInfo> GetQueryRequestHandlerDetails_2(this ReadOnlySpan<Assembly> assemblies)
     {

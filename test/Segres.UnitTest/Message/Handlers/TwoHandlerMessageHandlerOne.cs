@@ -7,7 +7,7 @@ namespace Segres.UnitTest.Event.Handlers;
 
 public class TwoHandlerMessageHandlerOne : IMessageHandler<TwoHandlerMessage>
 {
-    public async Task HandleAsync(TwoHandlerMessage message, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(TwoHandlerMessage message, CancellationToken cancellationToken = default)
     {
         await Task.Delay(100, cancellationToken);
 

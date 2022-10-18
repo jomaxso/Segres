@@ -29,6 +29,13 @@ public record class RegistrationOption
     internal ServiceLifetime CommandHandlerLifetime { get; private set; }
     internal ServiceLifetime MessageHandlerLifetime { get; private set; }
     internal ServiceLifetime StreamHandlerLifetime { get; private set; }
+    internal Strategy PublishStrategy { get; private set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="strategy"></param>
+    public void UsePublishStartegy(Strategy strategy) => this.PublishStrategy = strategy;
 
     /// <summary>
     /// 

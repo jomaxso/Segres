@@ -1,7 +1,7 @@
 # Welcome to Segres
 Clean coding should be simple and quick but also type save.
 
-## IMediator
+## IServiceBroker
 
 
 
@@ -26,5 +26,3 @@ Clean coding should be simple and quick but also type save.
 | #   | Method                                                                          | ReturnType                | ObjectType       | HandlerType                      |
 |-----|---------------------------------------------------------------------------------|---------------------------|------------------|----------------------------------|
 | 1   | ```CreateStreamAsync(Stream , CancellationToken)```                             | ```IAsyncEnumerable<T>``` | ```IStream<T>``` | ```IStreamHandler<TStream, T>``` |
-| 2   | ```StreamAsync(Stream, Func<T, Task> , CancellationToken)```                    | ```Task```                | ```IStream<T>``` | ```IStreamHandler<TStream, T>``` |
-| 3   | ```StreamAsync(Stream, Func<T, CancellationToken, Task> , CancellationToken)``` | ```Task```                | ```IStream<T>``` | ```IStreamHandler<TStream, T>``` |

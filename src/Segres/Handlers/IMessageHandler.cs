@@ -16,5 +16,5 @@ public interface IMessageHandler<in TMessage>
     /// <param name="cancellationToken">An cancellation token</param>
     /// <returns>A Task</returns>
     /// <seealso cref="IMessage"/>
-    Task HandleAsync(TMessage message, CancellationToken cancellationToken = default);
+    ValueTask HandleAsync(TMessage message, CancellationToken cancellationToken = default);
 }
