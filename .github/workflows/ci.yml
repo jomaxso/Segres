@@ -1,4 +1,4 @@
-name: Segres
+name: CI
 
 on:
   push:
