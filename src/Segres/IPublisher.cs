@@ -1,4 +1,4 @@
-﻿using Segres.Contracts;
+﻿using System.Runtime.CompilerServices;
 
 namespace Segres;
 
@@ -13,8 +13,9 @@ public interface IPublisher
     /// <param name="message">The message object</param>
     /// <param name="cancellationToken">An optional cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A task that represents the publish operation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     ValueTask PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
-        where TMessage : IMessage;
+        where TMessage : INotification;
 
     /// <summary>
     /// Asynchronously send a message to multiple subscribers.
@@ -23,6 +24,7 @@ public interface IPublisher
     /// <param name="strategy">The publish strategy how the message has to be processed.</param>
     /// <param name="cancellationToken">An optional cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A task that represents the publish operation.</returns>
-    ValueTask PublishAsync<TMessage>(TMessage message, Strategy strategy, CancellationToken cancellationToken = default)
-        where TMessage : IMessage;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    ValueTask PublishAsync<TMessage>(TMessage message, PublishStrategy strategy, CancellationToken cancellationToken = default)
+        where TMessage : INotification;
 }

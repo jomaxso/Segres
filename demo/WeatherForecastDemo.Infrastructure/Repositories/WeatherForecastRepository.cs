@@ -29,8 +29,9 @@ internal class WeatherForecastRepository :
         Delete(toDelete);
     }
 
-    public void Update(WeatherForecast entity)
+    public void Update(WeatherForecast? entity)
     {
+        ArgumentNullException.ThrowIfNull(entity);
         _cache.RemoveAll(x => x.Id == entity.Id);
         _cache.Add(entity);
     }

@@ -1,13 +1,16 @@
 ﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
+using Segres.Tmp.Http;
+using WeatherForecastDemo.Api.Endpoints.Abstractions;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal sealed record DeleteRequest(Guid Id) : ICommand<IResult>;
+[HttpDelete("WeatherForecast", "{id}")]
+internal record DeleteRequest(Guid Id) : IHttpRequest
+{
+}
 
-internal sealed class DeleteEndpoint : ICommandHandler<DeleteRequest, IResult>
+internal sealed class DeleteEndpoint : IEndpoint<DeleteRequest>
 {
     private readonly ISender _sender;
 
@@ -16,7 +19,7 @@ internal sealed class DeleteEndpoint : ICommandHandler<DeleteRequest, IResult>
         _sender = sender;
     }
 
-    public async Task<IResult> HandleAsync(DeleteRequest request, CancellationToken cancellationToken)
+    public async ValueTask<IResult> ExecuteAsync(DeleteRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteWeatherForecastCommand(request.Id);
         var result = await _sender.SendAsync(command, cancellationToken);

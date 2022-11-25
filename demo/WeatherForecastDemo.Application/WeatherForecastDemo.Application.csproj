@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj" />
+        <ProjectReference Include="..\..\src\Segres\Segres.csproj"/>
+        <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Segres" Version="1.0.1-preview" />
+        <PackageReference Include="FluentValidation" Version="11.3.0"/>
     </ItemGroup>
 
 </Project>

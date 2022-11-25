@@ -1,15 +1,13 @@
-﻿using Segres;
-using Segres.Handlers;
-using Xunit.Sdk;
+﻿using Xunit.Sdk;
 
 namespace Segres.UnitTest.Command;
 
-public class NoResultCommandHandler :ICommandHandler<NoResultCommand>
+public class NoResultCommandHandler : IRequestHandler<NoResultCommand>
 {
-    public async Task HandleAsync(NoResultCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(NoResultCommand command, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
-        
+
         switch (command.Number)
         {
             case < 0:

@@ -11,4 +11,12 @@
         <InternalsVisibleTo Include="$(AssemblyName).Extensions.Endpoint" />
     </ItemGroup>
     
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    </ItemGroup>
+    
+<!--    <ItemGroup>-->
+<!--      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />-->
+<!--    </ItemGroup>-->
+    
 </Project>

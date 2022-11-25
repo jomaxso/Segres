@@ -2,5 +2,4 @@
 
 public interface IWriteOnlyWeatherForecastRepository : IWriteOnlyRepository<Domain.Entities.WeatherForecast, Guid>
 {
-
 }

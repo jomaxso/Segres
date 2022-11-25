@@ -1,13 +1,16 @@
-﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
+﻿using Microsoft.AspNetCore.Mvc;
+using Segres;
+using WeatherForecastDemo.Api.Endpoints.Abstractions;
 using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal record struct GetByIdRequest(Guid Id) : IQuery<IResult>;
+[Segres.Tmp.Http.HttpGet("WeatherForecast", "/id")]
+internal record GetByIdRequest([FromQuery] Guid Id) : IHttpRequest
+{
+}
 
-internal sealed class GetByIdEndpoint : IQueryHandler<GetByIdRequest, IResult>
+internal sealed class GetByIdEndpoint : IEndpoint<GetByIdRequest>
 {
     private readonly ISender _sender;
 
@@ -16,8 +19,8 @@ internal sealed class GetByIdEndpoint : IQueryHandler<GetByIdRequest, IResult>
     {
         _sender = sender;
     }
-    
-    public async Task<IResult> HandleAsync(GetByIdRequest request, CancellationToken cancellationToken)
+
+    public async ValueTask<IResult> ExecuteAsync(GetByIdRequest request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
 
@@ -29,4 +32,3 @@ internal sealed class GetByIdEndpoint : IQueryHandler<GetByIdRequest, IResult>
             : Results.Ok(result);
     }
 }
-

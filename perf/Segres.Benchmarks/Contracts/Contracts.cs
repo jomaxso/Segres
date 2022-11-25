@@ -1,13 +1,23 @@
-﻿using Segres.Contracts;
-using MediatR;
+﻿using MediatR;
+using Segres;
+using Segres.Tmp.Http;
+using INotification = Segres.INotification;
+using IRequest = Segres.IRequest;
 
-namespace DispatchR.Benchmarks.Contracts;
+namespace DispatchR.Benchmarks;
 
-public record GetUsers : IQuery<int>, IRequest<int>;
+public record GetUsers : Segres.IRequest<int>, MediatR.IRequest<int>;
 
-public record CreateUser : ICommand, IRequest;
-public record UserStream : IStream<int?>, IStreamRequest<int?>;
+public record CreateUser : IRequest, MediatR.IRequest;
 
-public record CreateUserWithResult : ICommand<int>, IRequest<int>;
+public record UserStreamRequest : Segres.IStreamRequest<int?>, MediatR.IStreamRequest<int?>;
 
-public record UserCreated : IMessage, INotification;
+public record CreateUserWithResult(int Number) : Segres.IRequest<int>, MediatR.IRequest<int>;
+
+public record UserCreated : INotification, MediatR.INotification;
+
+public record CreateUser2 : IHttpRequest<bool>
+{
+    public static string RoutePattern { get; }
+    public static Http HttpMethod { get; } = Http.POST;
+}

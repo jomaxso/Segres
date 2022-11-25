@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Extensions.DependencyInjection.Microsoft;
-using Segres.UnitTest.Command;
 using Segres.UnitTest.Event.Objects;
 using Xunit;
 
@@ -9,17 +7,15 @@ namespace Segres.UnitTest.Message;
 
 public class NoHandlerMessageHandlerTest
 {
-    private readonly IServiceProvider _serviceProvider = new ServiceCollection()
-        .AddSegres(typeof(ResultCommand))
-        .BuildServiceProvider();
+    private readonly IServiceProvider _serviceProvider = TestServiceCollection.CreateServiceProvider();
 
     [Fact]
     public async Task PublishAsync_ShouldNotThrow_WhenMessageIsZeroCalled()
     {
         // Arrange
-        var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
-        
+        var message = new NoHandlerNotification();
+        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
+
         // Act
         var task = async () => await dispatcher.PublishAsync(message);
 
@@ -31,11 +27,11 @@ public class NoHandlerMessageHandlerTest
     public async Task PublishAsyncWhenAll_ShouldNotThrow_WhenMessageIsZeroCalled()
     {
         // Arrange
-        var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
-        
+        var message = new NoHandlerNotification();
+        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
+
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAll);
+        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -45,11 +41,11 @@ public class NoHandlerMessageHandlerTest
     public async Task PublishAsyncWhenAny_ShouldNotThrow_WhenMessageIsZeroCalled()
     {
         // Arrange
-        var message = new NoHandlerMessage();
-        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
-        
+        var message = new NoHandlerNotification();
+        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
+
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, Strategy.WhenAny);
+        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
 
         //Assert
         await task.Should().NotThrowAsync();

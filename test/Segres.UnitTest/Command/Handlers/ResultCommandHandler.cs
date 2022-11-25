@@ -1,12 +1,10 @@
-﻿using Segres;
-using Segres.Handlers;
-using Xunit.Sdk;
+﻿using Xunit.Sdk;
 
 namespace Segres.UnitTest.Command;
 
-public class ResultCommandHandler :ICommandHandler<ResultCommand, bool>
+public class ResultCommandHandler : IRequestHandler<ResultCommand, bool>
 {
-    public async Task<bool> HandleAsync(ResultCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<bool> HandleAsync(ResultCommand command, CancellationToken cancellationToken = default)
     {
         switch (command.Number)
         {

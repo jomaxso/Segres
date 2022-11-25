@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.Handlers;
+﻿namespace Segres;
 
 /// <summary>
 /// 
@@ -8,7 +6,7 @@ namespace Segres.Handlers;
 /// <typeparam name="TStream"></typeparam>
 /// <typeparam name="TResult"></typeparam>
 public interface IStreamHandler<in TStream, out TResult>
-    where TStream : IStream<TResult>
+    where TStream : IStreamRequest<TResult>
 {
     /// <summary>
     /// 

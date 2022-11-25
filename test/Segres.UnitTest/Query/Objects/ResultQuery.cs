@@ -1,8 +1,6 @@
-﻿using Segres.Contracts;
+﻿namespace Segres.UnitTest.Query;
 
-namespace Segres.UnitTest.Query;
-
-public class ResultQuery : IQuery<string>
+public class ResultQuery : IRequest<string>
 {
     public int Number { get; init; }
 }

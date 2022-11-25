@@ -1,10 +1,8 @@
-﻿using DispatchR.Benchmarks.Contracts;
-using Segres;
-using Segres.Handlers;
+﻿using Segres;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRQueryReturningObjectHandler : IQueryHandler<GetUsers, int>
+public class DispatchRQueryReturningObjectHandler : IRequestHandler<GetUsers, int>
 {
     private readonly BenchmarkService _benchmarkService;
 
@@ -13,7 +11,7 @@ public class DispatchRQueryReturningObjectHandler : IQueryHandler<GetUsers, int>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task<int> HandleAsync(GetUsers request, CancellationToken cancellationToken)
+    public async ValueTask<int> HandleAsync(GetUsers request, CancellationToken cancellationToken)
     {
         return await _benchmarkService.RunAsync();
     }

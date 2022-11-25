@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Extensions.DependencyInjection.Microsoft;
 using Segres.UnitTest.Stream.Objects;
 using Xunit;
 
@@ -8,17 +7,14 @@ namespace Segres.UnitTest.Stream;
 
 public class IntegerStreamHandlerTest
 {
-    private readonly IServiceProvider _serviceProvider = new ServiceCollection()
-        .AddSegres(typeof(IntegerStream))
-        .BuildServiceProvider();
+    private readonly IServiceProvider _serviceProvider = TestServiceCollection.CreateServiceProvider();
 
-    
     [Fact]
     public async Task CreateStreamAsync_ShouldReturnIntegersFrom0To10_WhenIterated()
     {
         // Arrange
-        var streamOption = new IntegerStream();
-        var dispatcher = _serviceProvider.GetRequiredService<IServiceBroker>();
+        var streamOption = new IntegerStreamRequest();
+        var dispatcher = _serviceProvider.GetRequiredService<IStreamer>();
 
         var last = 0;
 
