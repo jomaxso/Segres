@@ -1,27 +1,22 @@
-﻿using Segres;
-using Segres.Tmp.Http;
-using WeatherForecastDemo.Api.Endpoints.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using Segres;
+using Segres.AspNet;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-[HttpPut("WeatherForecast", "{id:guid}")]
-public record UpdateRequest(Guid Id, DateTime Date, int TemperatureC, string? Summary) : IHttpRequest
-{
-    public static string RoutePattern => "{id:guid}";
-    public static Http HttpMethod => Http.PUT;
-}
+public record UpdateWeatherForecastRequest(Guid Id, DateTime Date, int TemperatureC, string? Summary) : IHttpRequest;
 
-public sealed class UpdateEndpoint : IEndpoint<UpdateRequest>
+public sealed class UpdateAbstractEndpoint : AbstractEndpoint<UpdateWeatherForecastRequest>
 {
     private readonly ISender _sender;
 
-    public UpdateEndpoint(ISender sender)
+    public UpdateAbstractEndpoint(ISender sender)
     {
         _sender = sender;
     }
 
-    public async ValueTask<IResult> ExecuteAsync(UpdateRequest request, CancellationToken cancellationToken)
+    protected override async ValueTask<IResult> HandleAsync(UpdateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateWeatherForecastCommand(request.Id, new Domain.Entities.WeatherForecast
         {
@@ -34,5 +29,12 @@ public sealed class UpdateEndpoint : IEndpoint<UpdateRequest>
         var response = await _sender.SendAsync(command, cancellationToken);
 
         return Results.Ok(response);
+    }
+
+    protected override void Configure(EndpointDefinition builder)
+    {
+        builder.WithGroup(nameof(WeatherForecast))
+            .WithRoute("{id:guid}")
+            .MapPut();
     }
 }

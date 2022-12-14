@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Segres;
 
 namespace WeatherForecastDemo.Application.Commons.Behaviors;
@@ -6,19 +7,27 @@ namespace WeatherForecastDemo.Application.Commons.Behaviors;
 public sealed class CommandValidatorBehavior<TRequest> : IRequestBehavior<TRequest, None>
     where TRequest : IRequest
 {
-    private readonly IValidator<TRequest>? _validator;
+    private readonly IEnumerable<IValidator<TRequest>>? _validators;
 
-    public CommandValidatorBehavior(IValidator<TRequest>? validator = null)
+    public CommandValidatorBehavior(IEnumerable<IValidator<TRequest>>? validator = null)
     {
-        _validator = validator;
+        _validators = validator;
     }
 
     public ValueTask<None> HandleAsync(RequestDelegate<None> next, TRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = _validator?.Validate(request);
+        if (_validators is null)
+            return next(request, cancellationToken);
 
-        if (validationResult?.IsValid is false) throw new ValidationException(validationResult.Errors);
-
+        var validationErrors = _validators
+            .Select(x => x.Validate(request))
+            .Where(x => x.IsValid is false)
+            .SelectMany(x => x.Errors)
+            .ToArray();
+        
+        if (validationErrors.Any())
+            throw new ValidationException(validationErrors);
+        
         return next(request, cancellationToken);
     }
 }

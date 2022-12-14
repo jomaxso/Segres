@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Segres;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace DispatchR.Benchmarks.Handlers;
 
@@ -32,5 +33,13 @@ public class ValidationBehavior<TRequest, TResponse> : IRequestBehavior<TRequest
             Console.WriteLine(e);
             throw;
         }
+    }
+}
+
+public class FakeValidationBehavior<TRequest, TResponse> : IRequestBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+{
+    public ValueTask<TResponse> HandleAsync(RequestDelegate<TResponse> next, TRequest request, CancellationToken cancellationToken)
+    {
+        return next(request, cancellationToken);
     }
 }

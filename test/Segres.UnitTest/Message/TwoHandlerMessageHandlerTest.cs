@@ -66,7 +66,7 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -83,7 +83,7 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<Exception>();
@@ -100,24 +100,10 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<Exception>();
-    }
-
-    [Fact]
-    public async Task PublishAsyncWhenAny_ShouldNotThrow_WhenMessageIsZeroCalled()
-    {
-        // Arrange
-        var message = new TwoHandlerNotification();
-        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
-
-        // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
-
-        //Assert
-        await task.Should().NotThrowAsync();
     }
 
     [Fact]
@@ -128,7 +114,7 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -145,7 +131,7 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<IndexOutOfRangeException>();
@@ -162,7 +148,7 @@ public class TwoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<NotEmptyException>();

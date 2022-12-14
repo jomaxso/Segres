@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Segres.AspNet\Segres.AspNet.csproj" />
       <ProjectReference Include="..\..\src\Segres\Segres.csproj" />
       <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj" />
     </ItemGroup>

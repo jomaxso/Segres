@@ -8,7 +8,7 @@
     
     <PropertyGroup>
         <Authors>jomaxso</Authors>
-        <Version>1.0.1-preview</Version>
+        <Version>1.0.2-preview</Version>
         <Company>jomaxso</Company>
         <Copyright>Copyright jomaxso</Copyright>
 <!--        <PackageIcon>gradient_128x128.png</PackageIcon>-->

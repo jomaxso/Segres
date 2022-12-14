@@ -1,10 +1,10 @@
+using System.Collections.Concurrent;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Segres;
-using WeatherForecastDemo.Api.Endpoints;
-using WeatherForecastDemo.Api.Endpoints.WeatherForecast;
+using Segres.AspNet;
 using WeatherForecastDemo.Application;
 using WeatherForecastDemo.Application.Commons.Behaviors;
-using WeatherForecastDemo.Contracts.WeatherForecast;
 using WeatherForecastDemo.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
     // Add services to the container.
     builder.Services.AddInfrastructure();
 
-    builder.Services.AddSegres(x =>
-    {
-        x.RegisterAssembly(typeof(IApplicationMarker).Assembly);
-        x.RegisterAssembly(typeof(CreateWeatherForecastRequest).Assembly);
-        x.WithEndpoints();
-    });
+    builder.Services.AddSegres(options => options
+        .WithHandlerLifetime(ServiceLifetime.Scoped)
+        .WithCustomPublisher<MyPublisher>()
+        .WithParallelPublishing());
 
     // builder.Services.AddScoped(typeof(IRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
     builder.Services.AddScoped(typeof(IRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
@@ -28,6 +26,8 @@ var builder = WebApplication.CreateBuilder(args);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    
+    builder.Services.AddHostedService<NotificationWorker>();
 }
 
 var app = builder.Build();
@@ -42,14 +42,46 @@ var app = builder.Build();
     app.UseHttpsRedirection();
     app.UseAuthorization();
 
-    // app.UseSegres(x => { x.Configure<GetAllRequest>(); });
-    app.MapSegres<GetRangedRequestTest>();
-    
-    // app.MapGroupedEndpoints("tests",group =>
-    // {
-    //     const string route = "{from:int}/{till:int}";
-    //     group.MapGetEndpoint<GetRangedRequestTest, IEnumerable<int>>(route);
-    // });
+    app.UseSegres();
 }
 
+
 app.Run();
+
+public class NotificationWorker : BackgroundService
+{
+    private readonly ISubscriber _subscriber;
+
+    public NotificationWorker(ISubscriber subscriber)
+    {
+        _subscriber = subscriber;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await Task.Delay(20000, stoppingToken);
+            
+            for (var i = 0; i < 20; i++)
+            {
+                if (MyPublisher.Notifications.TryDequeue(out var notification))
+                {
+                    await _subscriber.SubscribeAsync(notification, stoppingToken);
+                }
+            }
+        }
+    }
+}
+
+public sealed class MyPublisher : IPublisher
+{
+    public static readonly ConcurrentQueue<INotification> Notifications = new();
+
+    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default) 
+        where TNotification : INotification
+    {
+        Notifications.Enqueue(notification);
+        return ValueTask.CompletedTask;
+    }
+}

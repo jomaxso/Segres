@@ -1,19 +1,32 @@
 ﻿using Segres;
+using Segres.AspNet;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 using WeatherForecastDemo.Contracts.WeatherForecast;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-internal sealed class CreateEndpoint : IEndpoint<CreateWeatherForecastRequest, None>
+public record struct WeatherForecastCreatedEvent(Guid Id) : INotification;
+
+public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForecastRequest>
 {
     private readonly ISender _sender;
+    private readonly IPublisher _publisher;
 
-    public CreateEndpoint(ISender sender)
+    public CreateAbstractEndpoint(ISender sender, IPublisher publisher)
     {
         _sender = sender;
+        _publisher = publisher;
     }
 
-    public async ValueTask<None> ExecuteAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
+    protected override void Configure(EndpointDefinition builder)
+    {
+        builder
+            .WithGroup(nameof(WeatherForecast))
+            .WithRoute("/")
+            .MapPost();
+    }
+
+    protected override async ValueTask<IResult> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWeatherForecastCommand
         {
@@ -21,12 +34,8 @@ internal sealed class CreateEndpoint : IEndpoint<CreateWeatherForecastRequest, N
             Summary = request.Summary
         };
 
-        await _sender.SendAsync(command, cancellationToken);
-
-        // return result is null
-        //     ? Results.BadRequest()
-        //     : Results.Ok(result);
-
-        return None.Empty;
+        var id = await _sender.SendAsync(command, cancellationToken);
+        await _publisher.PublishAsync(new WeatherForecastCreatedEvent(id), cancellationToken);
+        return Results.Ok(id);
     }
 }

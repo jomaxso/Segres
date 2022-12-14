@@ -15,6 +15,6 @@ internal sealed class CreateWeatherForecastCommandValidator : AbstractValidator<
 {
     public CreateWeatherForecastCommandValidator()
     {
-        RuleFor(x => x.Summary).NotNull().NotEqual("string");
+       RuleFor(x => x.Summary).NotNull().NotEqual("string");
     }
 }

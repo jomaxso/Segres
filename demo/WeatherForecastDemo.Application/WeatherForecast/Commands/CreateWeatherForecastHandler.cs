@@ -3,9 +3,9 @@ using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest;
+public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest<Guid>;
 
-internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand>
+internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Guid>
 {
     private readonly IPublisher _publisher;
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;
@@ -16,7 +16,7 @@ internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForec
         _weatherForecastRepository = weatherForecastRepository;
     }
 
-    public async ValueTask HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Guid> HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
     {
         var entity = new Domain.Entities.WeatherForecast
         {
@@ -31,6 +31,8 @@ internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForec
         var message = new WeatherForecastCreated(entity);
 
         await _publisher.PublishAsync(message, cancellationToken);
+
+        return result.Id;
     }
 }
 

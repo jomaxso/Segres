@@ -11,7 +11,7 @@ public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -26,7 +26,7 @@ public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -41,7 +41,7 @@ public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -56,7 +56,7 @@ public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -71,7 +71,7 @@ public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -86,7 +86,7 @@ public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -101,7 +101,7 @@ public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -116,7 +116,7 @@ public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -131,7 +131,7 @@ public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
@@ -146,7 +146,7 @@ public class DispatchRNotificationHandler10 : INotificationHandler<UserCreated>
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }

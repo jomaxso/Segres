@@ -43,14 +43,13 @@ public class Benchmarks
         services.AddSingleton<BenchmarkService>();
         services.AddSegres(x =>
         {
-            x.AsSingleton();
-            // x.RegisterAssembly(typeof(Benchmarks).Assembly);
+            x.WithHandlerLifetime(ServiceLifetime.Transient);
         });
 
         services.AddSingleton(typeof(IRequestBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddValidatorsFromAssemblyContaining<Benchmarks>();
+        services.AddValidatorsFromAssemblyContaining<Benchmarks>(ServiceLifetime.Singleton);
 
-        services.AddMediatR(x => x.AsSingleton(), typeof(Benchmarks));
+        services.AddMediatR(x => x.AsTransient(), typeof(Benchmarks));
         return services.BuildServiceProvider();
     }
 
@@ -63,23 +62,23 @@ public class Benchmarks
     //      await _sender.SendAsync(CreateUser, CancellationToken.Void);
     // }
     //
-    [Benchmark]
-    public async Task<int> CommandAsync_WithResponse_Segres()
-    {
-        return await _sender.SendAsync(CreateUserWithResult, CancellationToken.None);
-    }
-
     // [Benchmark]
-    // public async Task PublishAsync_Segres() => await _publisher.PublishAsync(UserCreated, CancellationToken.Void);
+    // public async Task<int> CommandAsync_WithResponse_Segres()
+    // {
+    //     return await _sender.SendAsync(CreateUserWithResult, CancellationToken.None);
+    // }
+
+    [Benchmark]
+    public async Task PublishAsync_Segres() => await _publisher.PublishAsync(UserCreated, CancellationToken.None);
     //
     // [Benchmark]
-    // public async Task PublishAsync_Segres_All() => await _publisher.PublishAsync(UserCreated, PublishStrategy.WhenAll, CancellationToken.Void);
+    // public async Task PublishAsync_Segres_All() => await _publisher.RaiseAsync(UserCreated, PublishStrategy.WhenAll, CancellationToken.Void);
     // //
     // [Benchmark]
-    // public async Task PublishAsync_Segres_Sequential() => await _publisher.PublishAsync(UserCreated, PublishStrategy.Sequential, CancellationToken.Void);
+    // public async Task PublishAsync_Segres_Sequential() => await _publisher.RaiseAsync(UserCreated, PublishStrategy.Sequential, CancellationToken.Void);
     //
     // [Benchmark]
-    // public async Task PublishAsync_Segres_Any() => await _publisher.PublishAsync(UserCreated, PublishStrategy.WhenAny, CancellationToken.Void);
+    // public async Task PublishAsync_Segres_Any() => await _publisher.RaiseAsync(UserCreated, PublishStrategy.WhenAny, CancellationToken.Void);
 
 
     // [Benchmark]
@@ -119,8 +118,8 @@ public class Benchmarks
     // [Benchmark]
     // public async Task<int> CommandAsync_WithResponse_MediatR() => await _mediatorMediatR.Send(CreateUserWithResult, CancellationToken.Void);
     //
-    // // [Benchmark]
-    // // public async Task PublishAsync_MediatR() => await _mediatorMediatR.Publish(UserCreated, CancellationToken.Void);
+    [Benchmark]
+    public async Task PublishAsync_MediatR() => await _mediatorMediatR.Publish(UserCreated, CancellationToken.None);
     //
     // [Benchmark]
     // public async ValueTask QueryAsync_WithResponse_MediatR() => await _mediatorMediatR.Send(GetUsers, CancellationToken.Void);

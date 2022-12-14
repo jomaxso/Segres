@@ -1,18 +1,28 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Reflection;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
-using WeatherForecastDemo.Contracts.WeatherForecast;
 
 IServiceProvider Provider = new ServiceCollection()
-    .AddSegres()
-    .AddScoped(typeof(IRequestBehavior<,>), typeof(Validator<,>))
-    .AddTransient<IRequestBehavior<ThePerson, int>, ThePersonHandlerValidatorTwo>()
-    .AddTransient<IRequestBehavior<ThePerson, int>, ThePersonHandlerValidatorThree>()
+    .AddSegres(configuration => configuration
+        .WithHttpClient<ThePerson>(""))
+
+    .AddValidatorsFromAssembly(Assembly.GetEntryAssembly())
     .BuildServiceProvider();
 
 
-var result = await Provider.GetService<ISender>()!.SendAsync(new ThePerson(0), CancellationToken.None);
+Result<int> result = await Provider
+    .GetService<ISender>()!
+    .SendAsync(new ThePerson(200), CancellationToken.None);
+
+if (result.IsSuccess)
+{
+    Console.WriteLine("jUP");
+}
+
+
 Console.WriteLine();
 
 

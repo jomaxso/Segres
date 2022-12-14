@@ -66,7 +66,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -83,7 +83,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<IndexOutOfRangeException>();
@@ -100,55 +100,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
-
-        //Assert
-        await result.Should().ThrowAsync<NotEmptyException>();
-    }
-
-    [Fact]
-    public async Task PublishAsyncWhenAny_ShouldNotThrow_WhenMessageIsZeroCalled()
-    {
-        // Arrange
-        var message = new DefaultNotification();
-        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
-
-        // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
-
-        //Assert
-        await task.Should().NotThrowAsync();
-    }
-
-    [Fact]
-    public async Task PublishAsyncWhenAny_ShouldThrowIndexOutOfRangeException_WhenMessageIsGreaterThenZeroCalled()
-    {
-        // Arrange
-        var message = new DefaultNotification
-        {
-            Number = 100
-        };
-        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
-
-        // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
-
-        //Assert
-        await result.Should().ThrowAsync<IndexOutOfRangeException>();
-    }
-
-    [Fact]
-    public async Task PublishAsyncWhenAny_ShouldThrowNotEmptyException_WhenMessageIsLessThenZeroCalled()
-    {
-        // Arrange
-        var message = new DefaultNotification
-        {
-            Number = -100
-        };
-        var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
-
-        // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<NotEmptyException>();
@@ -162,7 +114,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -179,7 +131,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<IndexOutOfRangeException>();
@@ -196,7 +148,7 @@ public class DefaultMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var result = async () => await dispatcher.PublishAsync(message, PublishStrategy.Sequential);
+        var result = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await result.Should().ThrowAsync<NotEmptyException>();

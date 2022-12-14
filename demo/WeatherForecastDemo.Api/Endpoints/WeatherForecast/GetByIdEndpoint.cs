@@ -1,34 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Segres;
-using WeatherForecastDemo.Api.Endpoints.Abstractions;
+using Segres.AspNet;
 using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-[Segres.Tmp.Http.HttpGet("WeatherForecast", "/id")]
-internal record GetByIdRequest([FromQuery] Guid Id) : IHttpRequest
+internal record GetWeatherForecastByIdRequest(Guid Id) : IHttpRequest
 {
 }
 
-internal sealed class GetByIdEndpoint : IEndpoint<GetByIdRequest>
+internal sealed class GetByIdAbstractEndpoint : AbstractEndpoint<GetWeatherForecastByIdRequest>
 {
     private readonly ISender _sender;
 
-
-    public GetByIdEndpoint(ISender sender)
+    public GetByIdAbstractEndpoint(ISender sender)
     {
         _sender = sender;
     }
 
-    public async ValueTask<IResult> ExecuteAsync(GetByIdRequest request, CancellationToken cancellationToken)
+    protected override async ValueTask<IResult> HandleAsync(GetWeatherForecastByIdRequest request, CancellationToken cancellationToken)
     {
-        await Task.CompletedTask;
-
         var command = new GetWeatherForecastByIdQuery(request.Id);
         var result = await _sender.SendAsync(command, cancellationToken);
 
-        return result is null
-            ? Results.BadRequest()
-            : Results.Ok(result);
+        return Results.Ok(result);
+    }
+
+    protected override void Configure(EndpointDefinition builder)
+    {
+        builder.WithGroup(nameof(WeatherForecast))
+            .WithRoute("{id:guid}")
+            .MapGet();
     }
 }

@@ -4,6 +4,7 @@ namespace Segres.UnitTest.Query;
 
 public class ResultQueryHandler : IRequestHandler<ResultQuery, string>
 {
+
     public async ValueTask<string> HandleAsync(ResultQuery query, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;

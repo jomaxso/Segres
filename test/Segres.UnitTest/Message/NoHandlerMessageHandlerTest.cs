@@ -31,7 +31,7 @@ public class NoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAll);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
@@ -45,7 +45,7 @@ public class NoHandlerMessageHandlerTest
         var dispatcher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Act
-        var task = async () => await dispatcher.PublishAsync(message, PublishStrategy.WhenAny);
+        var task = async () => await dispatcher.PublishAsync(message);
 
         //Assert
         await task.Should().NotThrowAsync();
