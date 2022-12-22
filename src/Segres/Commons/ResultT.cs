@@ -28,4 +28,6 @@ public readonly record struct Result<TValue>
         : throw new InvalidOperationException("The value of a failure result can not be accessed.");
 
     public static implicit operator Result<TValue>(TValue? value) => Result.Success(value);
+
+    public static implicit operator Result(Result<TValue> value) => value._result;
 }

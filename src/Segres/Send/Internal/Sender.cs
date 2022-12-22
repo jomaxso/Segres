@@ -1,19 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Segres.Communication;
+namespace Segres;
 
-public sealed class Sender : ISender
+internal sealed class Sender : ISender
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ServiceResolver _serviceResolver;
     private readonly ConcurrentDictionary<Type, object> _requestHandlerCache = new();
 
-    public Sender(IServiceProvider serviceProvider, SegresConfiguration? options = null)
+    internal Sender(ServiceResolver serviceResolver)
     {
-        _serviceProvider = options?.Lifetime is null or ServiceLifetime.Scoped
-            ? serviceProvider.CreateScope().ServiceProvider
-            : serviceProvider;
+        _serviceResolver = serviceResolver;
     }
 
     /// <inheritdoc />
@@ -28,14 +25,38 @@ public sealed class Sender : ISender
         var requestType = request.GetType();
         var requestDefinition = _requestHandlerCache.GetOrAdd<RequestHandlerDefinition<TResponse>>(requestType);
 
-        if (_serviceProvider.GetService(requestDefinition.HandlerType) is not { } requestHandler)
+        if (_serviceResolver.GetService(requestDefinition.HandlerType) is not { } requestHandler)
             throw new Exception($"Missing handler registration for type {requestType.Name}");
 
         if (requestDefinition.HasPipeline is false)
             return requestDefinition.InvokeAsync(requestHandler, null, request, cancellationToken);
 
-        var requestBehaviors = _serviceProvider.GetService(requestDefinition.BehaviorType) as object[];
+        var requestBehaviors = _serviceResolver.GetService(requestDefinition.BehaviorType) as object[];
         requestDefinition.CheckPipeline(requestBehaviors);
         return requestDefinition.InvokeAsync(requestHandler, requestBehaviors, request, cancellationToken);
+    }
+
+    public TResponse Send<TResponse>(IRequest<TResponse> request)
+    {
+        var resultTask = SendAsync(request, CancellationToken.None);
+
+        if (resultTask.IsCompleted)
+            return resultTask.Result;
+
+        return resultTask.AsTask()
+            .GetAwaiter()
+            .GetResult();
+    }
+
+    public void Send(IRequest request)
+    {
+        var resultTask = SendAsync(request, CancellationToken.None);
+
+        if (resultTask.IsCompleted is false)
+        {
+            resultTask.AsTask()
+                .GetAwaiter()
+                .GetResult();
+        }
     }
 }

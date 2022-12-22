@@ -1,46 +1,49 @@
 ﻿namespace Segres;
 
 /// <summary>
-/// Defines a receiver (fire-and-forget) for a request.
+/// Defines a receiver (fire-and-forget) for a asyncRequest.
 /// </summary>
 /// <typeparam name="TRequest">The request type witch implements <see cref="IRequest"/>.</typeparam>
 /// <seealso cref="IRequest"/>
-/// <seealso cref="IRequestHandler{TCommand}"/>
-public interface IRequestHandler<in TRequest> : IRequestHandler<TRequest, None>
+/// <seealso cref="IAsyncRequestHandler{TRequest}"/>
+public interface IRequestHandler<in TRequest> : IAsyncRequestHandler<TRequest>
     where TRequest : IRequest
 {
-    async ValueTask<None> IRequestHandler<TRequest, None>.HandleAsync(TRequest request, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    ValueTask IAsyncRequestHandler<TRequest>.HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        await HandleAsync(request, cancellationToken);
-        return None.Empty;
+        Handle(request);
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
-    /// Asynchronously receive and handle a request.
+    /// Synchronously receive and handle a asyncRequest.
     /// </summary>
-    /// <param name="request">The request object</param>
-    /// <param name="cancellationToken">An cancellation token</param>
-    /// <returns>A task that represents the receive operation.</returns>
+    /// <param name="request">The asyncRequest object</param>
+    /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
     /// <seealso cref="IRequest"/>
-   new ValueTask HandleAsync(TRequest request, CancellationToken cancellationToken);
+    void Handle(TRequest request);
 }
 
 /// <summary>
-/// Defines a receiver (fire-and-forget) for a request.
+/// Defines a receiver (fire-and-forget) for a asyncRequest.
 /// </summary>
-/// <typeparam name="TRequest">The request type witch implements <see cref="IRequest{TCommand}"/>.</typeparam>
+/// <typeparam name="TRequest">The request type witch implements <see cref="IRequest"/>.</typeparam>
 /// <typeparam name="TResponse"></typeparam>
-/// <seealso cref="IRequest{TResponse}"/>
-/// <seealso cref="IRequestHandler{TRequest, TResponse}"/>
-public interface IRequestHandler<in TRequest, TResponse> 
+/// <seealso cref="IRequest"/>
+/// <seealso cref="IAsyncRequestHandler{TRequest}"/>
+public interface IRequestHandler<in TRequest, TResponse> : IAsyncRequestHandler<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
+    /// <inheritdoc/>
+    ValueTask<TResponse> IAsyncRequestHandler<TRequest, TResponse>.HandleAsync(TRequest request, CancellationToken cancellationToken)
+        => ValueTask.FromResult(Handle(request));
+
     /// <summary>
-    /// Asynchronously receive and handle a request.
+    /// Synchronously receive and handle a asyncRequest.
     /// </summary>
-    /// <param name="request">The request object</param>
-    /// <param name="cancellationToken">An cancellation token</param>
+    /// <param name="request">The asyncRequest object</param>
     /// <returns>A task that represents the receive operation. The task result contains the handler response.</returns>
-    /// <seealso cref="IRequest{TResponse}"/>
-    ValueTask<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
+    /// <seealso cref="IRequest"/>
+    TResponse Handle(TRequest request);
 }

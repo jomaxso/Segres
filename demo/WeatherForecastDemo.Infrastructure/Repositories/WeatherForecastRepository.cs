@@ -80,4 +80,27 @@ internal class WeatherForecastRepository :
         await ValueTask.CompletedTask;
         return _cache.FirstOrDefault(x => x.Id == id);
     }
+
+    public List<WeatherForecast> Get(Expression<Func<WeatherForecast, bool>>? filter = null, Func<IQueryable<WeatherForecast>, IOrderedQueryable<WeatherForecast>>? orderBy = null, string includeProperties = "", bool trackable = true)
+    {
+        var query = _cache.AsQueryable();
+
+        if (filter is not null)
+            query = query.Where(filter);
+
+        if (orderBy is not null)
+            query = orderBy(query);
+        
+        if (string.IsNullOrWhiteSpace(includeProperties) is false)
+        {
+            
+        }
+
+        if (trackable)
+        {
+            
+        }
+
+        return query.ToList();
+    }
 }

@@ -15,6 +15,11 @@ public class BenchmarkService
         await ValueTask.CompletedTask;
         return number;
     }
+    
+    public int Run()
+    {
+        return number;
+    }
 }
 
 

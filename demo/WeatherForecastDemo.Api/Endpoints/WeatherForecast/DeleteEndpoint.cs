@@ -4,11 +4,10 @@ using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-public record DeleteRequest(Guid Id) : IHttpRequest
-{
-}
+[HttpDeleteRequest("{id:guid}", nameof(WeatherForecast))]
+public record DeleteRequest(Guid Id) : IHttpRequest<Domain.Entities.WeatherForecast?>;
 
-public sealed class DeleteAbstractEndpoint : AbstractEndpoint<DeleteRequest>
+public sealed class DeleteAbstractEndpoint : AbstractEndpoint<DeleteRequest, Domain.Entities.WeatherForecast?>
 {
     private readonly ISender _sender;
 
@@ -16,18 +15,11 @@ public sealed class DeleteAbstractEndpoint : AbstractEndpoint<DeleteRequest>
     {
         _sender = sender;
     }
-    
-    protected override void Configure(EndpointDefinition builder)
-    {
-        builder.WithGroup(nameof(WeatherForecast))
-            .WithRoute("{id:guid}")
-            .MapDelete();
-    }
 
-    protected override async ValueTask<IResult> HandleAsync(DeleteRequest request, CancellationToken cancellationToken)
+    public override async ValueTask<IHttpResult<Domain.Entities.WeatherForecast?>> HandleAsync(DeleteRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteWeatherForecastCommand(request.Id);
         var result = await _sender.SendAsync(command, cancellationToken);
-        return result is not null ? Results.Ok(result) : Results.BadRequest(Error.Null);
+        return Ok(result);
     }
 }

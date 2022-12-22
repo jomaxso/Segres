@@ -22,4 +22,3 @@ public class ThePerson : IRequest<Result<int>>
 
     public int Age { get; set; }
 }
-

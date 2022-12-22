@@ -4,12 +4,12 @@ using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-
-internal record GetAllRequest(int? Number) : IHttpRequest
+[HttpGetRequest(group: nameof(WeatherForecast))]
+internal record GetAllRequest(int? Number) : IHttpRequest<IEnumerable<Domain.Entities.WeatherForecast>>
 {
 }
 
-internal sealed class GetAllAbstractEndpoint : AbstractEndpoint<GetAllRequest>
+internal sealed class GetAllAbstractEndpoint : AbstractEndpoint<GetAllRequest, IEnumerable<Domain.Entities.WeatherForecast>>
 {
     private readonly ISender _sender;
 
@@ -18,19 +18,11 @@ internal sealed class GetAllAbstractEndpoint : AbstractEndpoint<GetAllRequest>
         _sender = sender;
     }
 
-
-    protected override async ValueTask<IResult> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
+    public override async ValueTask<IHttpResult<IEnumerable<Domain.Entities.WeatherForecast>>> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
     {
+        await Task.CompletedTask;
         var query = new GetAllWeatherForecastQuery(request.Number);
-        var result = await _sender.SendAsync(query, cancellationToken);
-
-        return Results.Ok(result);
-    }
-
-    protected override void Configure(EndpointDefinition definition)
-    {
-        definition.WithGroup(nameof(WeatherForecast))
-            .WithRoute("/")
-            .MapGet();
+        var response = _sender.Send(query);
+        return Ok(response);
     }
 }

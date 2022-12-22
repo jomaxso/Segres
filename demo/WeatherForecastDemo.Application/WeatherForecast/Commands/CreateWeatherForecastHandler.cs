@@ -5,7 +5,7 @@ namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest<Guid>;
 
-internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Guid>
+internal class CreateWeatherForecastHandler : IAsyncRequestHandler<CreateWeatherForecastCommand, Guid>
 {
     private readonly IPublisher _publisher;
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;

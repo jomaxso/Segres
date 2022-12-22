@@ -14,8 +14,8 @@ internal sealed class GetAllWeatherForecastHandler : IRequestHandler<GetAllWeath
         _weatherForecastRepository = weatherForecastRepository;
     }
 
-    public async ValueTask<IEnumerable<Domain.Entities.WeatherForecast>> HandleAsync(GetAllWeatherForecastQuery query, CancellationToken cancellationToken = default)
+    public IEnumerable<Domain.Entities.WeatherForecast> Handle(GetAllWeatherForecastQuery request)
     {
-        return await _weatherForecastRepository.GetAsync(cancellationToken: cancellationToken);
+        return _weatherForecastRepository.Get();
     }
 }

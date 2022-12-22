@@ -5,7 +5,7 @@ namespace WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 public record GetFirstFiveWeatherForecastRequest : IRequest<IEnumerable<Domain.Entities.WeatherForecast>>;
 
-public class GetFirstFiveWeatherForecastHandler : IRequestHandler<GetFirstFiveWeatherForecastRequest, IEnumerable<Domain.Entities.WeatherForecast>>
+public class GetFirstFiveWeatherForecastHandler : IAsyncRequestHandler<GetFirstFiveWeatherForecastRequest, IEnumerable<Domain.Entities.WeatherForecast>>
 {
     private readonly IReadOnlyWeatherForecastRepository _repository;
 

@@ -1,20 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres;
 
 internal class Streamer : IStreamer
 {
-    private readonly IServiceProvider _serviceProvider;
-    
+    private readonly ServiceResolver _serviceResolver;
     private readonly ConcurrentDictionary<Type, object> _streamHandlerCache = new();
-
-    public Streamer(IServiceProvider serviceProvider, SegresConfiguration? options = null)
+    
+    public Streamer(ServiceResolver serviceResolver)
     {
-        _serviceProvider = options?.Lifetime is null or ServiceLifetime.Scoped
-            ? serviceProvider.CreateScope().ServiceProvider
-            : serviceProvider;
+        _serviceResolver = serviceResolver;
     }
 
     /// <inheritdoc />
@@ -24,8 +20,8 @@ internal class Streamer : IStreamer
         var requestType = streamRequest.GetType();
         var handlerInfo = _streamHandlerCache.GetOrAdd<StreamRequestRunner<TResult>>(requestType);
 
-        var handler = _serviceProvider.GetService(handlerInfo.HandlerType)
-                      ?? throw new Exception($"No handler registered to handle request of type: {requestType.Name}");
+        var handler = _serviceResolver.GetService(handlerInfo.HandlerType)
+                      ?? throw new Exception($"No handler registered to handle asyncRequest of type: {requestType.Name}");
 
         return handlerInfo.InvokeHandlerAsync(handler, streamRequest, cancellationToken);
     }

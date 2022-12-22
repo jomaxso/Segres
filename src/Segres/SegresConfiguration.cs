@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres;
 
@@ -12,25 +11,43 @@ public class SegresConfiguration
 
     internal IEnumerable<Assembly> Assemblies => _assemblies.Distinct().ToArray();
 
-    internal ServiceLifetime Lifetime { get; private set; } = ServiceLifetime.Scoped;
+    internal HandlerLifetime Lifetime { get; private set; } = HandlerLifetime.Scoped;
     internal Type PublisherType { get; private set; } = typeof(Publisher);
     internal bool PublisherStrategy { get; private set; } = false;
 
     /// <summary>
     /// 
     /// </summary>
-    private SegresConfiguration()
+    private SegresConfiguration(Assembly assembly, Action<SegresConfiguration>? options = null)
     {
-        WithHandlerLifetime(ServiceLifetime.Scoped);
-        RegisterAssembly(typeof(ISender).Assembly);
+        RegisterAssembly(typeof(SegresConfiguration).Assembly)
+            .RegisterAssemblies(assembly.AppendReferencedAssemblies())
+            .AsScoped();
+        
+        options?.Invoke(this);
     }
 
-    internal static SegresConfiguration Create() => new();
+    internal static SegresConfiguration Create(Assembly assembly, Action<SegresConfiguration>? options = null) 
+        => new(assembly, options);
 
     /// <inheritdoc />
-    public SegresConfiguration WithHandlerLifetime(ServiceLifetime lifetime)
+    public SegresConfiguration AsSingleton()
     {
-        this.Lifetime = lifetime;
+        this.Lifetime = HandlerLifetime.Singleton;
+        return this;
+    }
+    
+    /// <inheritdoc />
+    public SegresConfiguration AsScoped()
+    {
+        this.Lifetime = HandlerLifetime.Scoped;
+        return this;
+    }
+    
+    /// <inheritdoc />
+    public SegresConfiguration AsTransient()
+    {
+        this.Lifetime = HandlerLifetime.Transient;
         return this;
     }
 
@@ -50,7 +67,7 @@ public class SegresConfiguration
         return this;
     }
 
-    public SegresConfiguration WithParallelPublishing(bool asParallel = true)
+    public SegresConfiguration WithParallelNotificationHandling(bool asParallel = true)
     {
         PublisherStrategy = asParallel;
         return this;
@@ -86,7 +103,7 @@ public class SegresConfiguration
 internal sealed class Client<TRequest, TResponse>
 {
     private readonly HttpClient _httpClient;
-    
+
     public Client(HttpClient httpClient)
     {
         _httpClient = httpClient;

@@ -2,7 +2,7 @@
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRCommandHandler : IRequestHandler<CreateUser>
+public class DispatchRCommandHandler : IAsyncRequestHandler<CreateUser>
 {
     private readonly BenchmarkService _benchmarkService;
 

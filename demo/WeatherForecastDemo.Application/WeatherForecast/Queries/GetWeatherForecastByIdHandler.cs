@@ -5,7 +5,7 @@ namespace WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 public sealed record GetWeatherForecastByIdQuery(Guid Id) : IRequest<Domain.Entities.WeatherForecast?>;
 
-internal sealed class GetWeatherForecastByIdHandler : IRequestHandler<GetWeatherForecastByIdQuery, Domain.Entities.WeatherForecast?>
+internal sealed class GetWeatherForecastByIdHandler : IAsyncRequestHandler<GetWeatherForecastByIdQuery, Domain.Entities.WeatherForecast?>
 {
     private readonly IReadOnlyWeatherForecastRepository _weatherForecastRepository;
 

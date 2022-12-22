@@ -12,13 +12,14 @@ public sealed class QueryValidatorBehavior<TRequest, TResult> : IRequestBehavior
     {
         _validator = validator;
     }
+    
 
-    public ValueTask<TResult> HandleAsync(RequestDelegate<TResult> next, TRequest request, CancellationToken cancellationToken)
+    public TResult Handle(RequestDelegate<TResult> next, TRequest request)
     {
         var validationResult = _validator?.Validate(request);
 
         if (validationResult?.IsValid is false) throw new ValidationException(validationResult.Errors);
 
-        return next(request, cancellationToken);
+        return next(request);
     }
 }

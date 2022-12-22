@@ -5,7 +5,7 @@ namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 public sealed record DeleteWeatherForecastCommand(Guid Id) : IRequest<Domain.Entities.WeatherForecast?>;
 
-internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
+internal sealed class DeleteWeatherForecastHandler : IAsyncRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
 {
     private readonly IReadOnlyWeatherForecastRepository _readOnlyWeatherForecastRepository;
     private readonly IWriteOnlyWeatherForecastRepository _writeOnlyWeatherForecastRepository;

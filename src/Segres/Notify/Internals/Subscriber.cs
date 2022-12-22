@@ -1,23 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres;
 
 internal sealed class Subscriber : ISubscriber
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ServiceResolver _serviceResolver;
     private readonly ConcurrentDictionary<Type, NotificationHandlerDefinition> _handlerCache = new();
 
     private readonly bool _asParallel;
 
-    public Subscriber(IServiceProvider serviceProvider, SegresConfiguration? options = null)
+    public Subscriber(ServiceResolver serviceResolver, bool asParallel = false)
     {
-        _serviceProvider = options?.Lifetime is null or ServiceLifetime.Scoped
-            ? serviceProvider.CreateScope().ServiceProvider
-            : serviceProvider;
-
-        _asParallel = options?.PublisherStrategy ?? false;
+        _serviceResolver = serviceResolver;
+        _asParallel = asParallel;
     }
     
     /// <inheritdoc />
@@ -33,7 +29,7 @@ internal sealed class Subscriber : ISubscriber
 
         var observerDefinition = _handlerCache.GetOrAdd(type, NotificationHandlerDefinition.Create);
 
-        if (_serviceProvider.GetService(observerDefinition.HandlerType) is not object[] handlers)
+        if (_serviceResolver.GetService(observerDefinition.HandlerType) is not object[] handlers)
             return ValueTask.CompletedTask;
 
         return observerDefinition.InvokeAsync(handlers, notification, asParallel, cancellationToken);

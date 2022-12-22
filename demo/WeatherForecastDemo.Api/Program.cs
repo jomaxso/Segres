@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Segres;
 using Segres.AspNet;
 using WeatherForecastDemo.Application;
@@ -11,14 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 {
     // Add services to the container.
     builder.Services.AddInfrastructure();
+    //
+    // builder.Services.AddCors();
 
     builder.Services.AddSegres(options => options
-        .WithHandlerLifetime(ServiceLifetime.Scoped)
+        .AsScoped()
         .WithCustomPublisher<MyPublisher>()
-        .WithParallelPublishing());
+        .WithParallelNotificationHandling());
 
-    // builder.Services.AddScoped(typeof(IRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
-    builder.Services.AddScoped(typeof(IRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
+    // builder.Services.AddScoped(typeof(IAsyncRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
+    builder.Services.AddScoped(typeof(IAsyncRequestBehavior<,>), typeof(QueryValidatorBehavior<,>));
     builder.Services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(includeInternalTypes: true);
 
     builder.Services.AddAuthorization();
@@ -41,11 +42,11 @@ var app = builder.Build();
 
     app.UseHttpsRedirection();
     app.UseAuthorization();
-
+    
     app.UseSegres();
 }
 
-
+// app.UseCors(x => x.AllowAnyOrigin());
 app.Run();
 
 public class NotificationWorker : BackgroundService

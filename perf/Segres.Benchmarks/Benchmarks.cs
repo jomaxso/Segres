@@ -8,6 +8,42 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres.Benchmarks;
 
+public sealed class GeneratedSender : ISender
+{
+    private readonly IServiceProvider _serviceResolver;
+
+    public GeneratedSender(IServiceProvider serviceResolver)
+    {
+        _serviceResolver = serviceResolver;
+    }
+
+    public async ValueTask SendAsync(IRequest request, CancellationToken cancellationToken = default)
+        => await SendAsync((IRequest<None>) request, cancellationToken);
+
+    public async ValueTask<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    {
+        return request switch
+        {
+            CreateUserWithResult r => await _serviceResolver
+                .GetRequiredService<IAsyncRequestHandler<CreateUserWithResult, int>>()
+                .HandleAsync(r, cancellationToken) is TResponse response ? response : throw new Exception(),
+            
+            
+            _ => throw new ArgumentOutOfRangeException(nameof(request))
+        };
+    }
+
+    public TResponse Send<TResponse>(IRequest<TResponse> request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Send(IRequest request)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 public class Benchmarks
@@ -16,6 +52,7 @@ public class Benchmarks
 
     private static readonly CreateUser CreateUser = new();
     private static readonly CreateUserWithResult CreateUserWithResult = new(1);
+    private static readonly CreateUserWithResultSync CreateUserWithResultSync = new(1);
     private static readonly UserCreated UserCreated = new();
     private static readonly UserStreamRequest UserStreamRequest = new();
 
@@ -43,15 +80,16 @@ public class Benchmarks
         services.AddSingleton<BenchmarkService>();
         services.AddSegres(x =>
         {
-            x.WithHandlerLifetime(ServiceLifetime.Transient);
+            x.AsSingleton();
         });
 
-        services.AddSingleton(typeof(IRequestBehavior<,>), typeof(ValidationBehavior<,>));
+        // services.AddSingleton(typeof(IAsyncRequestBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddValidatorsFromAssemblyContaining<Benchmarks>(ServiceLifetime.Singleton);
 
-        services.AddMediatR(x => x.AsTransient(), typeof(Benchmarks));
+        services.AddMediatR(x => x.AsSingleton(), typeof(Benchmarks));
         return services.BuildServiceProvider();
     }
+
 
     // [Benchmark]
     // public async ValueTask<WeatherForecast?> SendHttpAsync() => await _sender.SendAsync(t, CancellationToken.Void);
@@ -62,14 +100,32 @@ public class Benchmarks
     //      await _sender.SendAsync(CreateUser, CancellationToken.Void);
     // }
     //
-    // [Benchmark]
-    // public async Task<int> CommandAsync_WithResponse_Segres()
-    // {
-    //     return await _sender.SendAsync(CreateUserWithResult, CancellationToken.None);
-    // }
-
     [Benchmark]
-    public async Task PublishAsync_Segres() => await _publisher.PublishAsync(UserCreated, CancellationToken.None);
+    public async Task<int> CommandAsync_WithResponse_Segres()
+    {
+        return await _sender.SendAsync(CreateUserWithResult, CancellationToken.None);
+    }    
+    
+    [Benchmark]
+    public int Command_WithResponseSync_Segres()
+    {
+        return _sender.Send(CreateUserWithResultSync);
+    }
+    
+    [Benchmark]
+    public int Command_WithResponse_Segres()
+    {
+        return _sender.Send(CreateUserWithResult);
+    }
+    
+    [Benchmark]
+    public async Task<int> CommandAsync_WithResponseSync_Segres()
+    {
+        return await _sender.SendAsync(CreateUserWithResultSync, CancellationToken.None);
+    }
+
+    // [Benchmark]
+    // public async Task PublishAsync_Segres() => await _publisher.PublishAsync(UserCreated, CancellationToken.None);
     //
     // [Benchmark]
     // public async Task PublishAsync_Segres_All() => await _publisher.RaiseAsync(UserCreated, PublishStrategy.WhenAll, CancellationToken.Void);
@@ -112,14 +168,14 @@ public class Benchmarks
     // [Benchmark]
     // public async Task CommandAsync_WithoutResponse_MediatR()
     // {
-    //     await _mediatorMediatR.Send(CreateUser, CancellationToken.Void);
+    //     await _mediatorMediatR.Send(CreateUser, CancellationToken.None);
     // }
     //
-    // [Benchmark]
-    // public async Task<int> CommandAsync_WithResponse_MediatR() => await _mediatorMediatR.Send(CreateUserWithResult, CancellationToken.Void);
-    //
     [Benchmark]
-    public async Task PublishAsync_MediatR() => await _mediatorMediatR.Publish(UserCreated, CancellationToken.None);
+    public async Task<int> CommandAsync_WithResponse_MediatR() => await _mediatorMediatR.Send(CreateUserWithResult, CancellationToken.None);
+    //
+    // [Benchmark]
+    // public async Task PublishAsync_MediatR() => await _mediatorMediatR.Publish(UserCreated, CancellationToken.None);
     //
     // [Benchmark]
     // public async ValueTask QueryAsync_WithResponse_MediatR() => await _mediatorMediatR.Send(GetUsers, CancellationToken.Void);

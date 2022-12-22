@@ -2,7 +2,7 @@
 
 namespace Segres;
 
-public sealed class ThePersonHandler : IRequestHandler<ThePerson, Result<int>>
+public sealed class ThePersonHandler : IAsyncRequestHandler<ThePerson, Result<int>>
 {
     public ValueTask<Result<int>> HandleAsync(ThePerson request, CancellationToken cancellationToken)
     {

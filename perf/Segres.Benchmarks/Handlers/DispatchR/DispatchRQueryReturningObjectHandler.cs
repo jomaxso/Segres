@@ -5,7 +5,7 @@ using Segres;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRQueryReturningObjectHandler : IRequestHandler<GetUsers, int>
+public class DispatchRQueryReturningObjectHandler : IAsyncRequestHandler<GetUsers, int>
 {
     private readonly BenchmarkService _benchmarkService;
 

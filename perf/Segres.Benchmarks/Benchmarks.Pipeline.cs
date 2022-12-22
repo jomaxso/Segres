@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres.Benchmarks;
 
-public sealed class ThePersonHandler : IRequestHandler<GetPersonAgeQuery, int>
+public sealed class ThePersonHandler : IAsyncRequestHandler<GetPersonAgeQuery, int>
 {
     public async ValueTask<int> HandleAsync(GetPersonAgeQuery request, CancellationToken cancellationToken = default)
     {
@@ -14,9 +14,9 @@ public sealed class ThePersonHandler : IRequestHandler<GetPersonAgeQuery, int>
     }
 }
 
-public sealed class ThePersonHandlerValidatorOne : IRequestBehavior<GetPersonAgeQuery, int>
+public sealed class ThePersonHandlerValidatorOne : IAsyncRequestBehavior<GetPersonAgeQuery, int>
 {
-    public ValueTask<int> HandleAsync(RequestDelegate<int> next, GetPersonAgeQuery request, CancellationToken cancellationToken)
+    public ValueTask<int> HandleAsync(AsyncRequestDelegate<int> next, GetPersonAgeQuery request, CancellationToken cancellationToken)
     {
         return next(request, cancellationToken);
     }
@@ -27,14 +27,14 @@ public class BenchmarksPipeline
 {
     private static readonly IServiceProvider Provider = new ServiceCollection()
         .AddSegres()
-        // .AddSingleton<IRequestBehavior<GetPersonAgeQuery, int>, ThePersonHandlerValidatorOne>()
-        .AddSingleton<IRequestBehavior<GetPersonAgeQuery, int>, ThePersonHandlerValidatorOne>()
+        // .AddSingleton<IAsyncRequestBehavior<GetPersonAgeQuery, int>, ThePersonHandlerValidatorOne>()
+        .AddSingleton<IAsyncRequestBehavior<GetPersonAgeQuery, int>, ThePersonHandlerValidatorOne>()
         .AddSingleton<ThePersonHandlerValidatorOne>()
         .BuildServiceProvider();
 
-    private static Type type = typeof(IRequestBehavior<GetPersonAgeQuery, int>);
+    private static Type type = typeof(IAsyncRequestBehavior<GetPersonAgeQuery, int>);
 
-    private static RequestDelegate<int> Fu = async (r, c) =>
+    private static AsyncRequestDelegate<int> Fu = async (r, c) =>
     {
         await Task.Delay(1);
         return ((GetPersonAgeQuery) r).Age;
@@ -84,7 +84,7 @@ public class BenchmarksPipeline
 
     private static KeyValuePair<Type, Delegate> Register<T>(Type t)
     {
-        var type1 = typeof(IRequestHandler<,>).MakeGenericType(t, typeof(T));
+        var type1 = typeof(IAsyncRequestHandler<,>).MakeGenericType(t, typeof(T));
         var del = CreateDelegate<T>(t);
         return new KeyValuePair<Type, Delegate>(type1, del);
     }
@@ -99,6 +99,6 @@ public class BenchmarksPipeline
     private static Func<object, IRequest<T>, CancellationToken, ValueTask<T>> ExecuteAsync<TRequest, T>()
         where TRequest : IRequest<T>
     {
-        return (obj, request, cancellationToken) => ((IRequestHandler<TRequest, T>) obj).HandleAsync((TRequest) request, cancellationToken);
+        return (obj, request, cancellationToken) => ((IAsyncRequestHandler<TRequest, T>) obj).HandleAsync((TRequest) request, cancellationToken);
     }
 }

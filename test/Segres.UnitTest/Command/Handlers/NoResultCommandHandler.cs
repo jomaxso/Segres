@@ -2,7 +2,7 @@
 
 namespace Segres.UnitTest.Command;
 
-public class NoResultCommandHandler : IRequestHandler<NoResultCommand>
+public class NoResultCommandHandler : IAsyncRequestHandler<NoResultCommand>
 {
     public async ValueTask HandleAsync(NoResultCommand command, CancellationToken cancellationToken = default)
     {

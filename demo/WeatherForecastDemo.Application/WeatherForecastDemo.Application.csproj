@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Segres\Segres.csproj"/>
-        <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj"/>
+        <ProjectReference Include="..\..\src\Segres\Segres.csproj" />
+        <ProjectReference Include="..\WeatherForecastDemo.Domain\WeatherForecastDemo.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.3.0"/>
+        <PackageReference Include="FluentValidation" Version="11.3.0" />
     </ItemGroup>
 
 </Project>

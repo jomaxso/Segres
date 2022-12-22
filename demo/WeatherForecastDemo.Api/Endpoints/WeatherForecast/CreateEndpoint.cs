@@ -5,9 +5,7 @@ using WeatherForecastDemo.Contracts.WeatherForecast;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-public record struct WeatherForecastCreatedEvent(Guid Id) : INotification;
-
-public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForecastRequest>
+public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForecastRequest, Guid>
 {
     private readonly ISender _sender;
     private readonly IPublisher _publisher;
@@ -18,15 +16,7 @@ public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForec
         _publisher = publisher;
     }
 
-    protected override void Configure(EndpointDefinition builder)
-    {
-        builder
-            .WithGroup(nameof(WeatherForecast))
-            .WithRoute("/")
-            .MapPost();
-    }
-
-    protected override async ValueTask<IResult> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
+    public override async ValueTask<IHttpResult<Guid>> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWeatherForecastCommand
         {
@@ -34,8 +24,15 @@ public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForec
             Summary = request.Summary
         };
 
-        var id = await _sender.SendAsync(command, cancellationToken);
+        await _sender.SendAsync(command, cancellationToken);
+        var id = Guid.NewGuid();
         await _publisher.PublishAsync(new WeatherForecastCreatedEvent(id), cancellationToken);
-        return Results.Ok(id);
+        
+        return Ok(id);
+    }
+
+    protected override void Configure(EndpointDefinition builder)
+    {
+        builder.MapFromAttribute();
     }
 }
