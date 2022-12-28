@@ -5,6 +5,8 @@ using DispatchR.Benchmarks.Handlers;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Segres.Handlers;
+using IRequest = Segres.Contracts.IRequest;
 
 namespace Segres.Benchmarks;
 
@@ -18,9 +20,9 @@ public sealed class GeneratedSender : ISender
     }
 
     public async ValueTask SendAsync(IRequest request, CancellationToken cancellationToken = default)
-        => await SendAsync((IRequest<None>) request, cancellationToken);
+        => await SendAsync((Contracts.IRequest<None>) request, cancellationToken);
 
-    public async ValueTask<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public async ValueTask<TResponse> SendAsync<TResponse>(Contracts.IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         return request switch
         {
@@ -33,7 +35,7 @@ public sealed class GeneratedSender : ISender
         };
     }
 
-    public TResponse Send<TResponse>(IRequest<TResponse> request)
+    public TResponse Send<TResponse>(Contracts.IRequest<TResponse> request)
     {
         throw new NotImplementedException();
     }

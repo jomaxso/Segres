@@ -1,4 +1,5 @@
-﻿using Xunit.Sdk;
+﻿using Segres.Handlers;
+using Xunit.Sdk;
 
 namespace Segres.UnitTest.Query;
 

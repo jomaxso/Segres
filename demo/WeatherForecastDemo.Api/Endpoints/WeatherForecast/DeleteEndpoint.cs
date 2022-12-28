@@ -7,7 +7,7 @@ namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 [HttpDeleteRequest("{id:guid}", nameof(WeatherForecast))]
 public record DeleteRequest(Guid Id) : IHttpRequest<Domain.Entities.WeatherForecast?>;
 
-public sealed class DeleteAbstractEndpoint : AbstractEndpoint<DeleteRequest, Domain.Entities.WeatherForecast?>
+public sealed class DeleteAbstractEndpoint : IAsyncEndpoint<DeleteRequest, Domain.Entities.WeatherForecast?>
 {
     private readonly ISender _sender;
 
@@ -16,10 +16,15 @@ public sealed class DeleteAbstractEndpoint : AbstractEndpoint<DeleteRequest, Dom
         _sender = sender;
     }
 
-    public override async ValueTask<IHttpResult<Domain.Entities.WeatherForecast?>> HandleAsync(DeleteRequest request, CancellationToken cancellationToken)
+    public async ValueTask<Domain.Entities.WeatherForecast?> HandleAsync(DeleteRequest request, CancellationToken cancellationToken)
     {
         var command = new DeleteWeatherForecastCommand(request.Id);
         var result = await _sender.SendAsync(command, cancellationToken);
-        return Ok(result);
+        return result;
+    }
+
+    public static void Configure(EndpointDefinition builder)
+    {
+        builder.MapFromAttribute();
     }
 }

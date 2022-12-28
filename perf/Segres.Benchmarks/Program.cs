@@ -3,6 +3,7 @@
 using BenchmarkDotNet.Running;
 using Segres;
 using Segres.Benchmarks;
+using Segres.Contracts;
 
 // var b = new Benchmarks();
 // b.GlobalSetup();

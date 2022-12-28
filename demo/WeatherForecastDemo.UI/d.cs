@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Segres.Commons;
+using Segres.Contracts;
 
 namespace Segres;
 

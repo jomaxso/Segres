@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Segres.Commons;
+using Segres.Handlers;
 
 namespace Segres;
 

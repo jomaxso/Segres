@@ -12,6 +12,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\Segres.DependencyInjection\Segres.DependencyInjection.csproj" />
       <ProjectReference Include="..\Segres\Segres.csproj" />
     </ItemGroup>
 

@@ -1,4 +1,6 @@
-﻿namespace Segres.UnitTest.Command;
+﻿using Segres.Contracts;
+
+namespace Segres.UnitTest.Command;
 
 public class NoResultCommand : IRequest
 {

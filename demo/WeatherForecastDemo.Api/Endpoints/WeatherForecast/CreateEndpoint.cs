@@ -5,7 +5,7 @@ using WeatherForecastDemo.Contracts.WeatherForecast;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForecastRequest, Guid>
+public sealed class CreateAbstractEndpoint : IAsyncEndpoint<CreateWeatherForecastRequest, Guid>
 {
     private readonly ISender _sender;
     private readonly IPublisher _publisher;
@@ -16,7 +16,14 @@ public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForec
         _publisher = publisher;
     }
 
-    public override async ValueTask<IHttpResult<Guid>> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
+
+
+    public static void Configure(EndpointDefinition builder)
+    {
+        builder.MapFromAttribute();
+    }
+    
+    public async ValueTask<Guid> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWeatherForecastCommand
         {
@@ -27,12 +34,7 @@ public sealed class CreateAbstractEndpoint : AbstractEndpoint<CreateWeatherForec
         await _sender.SendAsync(command, cancellationToken);
         var id = Guid.NewGuid();
         await _publisher.PublishAsync(new WeatherForecastCreatedEvent(id), cancellationToken);
-        
-        return Ok(id);
-    }
 
-    protected override void Configure(EndpointDefinition builder)
-    {
-        builder.MapFromAttribute();
+        return id;
     }
 }

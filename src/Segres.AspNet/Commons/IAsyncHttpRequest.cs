@@ -1,9 +1,11 @@
-﻿namespace Segres.AspNet;
+﻿using Segres.Contracts;
 
-public interface IHttpRequest : IRequest<IHttpResult>
+namespace Segres.AspNet;
+
+public interface IHttpRequest : IHttpRequest<None>
 {
 }
 
-public interface IHttpRequest<TResponse> : IRequest<IHttpResult<TResponse>>
+public interface IHttpRequest<TResponse> :  IRequest<TResponse> //  IRequest<IHttpResult<TResponse>>,
 {
 }

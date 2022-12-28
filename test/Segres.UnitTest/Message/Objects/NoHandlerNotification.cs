@@ -1,4 +1,6 @@
-﻿namespace Segres.UnitTest.Event.Objects;
+﻿using Segres.Contracts;
+
+namespace Segres.UnitTest.Event.Objects;
 
 public class NoHandlerNotification : INotification
 {

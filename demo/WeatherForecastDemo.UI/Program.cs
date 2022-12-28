@@ -4,11 +4,10 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
+using Segres.Commons;
 
 IServiceProvider Provider = new ServiceCollection()
-    .AddSegres(configuration => configuration
-        .WithHttpClient<ThePerson>(""))
-
+    .AddSegres()
     .AddValidatorsFromAssembly(Assembly.GetEntryAssembly())
     .BuildServiceProvider();
 

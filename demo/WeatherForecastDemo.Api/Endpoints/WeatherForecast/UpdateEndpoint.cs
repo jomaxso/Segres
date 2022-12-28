@@ -7,7 +7,7 @@ namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 [HttpPutRequest("{id:guid}", nameof(WeatherForecast))]
 public record UpdateWeatherForecastRequest(Guid Id, DateTime Date, int TemperatureC, string? Summary) : IHttpRequest<Domain.Entities.WeatherForecast?>;
 
-public sealed class UpdateAbstractEndpoint : AbstractEndpoint<UpdateWeatherForecastRequest, Domain.Entities.WeatherForecast?>
+public sealed class UpdateAbstractEndpoint : IAsyncEndpoint<UpdateWeatherForecastRequest, Domain.Entities.WeatherForecast?>
 {
     private readonly ISender _sender;
 
@@ -16,7 +16,7 @@ public sealed class UpdateAbstractEndpoint : AbstractEndpoint<UpdateWeatherForec
         _sender = sender;
     }
 
-    public override async ValueTask<IHttpResult<Domain.Entities.WeatherForecast?>> HandleAsync(UpdateWeatherForecastRequest request, CancellationToken cancellationToken)
+    public async ValueTask<Domain.Entities.WeatherForecast?> HandleAsync(UpdateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateWeatherForecastCommand(request.Id, new Domain.Entities.WeatherForecast
         {
@@ -28,6 +28,11 @@ public sealed class UpdateAbstractEndpoint : AbstractEndpoint<UpdateWeatherForec
         
         var result = await _sender.SendAsync(command, cancellationToken);
         
-        return Ok(result);
+        return result;
+    }
+
+    public static void Configure(EndpointDefinition builder)
+    {
+        builder.MapFromAttribute();
     }
 }

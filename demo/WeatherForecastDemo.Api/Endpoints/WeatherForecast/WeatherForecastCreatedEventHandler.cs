@@ -1,10 +1,12 @@
 ﻿using Segres;
+using Segres.Contracts;
+using Segres.Handlers;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
 public record struct WeatherForecastCreatedEvent(Guid Id) : INotification;
 
-public class WeatherForecastCreatedEventHandler : INotificationHandler<WeatherForecastCreatedEvent>
+public class WeatherForecastCreatedEventHandler : IAsyncNotificationHandler<WeatherForecastCreatedEvent>
 {
     public ValueTask HandleAsync(WeatherForecastCreatedEvent notification, CancellationToken cancellationToken)
     {

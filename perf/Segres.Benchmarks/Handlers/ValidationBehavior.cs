@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Segres;
+using Segres.Behaviors;
+using Segres.Contracts;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace DispatchR.Benchmarks.Handlers;

@@ -1,12 +1,13 @@
 ﻿using Segres;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler1 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler1(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler1(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -17,11 +18,11 @@ public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler2 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler2(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler2(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -32,11 +33,11 @@ public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler3 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler3(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler3(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -47,11 +48,11 @@ public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler4 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler4(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler4(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -62,11 +63,11 @@ public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler5 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler5(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler5(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -77,11 +78,11 @@ public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler6 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler6(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler6(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -92,11 +93,11 @@ public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler7 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler7(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler7(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -107,11 +108,11 @@ public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler8 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler8(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler8(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -122,11 +123,11 @@ public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler9 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler9(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler9(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -137,11 +138,11 @@ public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler10 : INotificationHandler<UserCreated>
+public class DispatchRAsyncNotificationHandler10 : IAsyncNotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler10(BenchmarkService benchmarkService)
+    public DispatchRAsyncNotificationHandler10(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }

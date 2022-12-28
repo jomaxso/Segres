@@ -1,4 +1,5 @@
 ﻿using Segres;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 

@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using FluentValidation;
 using Segres;
 using Segres.AspNet;
+using Segres.Behaviors;
+using Segres.Contracts;
 using WeatherForecastDemo.Application;
 using WeatherForecastDemo.Application.Commons.Behaviors;
 using WeatherForecastDemo.Infrastructure;

@@ -21,11 +21,7 @@ internal class RequestEndpointDefinition<TRequest, TResponse> : EndpointDefiniti
         return _routeBuilder.MapGroup(group)
             .WithTags(group)
             .MapPost(route,
-                async (ISender sender, [FromBody] TRequest request, CancellationToken cancellationToken) =>
-                {
-                    var result =  await sender.SendAsync(request, cancellationToken);
-                    return result.ToResult();
-                });
+                async (ISender sender, [FromBody] TRequest request, CancellationToken cancellationToken) => await sender.SendAsync(request, cancellationToken));
     }
 
     protected internal override RouteHandlerBuilder InternalMapGet([StringSyntax("Route")] string route, string group = "")

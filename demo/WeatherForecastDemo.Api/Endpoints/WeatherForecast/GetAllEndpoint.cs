@@ -9,7 +9,7 @@ internal record GetAllRequest(int? Number) : IHttpRequest<IEnumerable<Domain.Ent
 {
 }
 
-internal sealed class GetAllAbstractEndpoint : AbstractEndpoint<GetAllRequest, IEnumerable<Domain.Entities.WeatherForecast>>
+internal sealed class GetAllAbstractEndpoint : IAsyncEndpoint<GetAllRequest, IEnumerable<Domain.Entities.WeatherForecast>>
 {
     private readonly ISender _sender;
 
@@ -18,11 +18,16 @@ internal sealed class GetAllAbstractEndpoint : AbstractEndpoint<GetAllRequest, I
         _sender = sender;
     }
 
-    public override async ValueTask<IHttpResult<IEnumerable<Domain.Entities.WeatherForecast>>> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
+    public async ValueTask<IEnumerable<Domain.Entities.WeatherForecast>> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var query = new GetAllWeatherForecastQuery(request.Number);
         var response = _sender.Send(query);
-        return Ok(response);
+        return response;
+    }
+
+    public static void Configure(EndpointDefinition builder)
+    {
+        builder.MapFromAttribute();
     }
 }

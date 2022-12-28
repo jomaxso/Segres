@@ -2,6 +2,9 @@
 using System.Reflection;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
+using Segres.Behaviors;
+using Segres.Contracts;
+using Segres.Handlers;
 
 namespace Segres.Benchmarks;
 

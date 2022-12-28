@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Segres.Commons;
 
 namespace Segres.AspNet;
 
