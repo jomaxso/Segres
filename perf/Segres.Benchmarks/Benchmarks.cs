@@ -5,46 +5,10 @@ using DispatchR.Benchmarks.Handlers;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Handlers;
-using IRequest = Segres.Contracts.IRequest;
+using IPublisher = Segres.Abstractions.IPublisher;
+using ISender = Segres.Abstractions.ISender;
 
 namespace Segres.Benchmarks;
-
-public sealed class GeneratedSender : ISender
-{
-    private readonly IServiceProvider _serviceResolver;
-
-    public GeneratedSender(IServiceProvider serviceResolver)
-    {
-        _serviceResolver = serviceResolver;
-    }
-
-    public async ValueTask SendAsync(IRequest request, CancellationToken cancellationToken = default)
-        => await SendAsync((Contracts.IRequest<None>) request, cancellationToken);
-
-    public async ValueTask<TResponse> SendAsync<TResponse>(Contracts.IRequest<TResponse> request, CancellationToken cancellationToken = default)
-    {
-        return request switch
-        {
-            CreateUserWithResult r => await _serviceResolver
-                .GetRequiredService<IAsyncRequestHandler<CreateUserWithResult, int>>()
-                .HandleAsync(r, cancellationToken) is TResponse response ? response : throw new Exception(),
-            
-            
-            _ => throw new ArgumentOutOfRangeException(nameof(request))
-        };
-    }
-
-    public TResponse Send<TResponse>(Contracts.IRequest<TResponse> request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Send(IRequest request)
-    {
-        throw new NotImplementedException();
-    }
-}
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
@@ -62,7 +26,6 @@ public class Benchmarks
     private IPublisher _publisher = default!;
     private ISender _sender = default!;
     private IServiceProvider _serviceProvider = default!;
-    private IStreamer _streamer = default!;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -72,7 +35,6 @@ public class Benchmarks
 
         _sender = _serviceProvider.GetRequiredService<ISender>();
         _publisher = _serviceProvider.GetRequiredService<IPublisher>();
-        _streamer = _serviceProvider.GetRequiredService<IStreamer>();
         _mediatorMediatR = _serviceProvider.GetRequiredService<IMediator>();
     }
 

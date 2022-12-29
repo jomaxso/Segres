@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Segres;
-using Segres.Behaviors;
-using Segres.Contracts;
+using Segres.Abstractions;
 
 namespace WeatherForecastDemo.Application.Commons.Behaviors;
 
@@ -16,7 +15,7 @@ public sealed class QueryValidatorBehavior<TRequest, TResult> : IRequestBehavior
     }
     
 
-    public TResult Handle(RequestDelegate<TResult> next, TRequest request)
+    public TResult Handle(RequestHandlerDelegate<TResult> next, TRequest request)
     {
         var validationResult = _validator?.Validate(request);
 

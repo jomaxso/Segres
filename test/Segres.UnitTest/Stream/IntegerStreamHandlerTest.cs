@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Segres.Abstractions;
 using Segres.UnitTest.Stream.Objects;
 using Xunit;
 
@@ -14,12 +15,12 @@ public class IntegerStreamHandlerTest
     {
         // Arrange
         var streamOption = new IntegerStreamRequest();
-        var dispatcher = _serviceProvider.GetRequiredService<IStreamer>();
+        var dispatcher = _serviceProvider.GetRequiredService<ISender>();
 
         var last = 0;
 
         // Act
-        var stream = dispatcher.CreateStreamAsync(streamOption);
+        var stream = await dispatcher.SendAsync(streamOption);
 
         //Assert
         await foreach (var item in stream)

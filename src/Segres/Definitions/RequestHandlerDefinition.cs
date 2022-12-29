@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
-using Segres.Behaviors;
-using Segres.Contracts;
-using Segres.Delegates;
-using Segres.Extensions;
-using Segres.Handlers;
+using Segres.Abstractions;
 
-namespace Segres.Definitions;
+namespace Segres;
+
+internal delegate ValueTask<T> PipelineDelegate<T>(object handler, object[]? behaviors, IRequest<T> request, CancellationToken cancellationToken);
 
 internal class RequestHandlerDefinition<TResponse> : IHandlerDefinition<RequestHandlerDefinition<TResponse>>
 {
@@ -49,11 +47,11 @@ internal class RequestHandlerDefinition<TResponse> : IHandlerDefinition<RequestH
         };
     }
 
-    private static AsyncRequestDelegate<TResult> Create<TRequest, TResult>(IAsyncRequestBehavior<TRequest, TResult>[] handlers, int index, AsyncRequestDelegate<TResult> finalDelegate)
+    private static AsyncRequestHandlerDelegate<TResult> Create<TRequest, TResult>(IAsyncRequestBehavior<TRequest, TResult>[] handlers, int index, AsyncRequestHandlerDelegate<TResult> finalHandlerDelegate)
         where TRequest : IRequest<TResult>
         => index < 0
-            ? finalDelegate
-            : (r, c) => handlers[index].HandleAsync(Create(handlers, index - 1, finalDelegate), (TRequest) r, c);
+            ? finalHandlerDelegate
+            : (r, c) => handlers[index].HandleAsync(Create(handlers, index - 1, finalHandlerDelegate), (TRequest) r, c);
 
     public void CheckPipeline(object[]? requestBehaviors)
         => HasPipeline ??= requestBehaviors is not null && requestBehaviors.Length > 0;

@@ -1,7 +1,7 @@
-﻿using Segres.Contracts;
-using Segres.Handlers;
+﻿using System.Runtime.CompilerServices;
+using Segres.Abstractions;
 
-namespace Segres.Extensions;
+namespace Segres;
 
 internal static class RequestHandlerExtensions
 {

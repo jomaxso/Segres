@@ -1,17 +1,18 @@
 ﻿using Segres;
-using Segres.AspNet;
+using Segres.Abstractions;
+using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
 [HttpDeleteRequest("{id:guid}", nameof(WeatherForecast))]
-public record DeleteRequest(Guid Id) : IHttpRequest<Domain.Entities.WeatherForecast?>;
+public record DeleteRequest(Guid Id) : IRequest<Domain.Entities.WeatherForecast?>;
 
-public sealed class DeleteAbstractEndpoint : IAsyncEndpoint<DeleteRequest, Domain.Entities.WeatherForecast?>
+public sealed class DeleteAbstractRequestEndpoint : IAsyncRequestEndpoint<DeleteRequest, Domain.Entities.WeatherForecast?>
 {
     private readonly ISender _sender;
 
-    public DeleteAbstractEndpoint(ISender sender)
+    public DeleteAbstractRequestEndpoint(ISender sender)
     {
         _sender = sender;
     }
@@ -23,7 +24,7 @@ public sealed class DeleteAbstractEndpoint : IAsyncEndpoint<DeleteRequest, Domai
         return result;
     }
 
-    public static void Configure(EndpointDefinition builder)
+    public static void Configure(IEndpointDefinition builder)
     {
         builder.MapFromAttribute();
     }

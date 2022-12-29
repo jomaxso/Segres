@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Segres.AspNet\Segres.AspNet.csproj" />
+        <ProjectReference Include="..\..\src\Segres.AspNetCore\Segres.AspNetCore.csproj" />
         <ProjectReference Include="..\WeatherForecastDemo.Application\WeatherForecastDemo.Application.csproj" />
         <ProjectReference Include="..\WeatherForecastDemo.Contracts\WeatherForecastDemo.Contracts.csproj" />
         <ProjectReference Include="..\WeatherForecastDemo.Infrastructure\WeatherForecastDemo.Infrastructure.csproj" />

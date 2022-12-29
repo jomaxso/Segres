@@ -1,4 +1,4 @@
-﻿namespace Segres.Definitions;
+﻿namespace Segres;
 
 internal interface IHandlerDefinition<out TSelf>
 {

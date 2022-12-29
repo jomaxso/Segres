@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
-using Segres.Delegates;
 
-namespace Segres.Extensions;
+namespace Segres;
 
 internal static class DelegatesExtensions
 {
@@ -14,6 +13,6 @@ internal static class DelegatesExtensions
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static object? GetService(this ServiceResolver serviceResolver, Type type) 
+    public static object? GetService(this Func<Type, object?> serviceResolver, Type type) 
         => serviceResolver.Invoke(type);
 }

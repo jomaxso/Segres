@@ -1,4 +1,4 @@
-﻿using Segres.Handlers;
+﻿using Segres.Abstractions;
 using Xunit.Sdk;
 
 namespace Segres.UnitTest.Command;

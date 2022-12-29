@@ -1,4 +1,4 @@
-﻿using Segres.Handlers;
+﻿using Segres.Abstractions;
 using Segres.UnitTest.Event.Objects;
 using Xunit.Sdk;
 

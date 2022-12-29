@@ -1,6 +1,5 @@
 ﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
+using Segres.Abstractions;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Queries;

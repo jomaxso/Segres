@@ -1,0 +1,18 @@
+﻿namespace Segres.Abstractions;
+
+/// <summary>
+/// Defines a subscriber for a notification.
+/// </summary>
+/// <seealso cref="INotification"/>
+public interface IAsyncNotificationHandler<in TNotification> 
+    where TNotification : INotification
+{
+    /// <summary>
+    /// Asynchronously subscribe and handle a notification.
+    /// </summary>
+    /// <param name="notification">The notification object</param>
+    /// <param name="cancellationToken">An cancellation token</param>
+    /// <returns>A Task</returns>
+    /// <seealso cref="INotification"/>
+    ValueTask HandleAsync(TNotification notification, CancellationToken cancellationToken);
+}

@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Segres;
-using Segres.Behaviors;
-using Segres.Contracts;
+using Segres.Abstractions;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace DispatchR.Benchmarks.Handlers;
@@ -16,7 +15,7 @@ public class ValidationBehavior<TRequest, TResponse> : IAsyncRequestBehavior<TRe
         _requestValidator = requestValidator;
     }
 
-    public async ValueTask<TResponse> HandleAsync(AsyncRequestDelegate<TResponse> next, TRequest request, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> HandleAsync(AsyncRequestHandlerDelegate<TResponse> next, TRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -40,7 +39,7 @@ public class ValidationBehavior<TRequest, TResponse> : IAsyncRequestBehavior<TRe
 
 public class FakeValidationBehavior<TRequest, TResponse> : IAsyncRequestBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public ValueTask<TResponse> HandleAsync(AsyncRequestDelegate<TResponse> next, TRequest request, CancellationToken cancellationToken)
+    public ValueTask<TResponse> HandleAsync(AsyncRequestHandlerDelegate<TResponse> next, TRequest request, CancellationToken cancellationToken)
     {
         return next(request, cancellationToken);
     }

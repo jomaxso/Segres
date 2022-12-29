@@ -1,8 +1,8 @@
-﻿using Segres.Contracts;
+﻿using Segres.Abstractions;
 
 namespace Segres;
 
-public sealed class Publisher : IPublisher
+internal sealed class Publisher : IPublisher
 {
     private readonly ISubscriber _subscriber;
 

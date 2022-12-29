@@ -6,4 +6,17 @@
         <RepositoryUrl>https://github.com/jomaxso/Segres</RepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).DependencyInjection" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Segres.Abstractions\Segres.Abstractions.csproj" />
+    </ItemGroup>
 </Project>

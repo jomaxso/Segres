@@ -2,7 +2,7 @@
 using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
-using Segres.Handlers;
+using Segres.Abstractions;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 

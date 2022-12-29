@@ -1,5 +1,5 @@
 ﻿using Segres;
-using Segres.Handlers;
+using Segres.Abstractions;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 

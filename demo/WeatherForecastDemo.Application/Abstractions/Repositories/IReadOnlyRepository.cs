@@ -13,7 +13,7 @@ public interface IReadOnlyRepository<TEntity, in TId>
 
     ValueTask<TEntity?> GetByIdAsync(TId id);
     
-    List<TEntity> Get(
+    IAsyncEnumerable<TEntity> Get(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "",

@@ -1,15 +1,16 @@
 ﻿using Segres;
-using Segres.AspNet;
+using Segres.Abstractions;
+using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Queries;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
 [HttpGetRequest(group: nameof(WeatherForecast))]
-internal record GetAllRequest(int? Number) : IHttpRequest<IEnumerable<Domain.Entities.WeatherForecast>>
+internal record GetAllRequest() : IStreamRequest<Domain.Entities.WeatherForecast>
 {
 }
 
-internal sealed class GetAllAbstractEndpoint : IAsyncEndpoint<GetAllRequest, IEnumerable<Domain.Entities.WeatherForecast>>
+internal sealed class GetAllAbstractEndpoint : IStreamEndpoint<GetAllRequest, Domain.Entities.WeatherForecast>
 {
     private readonly ISender _sender;
 
@@ -18,16 +19,14 @@ internal sealed class GetAllAbstractEndpoint : IAsyncEndpoint<GetAllRequest, IEn
         _sender = sender;
     }
 
-    public async ValueTask<IEnumerable<Domain.Entities.WeatherForecast>> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
-    {
-        await Task.CompletedTask;
-        var query = new GetAllWeatherForecastQuery(request.Number);
-        var response = _sender.Send(query);
-        return response;
-    }
-
-    public static void Configure(EndpointDefinition builder)
+    public static void Configure(IEndpointDefinition builder)
     {
         builder.MapFromAttribute();
+    }
+
+    public IAsyncEnumerable<Domain.Entities.WeatherForecast> HandleAsync(GetAllRequest request, CancellationToken cancellationToken)
+    {
+        var query = new GetAllWeatherForecastQuery(1);
+        return _sender.Send(query, cancellationToken);
     }
 }

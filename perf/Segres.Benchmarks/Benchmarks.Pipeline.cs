@@ -2,9 +2,8 @@
 using System.Reflection;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Behaviors;
-using Segres.Contracts;
-using Segres.Handlers;
+using Segres;
+using Segres.Abstractions;
 
 namespace Segres.Benchmarks;
 
@@ -19,7 +18,7 @@ public sealed class ThePersonHandler : IAsyncRequestHandler<GetPersonAgeQuery, i
 
 public sealed class ThePersonHandlerValidatorOne : IAsyncRequestBehavior<GetPersonAgeQuery, int>
 {
-    public ValueTask<int> HandleAsync(AsyncRequestDelegate<int> next, GetPersonAgeQuery request, CancellationToken cancellationToken)
+    public ValueTask<int> HandleAsync(AsyncRequestHandlerDelegate<int> next, GetPersonAgeQuery request, CancellationToken cancellationToken)
     {
         return next(request, cancellationToken);
     }
@@ -37,7 +36,7 @@ public class BenchmarksPipeline
 
     private static Type type = typeof(IAsyncRequestBehavior<GetPersonAgeQuery, int>);
 
-    private static AsyncRequestDelegate<int> Fu = async (r, c) =>
+    private static AsyncRequestHandlerDelegate<int> Fu = async (r, c) =>
     {
         await Task.Delay(1);
         return ((GetPersonAgeQuery) r).Age;

@@ -1,6 +1,5 @@
 ﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
+using Segres.Abstractions;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 

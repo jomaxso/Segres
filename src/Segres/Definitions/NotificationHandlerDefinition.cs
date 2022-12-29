@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
-using Segres.Contracts;
-using Segres.Extensions;
-using Segres.Handlers;
+using Segres.Abstractions;
 
-namespace Segres.Definitions;
+namespace Segres;
 
 internal class NotificationHandlerDefinition : IHandlerDefinition<NotificationHandlerDefinition>
 {

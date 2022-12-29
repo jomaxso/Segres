@@ -1,4 +1,4 @@
-﻿using Segres.Contracts;
+﻿using Segres.Abstractions;
 
 namespace Segres.UnitTest.Event.Objects;
 

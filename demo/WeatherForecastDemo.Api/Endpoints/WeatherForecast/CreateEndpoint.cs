@@ -1,24 +1,22 @@
-﻿using Segres;
-using Segres.AspNet;
+﻿using Segres.Abstractions;
+using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 using WeatherForecastDemo.Contracts.WeatherForecast;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-public sealed class CreateAbstractEndpoint : IAsyncEndpoint<CreateWeatherForecastRequest, Guid>
+public sealed class CreateAbstractRequestEndpoint : IAsyncRequestEndpoint<CreateWeatherForecastRequest, Guid>
 {
     private readonly ISender _sender;
     private readonly IPublisher _publisher;
 
-    public CreateAbstractEndpoint(ISender sender, IPublisher publisher)
+    public CreateAbstractRequestEndpoint(ISender sender, IPublisher publisher)
     {
         _sender = sender;
         _publisher = publisher;
     }
-
-
-
-    public static void Configure(EndpointDefinition builder)
+    
+    public static void Configure(IEndpointDefinition builder)
     {
         builder.MapFromAttribute();
     }

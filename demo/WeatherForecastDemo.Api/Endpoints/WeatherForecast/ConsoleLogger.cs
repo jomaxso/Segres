@@ -1,4 +1,4 @@
-﻿using Segres.DependencyInjection;
+﻿using Segres;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 

@@ -4,23 +4,11 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
-using Segres.Commons;
 
 IServiceProvider Provider = new ServiceCollection()
     .AddSegres()
     .AddValidatorsFromAssembly(Assembly.GetEntryAssembly())
     .BuildServiceProvider();
-
-
-Result<int> result = await Provider
-    .GetService<ISender>()!
-    .SendAsync(new ThePerson(200), CancellationToken.None);
-
-if (result.IsSuccess)
-{
-    Console.WriteLine("jUP");
-}
-
 
 Console.WriteLine();
 

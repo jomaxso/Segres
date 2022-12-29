@@ -1,20 +1,17 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Segres.Contracts;
-using Segres.Definitions;
-using Segres.Delegates;
-using Segres.Extensions;
+using Segres.Abstractions;
 
 namespace Segres;
 
-public sealed class Subscriber : ISubscriber
+internal sealed class Subscriber : ISubscriber
 {
-    private readonly ServiceResolver _serviceResolver;
+    private readonly Func<Type, object?> _serviceResolver;
     private readonly ConcurrentDictionary<Type, NotificationHandlerDefinition> _handlerCache = new();
 
     private readonly bool _asParallel;
 
-    public Subscriber(ServiceResolver serviceResolver, bool asParallel = false)
+    public Subscriber(Func<Type, object?> serviceResolver, bool asParallel = false)
     {
         _serviceResolver = serviceResolver;
         _asParallel = asParallel;

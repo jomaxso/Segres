@@ -1,20 +1,19 @@
-﻿
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 using WeatherForecastDemo.Domain.Entities;
 
 namespace WeatherForecastDemo.Infrastructure.Repositories;
 
 internal class WeatherForecastRepository :
-    IReadOnlyWeatherForecastRepository, 
+    IReadOnlyWeatherForecastRepository,
     IWriteOnlyWeatherForecastRepository
 {
-    private static readonly string[] Summaries = new[]
+    private static readonly string[] Summaries =
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 50000).Select(index => new WeatherForecast
         {
             Id = Guid.NewGuid(),
             Date = DateTime.Now.AddDays(index),
@@ -22,7 +21,7 @@ internal class WeatherForecastRepository :
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
         .ToList();
-    
+
     public void DeleteById(Guid id)
     {
         var toDelete = _cache.First(x => x.Id == id);
@@ -51,7 +50,12 @@ internal class WeatherForecastRepository :
     }
 
 
-    public async Task<List<WeatherForecast>> GetAsync(Expression<Func<WeatherForecast, bool>>? filter = null, Func<IQueryable<WeatherForecast>, IOrderedQueryable<WeatherForecast>>? orderBy = null, string includeProperties = "", CancellationToken cancellationToken = default, bool trackable = true)
+    public async Task<List<WeatherForecast>> GetAsync(
+        Expression<Func<WeatherForecast, bool>>? filter = null,
+        Func<IQueryable<WeatherForecast>, IOrderedQueryable<WeatherForecast>>? orderBy = null,
+        string includeProperties = "",
+        CancellationToken cancellationToken = default,
+        bool trackable = true)
     {
         await Task.CompletedTask;
         var query = _cache.AsQueryable();
@@ -61,15 +65,13 @@ internal class WeatherForecastRepository :
 
         if (orderBy is not null)
             query = orderBy(query);
-        
+
         if (string.IsNullOrWhiteSpace(includeProperties) is false)
         {
-            
         }
 
         if (trackable)
         {
-            
         }
 
         return query.ToList();
@@ -81,7 +83,8 @@ internal class WeatherForecastRepository :
         return _cache.FirstOrDefault(x => x.Id == id);
     }
 
-    public List<WeatherForecast> Get(Expression<Func<WeatherForecast, bool>>? filter = null, Func<IQueryable<WeatherForecast>, IOrderedQueryable<WeatherForecast>>? orderBy = null, string includeProperties = "", bool trackable = true)
+    public async IAsyncEnumerable<WeatherForecast> Get(Expression<Func<WeatherForecast, bool>>? filter = null, Func<IQueryable<WeatherForecast>, IOrderedQueryable<WeatherForecast>>? orderBy = null,
+        string includeProperties = "", bool trackable = true)
     {
         var query = _cache.AsQueryable();
 
@@ -90,17 +93,19 @@ internal class WeatherForecastRepository :
 
         if (orderBy is not null)
             query = orderBy(query);
-        
+
         if (string.IsNullOrWhiteSpace(includeProperties) is false)
         {
-            
         }
 
         if (trackable)
         {
-            
         }
 
-        return query.ToList();
+        foreach (var weatherForecast in query.ToList())
+        {
+            await ValueTask.CompletedTask;
+            yield return weatherForecast;
+        }
     }
 }

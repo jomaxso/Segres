@@ -1,17 +1,18 @@
 ﻿using Segres;
-using Segres.AspNet;
+using Segres.Abstractions;
+using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
 [HttpPutRequest("{id:guid}", nameof(WeatherForecast))]
-public record UpdateWeatherForecastRequest(Guid Id, DateTime Date, int TemperatureC, string? Summary) : IHttpRequest<Domain.Entities.WeatherForecast?>;
+public record UpdateWeatherForecastRequest(Guid Id, DateTime Date, int TemperatureC, string? Summary) : IRequest<Domain.Entities.WeatherForecast?>;
 
-public sealed class UpdateAbstractEndpoint : IAsyncEndpoint<UpdateWeatherForecastRequest, Domain.Entities.WeatherForecast?>
+public sealed class UpdateAbstractRequestEndpoint : IAsyncRequestEndpoint<UpdateWeatherForecastRequest, Domain.Entities.WeatherForecast?>
 {
     private readonly ISender _sender;
 
-    public UpdateAbstractEndpoint(ISender sender)
+    public UpdateAbstractRequestEndpoint(ISender sender)
     {
         _sender = sender;
     }
@@ -31,7 +32,7 @@ public sealed class UpdateAbstractEndpoint : IAsyncEndpoint<UpdateWeatherForecas
         return result;
     }
 
-    public static void Configure(EndpointDefinition builder)
+    public static void Configure(IEndpointDefinition builder)
     {
         builder.MapFromAttribute();
     }
