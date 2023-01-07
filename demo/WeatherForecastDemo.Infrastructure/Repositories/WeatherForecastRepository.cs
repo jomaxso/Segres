@@ -4,7 +4,7 @@ using WeatherForecastDemo.Domain.Entities;
 
 namespace WeatherForecastDemo.Infrastructure.Repositories;
 
-internal class WeatherForecastRepository :
+public class WeatherForecastRepository :
     IReadOnlyWeatherForecastRepository,
     IWriteOnlyWeatherForecastRepository
 {
@@ -13,7 +13,7 @@ internal class WeatherForecastRepository :
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 50000).Select(index => new WeatherForecast
+    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 500).Select(index => new WeatherForecast
         {
             Id = Guid.NewGuid(),
             Date = DateTime.Now.AddDays(index),

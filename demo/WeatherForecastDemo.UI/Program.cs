@@ -5,10 +5,12 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
 
-IServiceProvider Provider = new ServiceCollection()
-    .AddSegres()
-    .AddValidatorsFromAssembly(Assembly.GetEntryAssembly())
-    .BuildServiceProvider();
+var collection = new ServiceCollection();
+
+collection.AddSegres();
+collection.AddValidatorsFromAssembly(Assembly.GetEntryAssembly());
+
+IServiceProvider provider = collection.BuildServiceProvider();
 
 Console.WriteLine();
 

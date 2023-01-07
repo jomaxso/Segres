@@ -12,3 +12,4 @@ public sealed class MyPublisher : IPublisher
         return ValueTask.CompletedTask;
     }
 }
+

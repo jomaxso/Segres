@@ -1,53 +1,54 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Segres.Abstractions;
 
 namespace Segres;
 
-
-public class SegresConfiguration
+/// <inheritdoc />
+public class SegresConfiguration : ISegresContext
 {
+    internal static SegresConfiguration? Instance { get; private set; }
+
     private readonly List<Assembly> _assemblies = new();
 
+    /// <inheritdoc />
     public IEnumerable<Assembly> Assemblies => _assemblies.Distinct().ToArray();
-    
-    public IConfiguration? Configuration { get; }
-    public IServiceCollection? Services { get; }
-    
+
+    /// <inheritdoc />
+    public IServiceCollection Services { get; }
+
     internal ServiceLifetime ServiceLifetime { get; private set; } = ServiceLifetime.Scoped;
     internal Type PublisherType { get; private set; } = typeof(Publisher);
     internal bool PublisherStrategy { get; private set; } = false;
 
 
-    private SegresConfiguration(Assembly assembly, IServiceCollection serviceCollection, IConfiguration? configuration, Action<SegresConfiguration>? options = null)
+    private SegresConfiguration(Assembly assembly, IServiceCollection serviceCollection, Action<SegresConfiguration>? options = null)
     {
         RegisterAssembly(typeof(SegresConfiguration).Assembly)
             .RegisterAssemblies(assembly.AppendReferencedAssemblies())
             .AsScoped();
 
         Services = serviceCollection;
-        Configuration = configuration;
-        
+
         options?.Invoke(this);
     }
 
-    internal static SegresConfiguration Create(Assembly assembly, IServiceCollection services, IConfiguration? configuration, Action<SegresConfiguration>? options = null) 
-        => new(assembly, services, configuration, options);
+    internal static SegresConfiguration Create(Assembly assembly, IServiceCollection services, Action<SegresConfiguration>? options = null)
+        => Instance ??= new SegresConfiguration(assembly, services, options);
 
     public SegresConfiguration AsSingleton()
     {
         this.ServiceLifetime = ServiceLifetime.Singleton;
         return this;
     }
-    
+
 
     public SegresConfiguration AsScoped()
     {
         this.ServiceLifetime = ServiceLifetime.Scoped;
         return this;
     }
-    
+
 
     public SegresConfiguration AsTransient()
     {
@@ -76,7 +77,7 @@ public class SegresConfiguration
         PublisherStrategy = asParallel;
         return this;
     }
-    
+
     public SegresConfiguration RegisterAssembly(Assembly assembly)
     {
         if (!_assemblies.Contains(assembly))
@@ -84,7 +85,7 @@ public class SegresConfiguration
 
         return this;
     }
-    
+
     public SegresConfiguration RegisterAssemblies(IEnumerable<Assembly> assemblies)
     {
         foreach (var assembly in assemblies)

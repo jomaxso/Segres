@@ -5,5 +5,5 @@ namespace Segres;
 
 public interface IServiceInstaller
 {
-    public static abstract void Install(IServiceCollection services, IConfiguration? configuration);
+    public static abstract void Install(IServiceCollection services, IConfiguration configuration);
 }

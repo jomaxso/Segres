@@ -21,8 +21,8 @@ internal class RequestEndpointDefinition<TRequest, TResponse> : EndpointDefiniti
     {
         return _routeBuilder.MapGroup(group)
             .WithTags(group)
-            .MapPost(route,
-                async (ISender sender, [FromBody] TRequest request, CancellationToken cancellationToken) => await sender.SendAsync(request, cancellationToken));
+            .MapPost(route, (ISender sender, [FromBody] TRequest request, CancellationToken cancellationToken) =>
+                sender.SendAsync(new EndpointRequest<TRequest, TResponse>(request), cancellationToken));
     }
 
     protected internal override RouteHandlerBuilder InternalMapGet([StringSyntax("Route")] string route, string group = "")
@@ -30,20 +30,23 @@ internal class RequestEndpointDefinition<TRequest, TResponse> : EndpointDefiniti
         return _routeBuilder.MapGroup(group)
             .WithTags(group)
             .MapGet(route,
-                async (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) => await sender.SendAsync(request, cancellationToken));
+                (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) =>
+                    sender.SendAsync(new EndpointRequest<TRequest, TResponse>(request), cancellationToken));
     }
 
     protected internal override RouteHandlerBuilder InternalMapPut([StringSyntax("Route")] string route, string group = "")
     {
         return _routeBuilder.MapGroup(group)
             .WithTags(group)
-            .MapPut(route, async (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) => await sender.SendAsync(request, cancellationToken));
+            .MapPut(route, (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) =>
+                sender.SendAsync(new EndpointRequest<TRequest, TResponse>(request), cancellationToken));
     }
 
     protected internal override RouteHandlerBuilder InternalMapDelete([StringSyntax("Route")] string route, string group = "")
     {
         return _routeBuilder.MapGroup(group)
             .WithTags(group)
-            .MapDelete(route, async (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) => await sender.SendAsync(request, cancellationToken));
+            .MapDelete(route, (ISender sender, [AsParameters] TRequest request, CancellationToken cancellationToken) =>
+                sender.SendAsync(new EndpointRequest<TRequest, TResponse>(request), cancellationToken));
     }
 }

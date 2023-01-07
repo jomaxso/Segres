@@ -40,8 +40,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.Abstractions", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.AspNetCore", "src\Segres.AspNetCore\Segres.AspNetCore.csproj", "{E9E026A5-5625-4F26-BF2B-884EE521932A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Segres.Extensions.FluentValidation", "src\Segres.Extensions.FluentValidation\Segres.Extensions.FluentValidation.csproj", "{675DBD52-34FF-435A-8E13-0E53A7D231FE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,10 +94,6 @@ Global
 		{E9E026A5-5625-4F26-BF2B-884EE521932A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9E026A5-5625-4F26-BF2B-884EE521932A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9E026A5-5625-4F26-BF2B-884EE521932A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{675DBD52-34FF-435A-8E13-0E53A7D231FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{675DBD52-34FF-435A-8E13-0E53A7D231FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{675DBD52-34FF-435A-8E13-0E53A7D231FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{675DBD52-34FF-435A-8E13-0E53A7D231FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,7 +111,6 @@ Global
 		{46D66F8D-59C4-4A0F-8F2B-8F5784704E09} = {17C51AC4-1B6F-4610-B359-13B2F0DF4186}
 		{AAB6D730-A5E1-4C45-AAA3-A023DF6FAB6A} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 		{E9E026A5-5625-4F26-BF2B-884EE521932A} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
-		{675DBD52-34FF-435A-8E13-0E53A7D231FE} = {A023E111-7951-4C0B-855B-B167FAB1DED0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {72F20086-2AAE-4305-977A-B807839763A8}

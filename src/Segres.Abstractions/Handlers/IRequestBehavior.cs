@@ -27,9 +27,9 @@ public interface IRequestBehavior<in TRequest, TResult> : IAsyncRequestBehavior<
     
     private static RequestHandlerDelegate<TResult> Next(AsyncRequestHandlerDelegate<TResult> next)
     {
-        return (r) =>
+        return (request) =>
         {
-            var resultTask = next(r, CancellationToken.None);
+            var resultTask = next(request, CancellationToken.None);
 
             if (resultTask.IsCompleted)
                 return resultTask.Result;

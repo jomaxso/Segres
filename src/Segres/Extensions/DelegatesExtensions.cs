@@ -15,4 +15,8 @@ internal static class DelegatesExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? GetService(this Func<Type, object?> serviceResolver, Type type) 
         => serviceResolver.Invoke(type);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T? GetServiceAs<T>(this Func<Type, object?> serviceResolver, Type type) where T : class 
+        => serviceResolver.Invoke(type) as T;
 }

@@ -15,4 +15,8 @@
         <PackageReference Include="FluentValidation" Version="11.3.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Commons\Behaviors" />
+    </ItemGroup>
+
 </Project>

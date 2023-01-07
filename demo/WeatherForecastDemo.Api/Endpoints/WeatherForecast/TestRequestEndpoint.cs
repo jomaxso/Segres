@@ -1,24 +1,30 @@
-﻿using Segres;
+﻿using Microsoft.AspNetCore.Mvc;
 using Segres.Abstractions;
 using Segres.AspNetCore;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
 
-// [HttpPostRequest(group: "Test")]
-public record struct TestRequest : IRequest<Guid>;
 
-public class TestRequestEndpoint : IAsyncRequestEndpoint<TestRequest, Guid>
+public record struct TestRequest([FromRoute]int Id, [FromBody]string? Name) : IRequest<Guid>;
+
+[HttpGetRequest("Endpoints/Tests/Test2")]
+public record struct TestRequest2 : IRequest<Guid>;
+
+[HttpGetRequest("Endpoints/Test2")]
+public record struct TestRequest3 : IRequest<Guid>;
+
+public class TestRequestEndpoint : AbstractEndpoint<TestRequest, Guid>
 {
     private readonly ISender _sender;
-    private readonly ConsoleLogger _logger;
+    private readonly IConsoleLogger _logger;
 
-    public TestRequestEndpoint(ISender sender, ConsoleLogger logger)
+    public TestRequestEndpoint(ISender sender, IConsoleLogger logger)
     {
         _sender = sender;
         _logger = logger;
     }
 
-    public async ValueTask<Guid> HandleAsync(TestRequest request, CancellationToken cancellationToken)
+    protected override async ValueTask<IEndpointResult<Guid>> ResolveAsync(TestRequest request, CancellationToken cancellationToken)
     {
         var stream = await _sender.SendAsync(new MyStream(), cancellationToken);
 
@@ -30,17 +36,9 @@ public class TestRequestEndpoint : IAsyncRequestEndpoint<TestRequest, Guid>
         }
 
         _logger.Log(guid);
-        
-        return Guid.Parse(guid);
-    }
 
-    public static void Configure(IEndpointDefinition endpoint)
-    {
-        endpoint
-            .WithGroup("Tests")
-            .MapPost("Test")
-            .Produces<Guid>(200, "application/json")
-            .ProducesProblem(400, "application/json");
+        var result = Guid.Parse(guid);
+        return EndpointResult.Ok(result);
     }
 }
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using Segres.Abstractions;
 
@@ -16,15 +15,6 @@ internal sealed class Sender : ISender
         _requestHandlerCache = new ConcurrentDictionary<Type, object>(requestHandlers);
     }
 
-    public void Send(IRequest request)
-        => SendAsync(request, CancellationToken.None).Await();
-
-    public async ValueTask SendAsync(IRequest request, CancellationToken cancellationToken = default)
-        => await SendAsync((IRequest<None>) request, cancellationToken).ConfigureAwait(false);
-
-    public TResponse Send<TResponse>(IRequest<TResponse> request)
-        => SendAsync(request, CancellationToken.None).Await();
-
     /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ValueTask<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
@@ -38,12 +28,9 @@ internal sealed class Sender : ISender
 
         if (requestDefinition.HasPipeline is false)
             return requestDefinition.InvokeAsync(requestHandler, null, request, cancellationToken);
-
-        var requestBehaviors = _serviceResolver.GetService(requestDefinition.BehaviorType) as object[];
+        
+        var requestBehaviors = _serviceResolver(requestDefinition.BehaviorType) as object[];
         requestDefinition.CheckPipeline(requestBehaviors);
         return requestDefinition.InvokeAsync(requestHandler, requestBehaviors, request, cancellationToken);
     }
-
-    public IAsyncEnumerable<TResponse> Send<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
-        => SendAsync(request, cancellationToken).Await();
 }

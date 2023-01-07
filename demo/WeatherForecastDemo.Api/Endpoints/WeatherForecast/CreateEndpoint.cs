@@ -1,9 +1,11 @@
-﻿using Segres.Abstractions;
+﻿using Segres;
+using Segres.Abstractions;
 using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
-using WeatherForecastDemo.Contracts.WeatherForecast;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecast;
+
+public record CreateWeatherForecastRequest(int TemperatureC, string? Summary) : IRequest<Guid>;
 
 public sealed class CreateAbstractRequestEndpoint : IAsyncRequestEndpoint<CreateWeatherForecastRequest, Guid>
 {
@@ -18,10 +20,10 @@ public sealed class CreateAbstractRequestEndpoint : IAsyncRequestEndpoint<Create
     
     public static void Configure(IEndpointDefinition builder)
     {
-        builder.MapFromAttribute();
+        builder.MapPost();
     }
-    
-    public async ValueTask<Guid> HandleAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
+
+    public async ValueTask<IEndpointResult<Guid>> ResolveAsync(CreateWeatherForecastRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateWeatherForecastCommand
         {
@@ -32,7 +34,15 @@ public sealed class CreateAbstractRequestEndpoint : IAsyncRequestEndpoint<Create
         await _sender.SendAsync(command, cancellationToken);
         var id = Guid.NewGuid();
         await _publisher.PublishAsync(new WeatherForecastCreatedEvent(id), cancellationToken);
+        
+        return EndpointResult.Ok(id);
+    }
+}
 
-        return id;
+public class CreateWeatherForecastRequestBehavior : IRequestBehavior<CreateWeatherForecastCommand, Guid>
+{
+    public Guid Handle(RequestHandlerDelegate<Guid> next, CreateWeatherForecastCommand request)
+    {
+        return next(request);
     }
 }

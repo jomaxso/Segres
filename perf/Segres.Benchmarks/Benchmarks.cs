@@ -5,6 +5,7 @@ using DispatchR.Benchmarks.Handlers;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Segres.Abstractions;
 using IPublisher = Segres.Abstractions.IPublisher;
 using ISender = Segres.Abstractions.ISender;
 
@@ -47,6 +48,8 @@ public class Benchmarks
             x.AsSingleton();
         });
 
+        // services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(FakeValidationBehaviorM<,>));
+        // services.AddSingleton(typeof(IAsyncRequestBehavior<,>), typeof(FakeValidationBehaviorS<,>));
         // services.AddSingleton(typeof(IAsyncRequestBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddValidatorsFromAssemblyContaining<Benchmarks>(ServiceLifetime.Singleton);
 
