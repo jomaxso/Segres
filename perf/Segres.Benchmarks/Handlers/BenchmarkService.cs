@@ -11,6 +11,7 @@ public class BenchmarkService
 
     public async ValueTask<int> RunAsync()
     {
+        await Task.CompletedTask;
         await ValueTask.CompletedTask;
         return number;
     }

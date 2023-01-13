@@ -1,12 +1,14 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
+using WeatherForecastDemo.Api.Endpoints.Notifications;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest<Guid>;
 
-internal class CreateWeatherForecastHandler : IAsyncRequestHandler<CreateWeatherForecastCommand, Guid>
+internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Guid>
 {
     private readonly IPublisher _publisher;
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;
@@ -27,14 +29,13 @@ internal class CreateWeatherForecastHandler : IAsyncRequestHandler<CreateWeather
             Summary = command.Summary
         };
 
+        Console.WriteLine(entity.Date);
+
         var result = _weatherForecastRepository.Add(entity);
-
-        var message = new WeatherForecastCreated(entity);
-
-        await _publisher.PublishAsync(message, cancellationToken);
+        
+        await _publisher.PublishAsync( new WeatherForecastCreated(result), cancellationToken);
 
         return result.Id;
     }
 }
 
-internal record struct WeatherForecastCreated(Domain.Entities.WeatherForecast WeatherForecast) : INotification;

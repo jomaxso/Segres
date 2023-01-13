@@ -1,42 +1,27 @@
-﻿namespace Segres.Abstractions;
+﻿using Segres.Contracts;
+
+namespace Segres.Handlers;
 
 /// <summary>
-/// The delegate for intercepting a request with the <see cref="IRequestBehavior{TRequest,TResult}"/>. 
+/// The delegate for asynchronously intercepting a request with the <see cref="IRequestBehavior{TRequest,TResult}"/>. 
 /// </summary>
 /// <typeparam name="TResult">The type of the result.</typeparam>
-public delegate TResult RequestHandlerDelegate<TResult>(IRequest<TResult> request);
+public delegate ValueTask<TResult> RequestDelegate<TResult>(IRequest<TResult> request, CancellationToken cancellationToken);
 
-/// <inheritdoc />
-public interface IRequestBehavior<in TRequest, TResult> : IAsyncRequestBehavior<TRequest, TResult> 
+/// <summary>
+/// A interceptor for a request using the <see cref="ISender"/> to call the matching <see cref="IRequestHandler{TRequest}"/> or <see cref="IRequestHandler{TRequest}"/>
+/// </summary>
+/// <typeparam name="TRequest">Th request type. Has to implement <see cref="IRequest{TResult}"/>.</typeparam>
+/// <typeparam name="TResult">The type of the result specified from the <see cref="IRequest{TResult}"/>.</typeparam>
+public interface IRequestBehavior<in TRequest, TResult> 
     where TRequest : IRequest<TResult>
 {
-    ValueTask<TResult> IAsyncRequestBehavior<TRequest, TResult>.HandleAsync(AsyncRequestHandlerDelegate<TResult> next, TRequest request, CancellationToken cancellationToken)
-    {
-        var requestDelegate = Next(next);
-        var result = Handle(requestDelegate, request);
-        return ValueTask.FromResult(result);
-    }
-    
     /// <summary>
     /// Hook into the pipeline of a request before calling the request handler or the next interceptor.
     /// </summary>
     /// <param name="next">The next step of the pipeline.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>The result of this interception.</returns>
-    public TResult Handle(RequestHandlerDelegate<TResult> next, TRequest request);
-    
-    private static RequestHandlerDelegate<TResult> Next(AsyncRequestHandlerDelegate<TResult> next)
-    {
-        return (request) =>
-        {
-            var resultTask = next(request, CancellationToken.None);
-
-            if (resultTask.IsCompleted)
-                return resultTask.Result;
-            
-            return resultTask.AsTask()
-                .GetAwaiter()
-                .GetResult();
-        };
-    }
+    /// <param name="cancellationToken">An cancellation token.</param>
+    /// <returns>A task that represents the receive operation. The task contains the result of this interception.</returns>
+    public ValueTask<TResult> HandleAsync(RequestDelegate<TResult> next, TRequest request, CancellationToken cancellationToken);
 }

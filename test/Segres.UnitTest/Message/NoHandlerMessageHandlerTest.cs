@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Abstractions;
 using Segres.UnitTest.Event.Objects;
 using Xunit;
 

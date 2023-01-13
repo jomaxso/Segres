@@ -1,9 +1,9 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRCommandHandler : IAsyncRequestHandler<CreateUser>
+public class DispatchRCommandHandler : IRequestHandler<CreateUser>
 {
     private readonly BenchmarkService _benchmarkService;
 

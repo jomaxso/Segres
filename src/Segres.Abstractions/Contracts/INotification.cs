@@ -1,4 +1,4 @@
-﻿namespace Segres.Abstractions;
+﻿namespace Segres.Contracts;
 
 /// <summary>
 /// Marker interface to represent a message.

@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Segres.Abstractions;
+using Segres.Handlers;
 
 namespace Segres;
 
 /// <summary>
 /// Extensions to scan and register for Segres handlers and behaviors.
-/// - Scans for any <see cref="IAsyncRequestHandler{TRequest}"/> interface implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
-/// - Scans for any <see cref="IAsyncRequestBehavior{TRequest, TResult}"/> implementations as well as the open generic implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
+/// - Scans for any <see cref="IRequestHandler{TRequest}"/> interface implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
+/// - Scans for any <see cref="IRequestBehavior{TRequest,TResult}"/> implementations as well as the open generic implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
 /// Registers <see cref="ISender"/> as <see cref="ServiceLifetime.Singleton"/>.
-/// Registers <see cref="ISubscriber"/> as <see cref="ServiceLifetime.Singleton"/>.
+/// Registers <see cref="IConsumer"/> as <see cref="ServiceLifetime.Singleton"/>.
 /// Registers <see cref="IPublisher"/> as <see cref="ServiceLifetime.Singleton"/>.
 /// </summary>
 public static class ServiceRegistration
@@ -19,80 +19,142 @@ public static class ServiceRegistration
     /// Registers handlers and behaviors types from the calling assembly and all referenced assemblies.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <param name="options">The action used to configure the options.</param>
-    /// <returns></returns>
-    public static ISegresContext AddSegres(this IServiceCollection services, Action<SegresConfiguration>? options = null)
+    /// <returns><see cref="SegresConvention"/></returns>
+    public static SegresConvention AddSegres(this IServiceCollection services)
     {
-        var segresConfiguration = SegresConfiguration.Create(Assembly.GetCallingAssembly(), services, options);
+        var assembly = Assembly.GetCallingAssembly();
+        return services.AddSegres(x => x.UseReferencedAssemblies(assembly));
+    }
 
-        services.TryAddHandlers(segresConfiguration);
-        services.TryAddBehaviors(segresConfiguration);
+    /// <summary>
+    /// Registers handlers and behaviors types manual.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="options">The action used to configure the options.</param>
+    /// <returns><see cref="SegresConvention"/></returns>
+    public static SegresConvention AddSegres(this IServiceCollection services, Action<SegresConventionBuilder> options)
+        => services.AddSegres(new SegresConventionBuilder(services), options);
 
-        services.TryAddSingleton(typeof(ISender), provider => new Sender(provider.CreateServiceResolver(segresConfiguration), new Dictionary<Type, object>()));
-        services.TryAddSingleton(typeof(IPublisher), segresConfiguration.PublisherType);
-        services.TryAddSingleton(typeof(ISubscriber), provider => new Subscriber(provider.CreateServiceResolver(segresConfiguration), segresConfiguration.PublisherStrategy));
+    /// <summary>
+    /// Registers handlers and behaviors types manual.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="segresConventionBuilder">The convention builder.</param>
+    /// <param name="options">The action used to configure the options.</param>
+    /// <returns><see cref="SegresConvention"/></returns>
+    public static SegresConvention AddSegres(this IServiceCollection services, SegresConventionBuilder segresConventionBuilder, Action<SegresConventionBuilder>? options = null)
+    {
+        var segresConfiguration = segresConventionBuilder
+            .UseAssembly(typeof(SegresConventionBuilder))
+            .Build(options);
 
-        services.AddSingleton<ISegresContext>(segresConfiguration);
+        services.AddSingleton(segresConfiguration);
+
+        segresConfiguration
+            .RegisterRequestHandlers()
+            .RegisterNotificationHandlers()
+            .RegisterBehaviors()
+            .RegisterMediators();
 
         return segresConfiguration;
     }
 
-    private static void TryAddBehaviors(this IServiceCollection services, SegresConfiguration configuration)
+    private static SegresConvention RegisterMediators(this SegresConvention configuration)
     {
-        var type = typeof(IAsyncRequestBehavior<,>);
+        configuration.Services.TryAddSingleton(typeof(IConsumer), provider => new Consumer(provider.CreateServiceResolver(configuration.ServiceLifetime)));
+        configuration.Services.TryAddSingleton(typeof(IPublisherContext), configuration.PublisherType);
+
+        configuration.Services.TryAddSingleton<IMediator>(p =>
+        {
+            var provider = p.CreateServiceResolver(configuration.ServiceLifetime);
+            var publisherContext = p.GetRequiredService<IPublisherContext>();
+            return new Mediator(provider, publisherContext, new Dictionary<Type, object>());
+        });
+
+        configuration.Services.TryAddSingleton<ISender>(provider => provider.GetRequiredService<IMediator>());
+        configuration.Services.TryAddSingleton<IPublisher>(provider => provider.GetRequiredService<IMediator>());
+
+        return configuration;
+    }
+
+    private static SegresConvention RegisterBehaviors(this SegresConvention configuration)
+    {
+        var typeToMatch = typeof(IRequestBehavior<,>);
+
+        var descriptors = configuration.BehaviorTypes
+            .Distinct()
+            .SelectMany(behaviorType => GetBehaviorInfos(behaviorType, typeToMatch))
+            .Distinct()
+            .Select(x => new ServiceDescriptor(x.Key, x.Value, configuration.ServiceLifetime));
+
+        configuration.Services.Add(descriptors);
+
+        return configuration;
+    }
+
+    private static IEnumerable<KeyValuePair<Type, Type>> GetBehaviorInfos(Type behaviorType, Type typeToMatch)
+    {
+        var isImplementRequestType = behaviorType
+            .GetInterfaces()
+            .Where(x => x.IsGenericType)
+            .Any(x => x.GetGenericTypeDefinition() == typeToMatch);
+
+        if (!behaviorType.IsInstance() || !isImplementRequestType)
+            return Enumerable.Empty<KeyValuePair<Type, Type>>();
+
+        return behaviorType.GetInterfaces()
+            .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeToMatch)
+            .Select(i => i.GetGenericArguments())
+            .Select(i => new KeyValuePair<Type, Type>(typeToMatch.MakeGenericType(i), behaviorType))
+            .Select(GetTypeCombinations);
+    }
+
+    private static SegresConvention RegisterNotificationHandlers(this SegresConvention configuration)
+    {
+        var typeToMatch = typeof(INotificationHandler<>);
 
         var descriptors = configuration.Assemblies
-            .GetGenericHandlers(type)
-            .Select(x =>
-            {
-                var (key, value) = GetTypeCombinations(x);
-                return new ServiceDescriptor(key, value, configuration.ServiceLifetime);
-            })
-            .Distinct()
-            .ToArray();
+            .GetGenericHandlers(typeToMatch)
+            .Select(x => new ServiceDescriptor(x.Key, x.Value, configuration.ServiceLifetime));
 
-        services.Add(descriptors);
+        configuration.Services.Add(descriptors);
+
+        return configuration;
     }
 
-    private static void TryAddHandlers(this IServiceCollection services, SegresConfiguration configuration)
+    private static SegresConvention RegisterRequestHandlers(this SegresConvention configuration)
     {
-        services.TryAddHandlers(typeof(IAsyncRequestHandler<>), configuration);
-        services.TryAddHandlers(typeof(IAsyncRequestHandler<,>), configuration);
-        services.TryAddHandlers(typeof(IAsyncNotificationHandler<>), configuration);
+        var handler1 = configuration.Assemblies.GetGenericHandlers(typeof(IRequestHandler<>));
+        var handler2 = configuration.Assemblies.GetGenericHandlers(typeof(IRequestHandler<,>));
+
+
+        var descriptors = handler1
+            .Concat(handler2)
+            .ToDictionary(x => x.Key, v => v.Value)
+            .Select(x => new ServiceDescriptor(x.Key, x.Value, configuration.ServiceLifetime));
+
+        configuration.Services.Add(descriptors);
+
+        return configuration;
     }
 
-    private static void TryAddHandlers(this IServiceCollection services, Type type, SegresConfiguration configuration, Func<KeyValuePair<Type, Type>, bool>? condition = default)
+    private static IServiceProvider CreateServiceResolver(this IServiceProvider serviceProvider, ServiceLifetime serviceLifetime)
+        => serviceLifetime is ServiceLifetime.Scoped
+            ? serviceProvider.CreateScope().ServiceProvider
+            : serviceProvider;
+
+    private static IEnumerable<KeyValuePair<Type, Type>> GetGenericHandlers(this IEnumerable<Assembly> assemblies, Type typeToMatch)
     {
-        var descriptors = configuration.Assemblies
-            .GetGenericHandlers(type)
-            .Where(x => condition?.Invoke(x) ?? true)
-            .Select(x => new ServiceDescriptor(x.Key, x.Value, configuration.ServiceLifetime))
-            .ToArray();
-
-        services.Add(descriptors);
-    }
-
-    private static Func<Type, object?> CreateServiceResolver(this IServiceProvider serviceProvider, SegresConfiguration configuration)
-        => configuration.ServiceLifetime is ServiceLifetime.Scoped
-            ? serviceProvider.CreateScope().ServiceProvider.GetService
-            : serviceProvider.GetService;
-
-    private static IEnumerable<KeyValuePair<Type, Type>> GetGenericHandlers(this IEnumerable<Assembly> assemblies, Type type)
-    {
-        return assemblies.GetClassesImplementingInterface(type)
-            .Distinct()
+        return assemblies
+            .SelectMany(assembly => GetClassesImplementingInterface(assembly, typeToMatch))
             .SelectMany(implementationType =>
             {
                 return implementationType.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == type)
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeToMatch)
                     .Select(i => i.GetGenericArguments())
-                    .Select(i => new KeyValuePair<Type, Type>(type.MakeGenericType(i), implementationType));
-            })
-            .Distinct();
+                    .Select(i => new KeyValuePair<Type, Type>(typeToMatch.MakeGenericType(i), implementationType));
+            });
     }
-
-    private static IEnumerable<Type> GetClassesImplementingInterface(this IEnumerable<Assembly> assemblies, Type typeToMatch)
-        => assemblies.SelectMany(assembly => GetClassesImplementingInterface(assembly, typeToMatch));
 
     private static IEnumerable<Type> GetClassesImplementingInterface(this Assembly assembly, Type typeToMatch)
     {
@@ -106,12 +168,12 @@ public static class ServiceRegistration
             return type.IsInstance() && isImplementRequestType;
         });
     }
-    
+
     private static KeyValuePair<Type, Type> GetTypeCombinations(KeyValuePair<Type, Type> keyValuePair)
     {
-        if (!keyValuePair.Key.IsGenericType || !keyValuePair.Value.IsGenericType) 
+        if (!keyValuePair.Key.IsGenericType || !keyValuePair.Value.IsGenericType)
             return keyValuePair;
-        
+
         var key = keyValuePair.Key.GetGenericTypeDefinition();
         var value = keyValuePair.Value.GetGenericTypeDefinition();
 
@@ -120,13 +182,4 @@ public static class ServiceRegistration
 
     private static bool IsInstance(this Type type)
         => type is {IsInterface: false, IsAbstract: false};
-
-    internal static IEnumerable<Assembly> AppendReferencedAssemblies(this Assembly assembly)
-    {
-        return assembly
-            .GetReferencedAssemblies()
-            .Select(Assembly.Load)
-            .Append(assembly)
-            .Distinct();
-    }
 }

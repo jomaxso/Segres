@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Segres;
-using Segres.Abstractions;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 

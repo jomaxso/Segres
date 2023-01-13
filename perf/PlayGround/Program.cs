@@ -1,16 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.DependencyInjection;
 using PlayGround;
 using PlayGround.DependencyInjection;
 using Segres;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 
 var col = new ServiceCollection();
-col.AddSegres();
+col.AddSegres(x => x.UseReferencedAssemblies(typeof(Obj)));
 ServiceProvider _provider = col.BuildServiceProvider();
+
+
 
 var s = _provider.GetRequiredService<ISender>();
 
@@ -37,7 +39,7 @@ serviceSecond.PrintSomething();
 
 public record Obj : IRequest<bool>;
 
-public class ObjHandler : IAsyncRequestHandler<Obj, bool>
+public class ObjHandler : IRequestHandler<Obj, bool>
 {
     public ValueTask<bool> HandleAsync(Obj request, CancellationToken cancellationToken)
     {
@@ -45,25 +47,25 @@ public class ObjHandler : IAsyncRequestHandler<Obj, bool>
     }
 }
 
-public class ValidationBehavior : IRequestBehavior<Obj, bool>
+public class ValidationBehavior : RequestBehavior<Obj, bool>
 {
-    public bool Handle(RequestHandlerDelegate<bool> next, Obj request)
+    protected override bool Handle(SynchronisedRequestDelegate<bool> next, Obj request)
     {
        return next(request);
     }
 }
 
-public class ValidationBehavior1<T1, T2> : IRequestBehavior<T1, T2> where T1 : IRequest<T2>
+public class ValidationBehavior1<T1, T2> : RequestBehavior<T1, T2> where T1 : IRequest<T2>
 {
-    public T2 Handle(RequestHandlerDelegate<T2> next, T1 request)
+    protected override T2 Handle(SynchronisedRequestDelegate<T2> next, T1 request)
     {
         return next(request);
     }
 }
 
-public class ValidationBehavior2<T1, T2> : IRequestBehavior<T1, T2> where T1 : IRequest<T2>
+public class ValidationBehavior2<T1, T2> : RequestBehavior<T1, T2> where T1 : IRequest<T2>
 {
-    public T2 Handle(RequestHandlerDelegate<T2> next, T1 request)
+    protected override T2 Handle(SynchronisedRequestDelegate<T2> next, T1 request)
     {
         return next(request);
     }

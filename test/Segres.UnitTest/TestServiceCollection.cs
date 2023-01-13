@@ -8,7 +8,9 @@ public static class TestServiceCollection
 
     static TestServiceCollection()
     {
-        ServiceCollection.AddSegres();
+        ServiceCollection.AddSegres(x => x
+            .UseReferencedAssemblies(typeof(TestServiceCollection))
+            .UseLifetime(ServiceLifetime.Singleton));
     }
 
     public static IServiceProvider CreateServiceProvider()

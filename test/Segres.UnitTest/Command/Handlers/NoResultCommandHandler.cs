@@ -1,9 +1,9 @@
-﻿using Segres.Abstractions;
+﻿using Segres.Handlers;
 using Xunit.Sdk;
 
 namespace Segres.UnitTest.Command;
 
-public class NoResultCommandHandler : IAsyncRequestHandler<NoResultCommand>
+public class NoResultCommandHandler : IRequestHandler<NoResultCommand>
 {
     public async ValueTask HandleAsync(NoResultCommand command, CancellationToken cancellationToken = default)
     {

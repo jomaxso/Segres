@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 
 namespace Segres;
 
@@ -19,12 +20,12 @@ internal class RequestHandlerDefinition<TResponse> : IHandlerDefinition<RequestH
     {
         var responseType = typeof(TResponse);
         var self = this.GetType();
-        
-        this.HandlerType = typeof(IAsyncRequestHandler<,>)
+
+        this.HandlerType = typeof(IRequestHandler<,>)
             .MakeGenericType(requestType, responseType);
 
         this.BehaviorType = typeof(IEnumerable<>)
-            .MakeGenericType(typeof(IAsyncRequestBehavior<,>)
+            .MakeGenericType(typeof(IRequestBehavior<,>)
                 .MakeGenericType(requestType, responseType));
 
         this.InvokeAsync = (PipelineDelegate<TResponse>) self
@@ -36,22 +37,22 @@ internal class RequestHandlerDefinition<TResponse> : IHandlerDefinition<RequestH
     {
         return (requestHandler, requestBehaviors, request, cancellationToken) =>
         {
-            if (requestHandler is not IAsyncRequestHandler<TRequest, TResponse> handler)
+            if (requestHandler is not IRequestHandler<TRequest, TResponse> handler)
                 throw new UnreachableException();
 
-            if (requestBehaviors is not IAsyncRequestBehavior<TRequest, TResponse>[] behaviors || behaviors.Length < 1)
+            if (requestBehaviors is not IRequestBehavior<TRequest, TResponse>[] behaviors || behaviors.Length < 1)
                 return handler.HandleAsync((TRequest) request, cancellationToken);
 
-            return Create(behaviors, behaviors.Length - 1, handler.ExecuteRequestHandler)
+            return Create(behaviors.AsMemory(), behaviors.Length - 1, handler.ExecuteRequestHandler)
                 .Invoke(request, cancellationToken);
         };
     }
 
-    private static AsyncRequestHandlerDelegate<TResult> Create<TRequest, TResult>(IAsyncRequestBehavior<TRequest, TResult>[] handlers, int index, AsyncRequestHandlerDelegate<TResult> finalHandlerDelegate)
+    private static RequestDelegate<TResult> Create<TRequest, TResult>(Memory<IRequestBehavior<TRequest, TResult>> handlers, int index, RequestDelegate<TResult> finalHandlerDelegate)
         where TRequest : IRequest<TResult>
         => index < 0
             ? finalHandlerDelegate
-            : (r, c) => handlers[index].HandleAsync(Create(handlers, index - 1, finalHandlerDelegate), (TRequest) r, c);
+            : (r, c) => handlers.Span[index].HandleAsync(Create(handlers, index - 1, finalHandlerDelegate), (TRequest) r, c);
 
     public void CheckPipeline(object[]? requestBehaviors)
         => HasPipeline ??= requestBehaviors is not null && requestBehaviors.Length > 0;

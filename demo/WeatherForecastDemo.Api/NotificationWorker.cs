@@ -1,12 +1,24 @@
-﻿using Segres.Abstractions;
+﻿using Segres;
+using Segres.Contracts;
+
+public class MyPublisher : IPublisherContext
+{
+    public static Queue<INotification> Database { get; } = new Queue<INotification>();
+
+    public ValueTask RaiseNotificationAsync(INotification notification, CancellationToken cancellationToken)
+    {
+        Database.Enqueue(notification);
+        return ValueTask.CompletedTask;
+    }
+}
 
 public class NotificationWorker : BackgroundService
 {
-    private readonly ISubscriber _subscriber;
+    private readonly IConsumer _consumer;
 
-    public NotificationWorker(ISubscriber subscriber)
+    public NotificationWorker(IConsumer consumer)
     {
-        _subscriber = subscriber;
+        _consumer = consumer;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -17,9 +29,9 @@ public class NotificationWorker : BackgroundService
             
             for (var i = 0; i < 20; i++)
             {
-                if (MyPublisher.Notifications.TryDequeue(out var notification))
+                if (MyPublisher.Database.TryDequeue(out var notification))
                 {
-                    await _subscriber.SubscribeAsync(notification, stoppingToken);
+                    await _consumer.ConsumeAsync(notification, stoppingToken);
                 }
             }
         }

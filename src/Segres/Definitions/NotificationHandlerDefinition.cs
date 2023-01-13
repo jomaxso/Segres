@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 
 namespace Segres;
 
@@ -10,7 +11,7 @@ internal class NotificationHandlerDefinition : IHandlerDefinition<NotificationHa
         var self = this.GetType();
 
         this.HandlerType = typeof(IEnumerable<>)
-            .MakeGenericType(typeof(IAsyncNotificationHandler<>)
+            .MakeGenericType(typeof(INotificationHandler<>)
                 .MakeGenericType(requestType));
 
         this.InvokeAsync = (Func<object[], INotification, bool, CancellationToken, ValueTask>) self
@@ -29,7 +30,7 @@ internal class NotificationHandlerDefinition : IHandlerDefinition<NotificationHa
     {
         return (requestHandler, message, asParallel, cancellationToken) =>
         {
-            if (requestHandler is not IAsyncNotificationHandler<TNotification>[] handlers)
+            if (requestHandler is not INotificationHandler<TNotification>[] handlers)
                 throw new UnreachableException();
 
             var length = handlers.Length;
@@ -44,7 +45,7 @@ internal class NotificationHandlerDefinition : IHandlerDefinition<NotificationHa
         };
     }
 
-    private static async ValueTask PublishWhenAll<TEvent>(IAsyncNotificationHandler<TEvent>[] handlers, int length, TEvent message, CancellationToken cancellationToken)
+    private static async ValueTask PublishWhenAll<TEvent>(INotificationHandler<TEvent>[] handlers, int length, TEvent message, CancellationToken cancellationToken)
         where TEvent : INotification
     {
         var tasks = new Task[length];
@@ -68,7 +69,7 @@ internal class NotificationHandlerDefinition : IHandlerDefinition<NotificationHa
             throw new Exception("One or more errors appeared while publishing notification " + all.Exception.InnerExceptions);
     }
 
-    private static async ValueTask PublishSequential<TEvent>(IReadOnlyList<IAsyncNotificationHandler<TEvent>> handlers, TEvent message, CancellationToken cancellationToken)
+    private static async ValueTask PublishSequential<TEvent>(IReadOnlyList<INotificationHandler<TEvent>> handlers, TEvent message, CancellationToken cancellationToken)
         where TEvent : INotification
     {
         for (var i = 0; i < handlers.Count; i++)

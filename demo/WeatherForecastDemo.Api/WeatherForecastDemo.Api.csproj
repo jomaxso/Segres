@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="11.4.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
@@ -15,7 +17,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Segres.AspNetCore\Segres.AspNetCore.csproj" />
         <ProjectReference Include="..\WeatherForecastDemo.Application\WeatherForecastDemo.Application.csproj" />
-        <ProjectReference Include="..\WeatherForecastDemo.Contracts\WeatherForecastDemo.Contracts.csproj" />
         <ProjectReference Include="..\WeatherForecastDemo.Infrastructure\WeatherForecastDemo.Infrastructure.csproj" />
     </ItemGroup>
 

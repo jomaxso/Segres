@@ -1,9 +1,9 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRAsyncCommandReturningObjectHandler : IAsyncRequestHandler<CreateUserWithResult, int>
+public class DispatchRAsyncCommandReturningObjectHandler : IRequestHandler<CreateUserWithResult, int>
 {
     private readonly BenchmarkService _benchmarkService;
 
@@ -18,7 +18,7 @@ public class DispatchRAsyncCommandReturningObjectHandler : IAsyncRequestHandler<
         return await _benchmarkService.RunAsync();
     }
 }
-public class DispatchRAsyncCommandReturningObjectSyncHandler : IRequestHandler<CreateUserWithResultSync, int>
+public class DispatchRAsyncCommandReturningObjectSyncHandler : RequestHandler<CreateUserWithResultSync, int>
 {
     private readonly BenchmarkService _benchmarkService;
 
@@ -27,7 +27,7 @@ public class DispatchRAsyncCommandReturningObjectSyncHandler : IRequestHandler<C
         _benchmarkService = benchmarkService;
     }
 
-    public int Handle(CreateUserWithResultSync request)
+    protected override int Handle(CreateUserWithResultSync request)
     {
        return _benchmarkService.Run();
     }

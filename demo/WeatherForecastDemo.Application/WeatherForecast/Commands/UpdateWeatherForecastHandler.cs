@@ -1,12 +1,13 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 public sealed record UpdateWeatherForecastCommand(Guid Id, Domain.Entities.WeatherForecast WeatherForecast) : IRequest<Domain.Entities.WeatherForecast>;
 
-internal sealed class UpdateWeatherForecastHandler : IAsyncRequestHandler<UpdateWeatherForecastCommand, Domain.Entities.WeatherForecast>
+internal sealed class UpdateWeatherForecastHandler : IRequestHandler<UpdateWeatherForecastCommand, Domain.Entities.WeatherForecast>
 {
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;
 

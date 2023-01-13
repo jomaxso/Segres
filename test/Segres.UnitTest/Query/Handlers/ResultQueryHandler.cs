@@ -1,9 +1,9 @@
-﻿using Segres.Abstractions;
+﻿using Segres.Handlers;
 using Xunit.Sdk;
 
 namespace Segres.UnitTest.Query;
 
-public class ResultQueryHandler : IAsyncRequestHandler<ResultQuery, string>
+public class ResultQueryHandler : IRequestHandler<ResultQuery, string>
 {
 
     public async ValueTask<string> HandleAsync(ResultQuery query, CancellationToken cancellationToken = default)

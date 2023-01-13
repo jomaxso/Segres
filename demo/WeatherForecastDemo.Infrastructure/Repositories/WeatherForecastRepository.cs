@@ -13,7 +13,7 @@ public class WeatherForecastRepository :
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 500).Select(index => new WeatherForecast
+    private static readonly List<WeatherForecast> _cache = Enumerable.Range(1, 1).Select(index => new WeatherForecast
         {
             Id = Guid.NewGuid(),
             Date = DateTime.Now.AddDays(index),
@@ -37,9 +37,7 @@ public class WeatherForecastRepository :
 
     public WeatherForecast Add(WeatherForecast entity)
     {
-        entity.Id = Guid.NewGuid();
         _cache.Add(entity);
-
         return entity;
     }
 
@@ -105,7 +103,13 @@ public class WeatherForecastRepository :
         foreach (var weatherForecast in query.ToList())
         {
             await ValueTask.CompletedTask;
+            await Task.Delay(500);
             yield return weatherForecast;
         }
+    }
+
+    public WeatherForecast GetLast()
+    {
+        return _cache.Last();
     }
 }

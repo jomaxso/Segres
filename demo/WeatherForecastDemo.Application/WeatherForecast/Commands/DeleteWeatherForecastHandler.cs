@@ -1,12 +1,16 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public sealed record DeleteWeatherForecastCommand(Guid Id) : IRequest<Domain.Entities.WeatherForecast?>;
+public sealed record DeleteWeatherForecastCommand : IRequest<Domain.Entities.WeatherForecast?>
+{
+    public required Guid Id { get; init; }
+}
 
-internal sealed class DeleteWeatherForecastHandler : IAsyncRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
+internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
 {
     private readonly IReadOnlyWeatherForecastRepository _readOnlyWeatherForecastRepository;
     private readonly IWriteOnlyWeatherForecastRepository _writeOnlyWeatherForecastRepository;

@@ -12,3 +12,4 @@ public class MediatRStreamHandler : IStreamRequestHandler<UserStreamRequest, int
         foreach (var item in BenchmarkService.ListOfNumbers) yield return item;
     }
 }
+

@@ -2,11 +2,11 @@
 using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Segres;
-using Segres.Abstractions;
+using Segres.Handlers;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRQueryReturningObjectHandler : IAsyncRequestHandler<GetUsers, int>
+public class DispatchRQueryReturningObjectHandler : IRequestHandler<GetUsers, int>
 {
     private readonly BenchmarkService _benchmarkService;
 
@@ -20,3 +20,5 @@ public class DispatchRQueryReturningObjectHandler : IAsyncRequestHandler<GetUser
         return await _benchmarkService.RunAsync();
     }
 }
+
+

@@ -1,11 +1,28 @@
+using FluentValidation;
 using Segres;
 using Segres.AspNetCore;
-using WeatherForecastDemo.Api.Endpoints.WeatherForecast;
+using WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
+using WeatherForecastDemo.Application.Abstractions.Repositories;
+using WeatherForecastDemo.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    builder.Services.AddSegres(options => options.WithCustomPublisher<MyPublisher>())
-        .AddInstallerRegistrations();
+    var config = builder.Services
+        .AddSegres();
+        // .AddSegres(options =>
+        // {
+        //     options.UseReferencedAssemblies(typeof(Program));
+        //     options.UsePublisherContext<MyPublisher>();
+        //     options.UseParallelNotification();
+        //     options.UseLifetime(ServiceLifetime.Singleton);
+        // });
+    
+    builder.Services.AddSingleton<IReadOnlyWeatherForecastRepository, WeatherForecastRepository>();
+    builder.Services.AddSingleton<IWriteOnlyWeatherForecastRepository, WeatherForecastRepository>();
+    builder.Services.AddHostedService<NotificationWorker>();
+    builder.Services.AddSingleton<IConsoleLogger, ConsoleLogger>();
+    
+    builder.Services.AddValidatorsFromAssemblies(config.Assemblies, ServiceLifetime.Singleton, includeInternalTypes: true);
 
     builder.Services.AddAuthorization();
 
@@ -26,26 +43,9 @@ var app = builder.Build();
     app.UseHttpsRedirection();
     app.UseAuthorization();
 
+    app.UseSegres();
 
-    app.MapEndpoints();
-
-    // app.UseSegres();
 }
 
 // app.UseCors(x => x.AllowAnyOrigin());
 app.Run();
-
-public static class EndpointMapper
-{
-    public static void MapEndpoints(this IEndpointRouteBuilder app)
-    {
-        var group = app.MapGroup("api").WithTags("api");
-        
-        var v1 = group.MapGroup("v1");
-        
-        var weatherForecastGroup = v1.MapGroup("WeatherForecasts").WithTags("WeatherForecasts");
-        weatherForecastGroup.MapPut<TestRequest, Guid>("test1/{id}");
-        weatherForecastGroup.MapGet<TestRequest2, Guid>("test2");
-        weatherForecastGroup.MapGet<TestRequest3, Guid>("test3");
-    }
-}

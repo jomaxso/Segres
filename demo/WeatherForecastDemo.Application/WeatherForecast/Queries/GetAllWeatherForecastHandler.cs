@@ -1,5 +1,6 @@
 ﻿using Segres;
-using Segres.Abstractions;
+using Segres.Contracts;
+using Segres.Handlers;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Queries;
@@ -13,11 +14,6 @@ internal sealed class GetAllWeatherForecastHandler : IStreamRequestHandler<GetAl
     public GetAllWeatherForecastHandler(IReadOnlyWeatherForecastRepository weatherForecastRepository)
     {
         _weatherForecastRepository = weatherForecastRepository;
-    }
-
-    public IEnumerable<Domain.Entities.WeatherForecast> Handle(GetAllWeatherForecastQuery request)
-    {
-        return _weatherForecastRepository.Get().ToBlockingEnumerable();
     }
 
     public IAsyncEnumerable<Domain.Entities.WeatherForecast> HandleAsync(GetAllWeatherForecastQuery request, CancellationToken cancellationToken)
