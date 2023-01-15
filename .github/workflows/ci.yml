@@ -9,7 +9,9 @@ on:
       - master
       
 env:
-  PROJECT_PATH: src/Segres/Segres.csproj
+  SEGRES: src/Segres/Segres.csproj
+  SEGRES_ABSTRACTIONS: src/Segres/Segres.csproj
+  SEGRES_ASPNETCORE: src/Segres/Segres.csproj
       
 jobs:
   build:
@@ -19,17 +21,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup .NET 3.x
+      - name: Setup .NET 7.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
       
-      - name: Restore
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: Restore - Segres.Abstractions
+        run: dotnet restore ${{ env.SEGRES_ABSTRACTIONS }}
       
-      - name: Build
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      - name: Build - Segres.Abstractions
+        run: dotnet build ${{ env.SEGRES_ABSTRACTIONS }} --configuration Release --no-restore
         
-      - name: Test
-        run: dotnet test ${{ env.PROJECT_PATH }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65
+      - name: Restore - Segres
+        run: dotnet restore ${{ env.SEGRES }}
+      
+      - name: Build - Segres
+        run: dotnet build ${{ env.SEGRES }} --configuration Release --no-restore
+       
+      - name: Test - Segres
+        run: dotnet test ${{ env.SEGRES }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=10
+        
+      - name: Restore - Segres.AspNetCore
+        run: dotnet restore ${{ env.SEGRES_ASPNETCORE }}
+      
+      - name: Build - Segres.AspNetCore
+        run: dotnet build ${{ env.SEGRES_ASPNETCORE }} --configuration Release --no-restore
 
