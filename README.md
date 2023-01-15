@@ -103,7 +103,7 @@ public sealed class CreateCustomerRequestHandler : IRequestHandler<CreateCustome
 ### Send a request
 
 ```csharp
-// CreateCustomerRequestHandler.cs
+// SomeService.cs
 
 using Segres;
 
@@ -129,7 +129,7 @@ public class SomeService
 ```
 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+_For more examples, please refer to the [Documentation](#)_
 
 
 <!-- LICENSE -->
