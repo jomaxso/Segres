@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.UnitTest.Query;
+﻿namespace Segres.UnitTest.Query;
 
 public class ResultQuery : IRequest<string>
 {

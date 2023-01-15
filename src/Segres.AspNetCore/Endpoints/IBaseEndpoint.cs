@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Segres.Handlers;
 
 namespace Segres.AspNetCore;
 

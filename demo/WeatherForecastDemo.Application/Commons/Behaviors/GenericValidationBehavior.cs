@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
-using Segres.Contracts;
-using Segres.Handlers;
+using Segres;
 
 namespace WeatherForecastDemo.Application.Commons.Behaviors;
 

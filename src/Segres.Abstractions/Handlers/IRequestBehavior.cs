@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.Handlers;
+﻿namespace Segres;
 
 /// <summary>
 /// The delegate for asynchronously intercepting a request with the <see cref="IRequestBehavior{TRequest,TResult}"/>. 

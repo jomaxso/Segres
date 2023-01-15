@@ -1,4 +1,4 @@
-﻿namespace Segres.Contracts;
+﻿namespace Segres;
 
 /// <summary>
 /// Marker interface to represent a asyncRequest of a Stream.

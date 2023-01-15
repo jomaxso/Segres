@@ -8,7 +8,7 @@
 public interface IResult<out TSelf, T>
 {
     /// <summary>
-    /// Creates a new instance.
+    /// Creates a new result instance.
     /// </summary>
     /// <param name="result">The value to be wrapped.</param>
     /// <returns>The actual, newly created result.</returns>

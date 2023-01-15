@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using Segres.Contracts;
-using Segres.Handlers;
 
 namespace Segres;
 

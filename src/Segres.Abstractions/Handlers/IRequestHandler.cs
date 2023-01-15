@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.Handlers;
+﻿namespace Segres;
 
 /// <summary>
 /// Defines a handler for a request implementing the <see cref="IRequest"/> interface.

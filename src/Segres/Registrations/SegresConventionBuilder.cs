@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Contracts;
-using Segres.Handlers;
 
 namespace Segres;
 
@@ -44,16 +42,15 @@ public sealed class SegresConventionBuilder
     }
 
     /// <summary>
-    /// Register a custom <see cref="IPublisherContext"/> to change the behavior publishing <see cref="INotification"/>'s.
+    /// Register a custom <see cref="PublisherContext"/> to change the behavior publishing <see cref="INotification"/>'s.
     /// </summary>
-    /// <typeparam name="TPublisher"><see cref="IPublisherContext"/></typeparam>
+    /// <typeparam name="TPublisher"><see cref="PublisherContext"/></typeparam>
     /// <remarks>
     /// This is useful for implementing the Outbox-Pattern.
-    /// If a custom <see cref="IPublisherContext"/> is used, ensure that the <see cref="IConsumer"/> is executed at some point to call the matching <see cref="INotificationHandler{TNotification}"/>.
     /// </remarks>
     /// <returns><see cref="SegresConventionBuilder"/></returns>
     public SegresConventionBuilder UsePublisherContext<TPublisher>()
-        where TPublisher : IPublisherContext
+        where TPublisher : PublisherContext
     {
         _publisherType = typeof(TPublisher);
         return this;

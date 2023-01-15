@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.Handlers;
+﻿namespace Segres;
 
 /// <summary>
 /// Defines a subscriber for a notification.

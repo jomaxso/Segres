@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Segres.Contracts;
-using Segres.Handlers;
 
 namespace Segres;
 
@@ -30,7 +28,7 @@ public sealed record SegresConvention
     /// The specified context for publishing <see cref="INotification"/>'s with the <see cref="IPublisher"/> interface. 
     /// </summary>
     /// <remarks>
-    /// <see cref="IPublisherContext"/> has to be implemented.
+    /// <see cref="PublisherContext"/> has to be implemented.
     /// </remarks>
     public required Type PublisherType { get; init; }
     

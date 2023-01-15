@@ -1,6 +1,5 @@
-﻿using Segres.AspNetCore;
-using Segres.Contracts;
-using Segres.Handlers;
+﻿using Segres;
+using Segres.AspNetCore;
 
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
 

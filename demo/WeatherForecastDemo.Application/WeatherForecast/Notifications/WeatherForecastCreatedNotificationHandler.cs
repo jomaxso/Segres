@@ -1,15 +1,23 @@
-﻿using Segres.Contracts;
-using Segres.Handlers;
+﻿using Segres;
 
 namespace WeatherForecastDemo.Api.Endpoints.Notifications;
 
 internal record struct WeatherForecastCreated(Domain.Entities.WeatherForecast WeatherForecast) : INotification;
 
-internal class WeatherForecastCreatedNotificationHandler : INotificationHandler<WeatherForecastCreated>
+internal class WeatherForecastCreatedErrorLogNotificationHandler : INotificationHandler<WeatherForecastCreated>
 {
-    public ValueTask HandleAsync(WeatherForecastCreated notification, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(WeatherForecastCreated notification, CancellationToken cancellationToken)
     {
-        Console.WriteLine(nameof(WeatherForecastCreatedNotificationHandler));
-        return ValueTask.CompletedTask;
+        await Task.Delay(1000, cancellationToken);
+        Console.WriteLine(nameof(WeatherForecastCreatedErrorLogNotificationHandler));
+    }
+}
+
+internal class WeatherForecastCreatedInformationLogNotificationHandler : INotificationHandler<WeatherForecastCreated>
+{
+    public async ValueTask HandleAsync(WeatherForecastCreated notification, CancellationToken cancellationToken)
+    {
+        await Task.Delay(1000, cancellationToken);
+        Console.WriteLine(nameof(WeatherForecastCreatedInformationLogNotificationHandler));
     }
 }

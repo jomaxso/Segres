@@ -1,28 +1,21 @@
 using FluentValidation;
 using Segres;
 using Segres.AspNetCore;
+using WeatherForecastDemo.Api.Endpoints.Randoms;
 using WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 using WeatherForecastDemo.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    var config = builder.Services
-        .AddSegres();
-        // .AddSegres(options =>
-        // {
-        //     options.UseReferencedAssemblies(typeof(Program));
-        //     options.UsePublisherContext<MyPublisher>();
-        //     options.UseParallelNotification();
-        //     options.UseLifetime(ServiceLifetime.Singleton);
-        // });
+    builder.Services.AddSegres();
     
     builder.Services.AddSingleton<IReadOnlyWeatherForecastRepository, WeatherForecastRepository>();
     builder.Services.AddSingleton<IWriteOnlyWeatherForecastRepository, WeatherForecastRepository>();
     builder.Services.AddHostedService<NotificationWorker>();
     builder.Services.AddSingleton<IConsoleLogger, ConsoleLogger>();
-    
-    builder.Services.AddValidatorsFromAssemblies(config.Assemblies, ServiceLifetime.Singleton, includeInternalTypes: true);
+    builder.Services.AddSingleton<RandomService>();
+    builder.Services.AddValidatorsFromAssemblies(new[]{typeof(Program).Assembly, typeof(IReadOnlyRepository<,>).Assembly}, includeInternalTypes: true);
 
     builder.Services.AddAuthorization();
 
@@ -44,8 +37,6 @@ var app = builder.Build();
     app.UseAuthorization();
 
     app.UseSegres();
-
 }
 
-// app.UseCors(x => x.AllowAnyOrigin());
 app.Run();

@@ -1,16 +1,11 @@
-﻿using Segres.Contracts;
+﻿namespace Segres;
 
-namespace Segres;
-
-internal sealed class DefaultPublisherContext : IPublisherContext
+internal sealed class DefaultPublisherContext : PublisherContext
 {
-    private readonly IConsumer _consumer;
-
-    public DefaultPublisherContext(IConsumer consumer)
+    public DefaultPublisherContext(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _consumer = consumer;
     }
 
-    public ValueTask RaiseNotificationAsync(INotification notification, CancellationToken cancellationToken)
-        => _consumer.ConsumeAsync(notification, cancellationToken);
+    public override ValueTask OnPublishAsync(INotification notification, CancellationToken cancellationToken)
+        => ConsumeAsync(notification, cancellationToken);
 }

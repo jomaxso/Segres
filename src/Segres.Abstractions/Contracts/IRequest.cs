@@ -1,6 +1,4 @@
-using Segres.Handlers;
-
-namespace Segres.Contracts;
+namespace Segres;
 
 /// <summary>
 /// Marker interface to represent a async request without a response.

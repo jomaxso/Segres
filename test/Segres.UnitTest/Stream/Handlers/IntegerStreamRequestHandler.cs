@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Segres.Handlers;
 using Segres.UnitTest.Stream.Objects;
 
 namespace Segres.UnitTest.Stream.Handlers;

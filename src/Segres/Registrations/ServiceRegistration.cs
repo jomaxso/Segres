@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Segres.Handlers;
 
 namespace Segres;
 
@@ -61,14 +60,13 @@ public static class ServiceRegistration
 
     private static SegresConvention RegisterMediators(this SegresConvention configuration)
     {
-        configuration.Services.TryAddSingleton(typeof(IConsumer), provider => new Consumer(provider.CreateServiceResolver(configuration.ServiceLifetime)));
-        configuration.Services.TryAddSingleton(typeof(IPublisherContext), configuration.PublisherType);
+        configuration.Services.TryAddSingleton(configuration.PublisherType);
+        configuration.Services.TryAddSingleton(typeof(PublisherContext), x => x.GetRequiredService(configuration.PublisherType));
 
         configuration.Services.TryAddSingleton<IMediator>(p =>
         {
             var provider = p.CreateServiceResolver(configuration.ServiceLifetime);
-            var publisherContext = p.GetRequiredService<IPublisherContext>();
-            return new Mediator(provider, publisherContext, new Dictionary<Type, object>());
+            return new Mediator(provider, new Dictionary<Type, object>());
         });
 
         configuration.Services.TryAddSingleton<ISender>(provider => provider.GetRequiredService<IMediator>());

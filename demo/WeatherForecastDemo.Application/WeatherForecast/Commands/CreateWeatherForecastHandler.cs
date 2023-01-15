@@ -1,6 +1,4 @@
 ﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
 using WeatherForecastDemo.Api.Endpoints.Notifications;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 

@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PlayGround;
 using PlayGround.DependencyInjection;
 using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
 
 var col = new ServiceCollection();
 col.AddSegres(x => x.UseReferencedAssemblies(typeof(Obj)));

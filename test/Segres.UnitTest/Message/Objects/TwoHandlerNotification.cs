@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.UnitTest.Event.Objects;
+﻿namespace Segres.UnitTest.Event.Objects;
 
 public class TwoHandlerNotification : INotification
 {

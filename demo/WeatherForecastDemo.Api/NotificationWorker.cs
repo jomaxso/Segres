@@ -1,39 +1,21 @@
-﻿using Segres;
-using Segres.Contracts;
-
-public class MyPublisher : IPublisherContext
+﻿public class NotificationWorker : BackgroundService
 {
-    public static Queue<INotification> Database { get; } = new Queue<INotification>();
+    private readonly OutboxPublisherContext? _publisherContext;
 
-    public ValueTask RaiseNotificationAsync(INotification notification, CancellationToken cancellationToken)
+    public NotificationWorker(OutboxPublisherContext? publisherContext = null)
     {
-        Database.Enqueue(notification);
-        return ValueTask.CompletedTask;
-    }
-}
-
-public class NotificationWorker : BackgroundService
-{
-    private readonly IConsumer _consumer;
-
-    public NotificationWorker(IConsumer consumer)
-    {
-        _consumer = consumer;
+        _publisherContext = publisherContext;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(20000, stoppingToken);
+            await Task.Delay(5000, stoppingToken);
             
             for (var i = 0; i < 20; i++)
-            {
-                if (MyPublisher.Database.TryDequeue(out var notification))
-                {
-                    await _consumer.ConsumeAsync(notification, stoppingToken);
-                }
-            }
+                if (_publisherContext?.Db.TryDequeue(out var notification) is true)
+                    await _publisherContext.ConsumeAsync(notification, stoppingToken);
         }
     }
 }

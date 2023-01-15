@@ -1,19 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using Segres.Contracts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Segres;
 
 internal sealed class Mediator : IMediator
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IPublisherContext _publisherContext;
+    private readonly PublisherContext _publisherContext;
     private readonly ConcurrentDictionary<Type, object> _requestHandlerCache;
 
-    public Mediator(IServiceProvider serviceProvider, IPublisherContext publisherContext, IEnumerable<KeyValuePair<Type, object>> requestHandlers)
+    public Mediator(IServiceProvider serviceProvider, IEnumerable<KeyValuePair<Type, object>> requestHandlers)
     {
         _serviceProvider = serviceProvider;
-        _publisherContext = publisherContext;
+        _publisherContext = serviceProvider.GetRequiredService<PublisherContext>();
         _requestHandlerCache = new ConcurrentDictionary<Type, object>(requestHandlers);
     }
 
@@ -37,8 +37,63 @@ internal sealed class Mediator : IMediator
     }
 
     /// <inheritdoc />
+    public void Send(IRequest request)
+    {
+        var valueTask = SendAsync(request, CancellationToken.None);
+        Await(valueTask);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask SendAsync(IRequest request, CancellationToken cancellationToken = default)
+        => await SendAsync((IRequest<None>)request, cancellationToken);
+
+    /// <inheritdoc />
+    public TResponse Send<TResponse>(IRequest<TResponse> request)
+    {
+        var valueTask = SendAsync(request, CancellationToken.None);
+        return Await(valueTask);
+    }
+
+    /// <inheritdoc />
+    public IAsyncEnumerable<TResponse> Send<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
+    {
+        var valueTask = SendAsync(request, cancellationToken);
+        return Await(valueTask);
+    }
+
+    /// <inheritdoc />
+    public ValueTask<IAsyncEnumerable<TResult>> SendAsync<TResult>(IStreamRequest<TResult> request, CancellationToken cancellationToken = default)
+        => SendAsync((IRequest<IAsyncEnumerable<TResult>>)request, cancellationToken);
+
+    /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default) 
         where TNotification : INotification
-        => _publisherContext.RaiseNotificationAsync(notification, cancellationToken);
+        => _publisherContext.OnPublishAsync(notification, cancellationToken);
+
+    public void Publish<TNotification>(TNotification notification) where TNotification : INotification
+    {
+        var valueTask = PublishAsync(notification, CancellationToken.None);
+        Await(valueTask);
+    }
+    
+    private static void Await(ValueTask valueTask)
+    {
+        if (valueTask.IsCompleted)
+            return;
+
+        valueTask.AsTask()
+            .GetAwaiter()
+            .GetResult();
+    }
+    
+    private static TResult Await<TResult>(ValueTask<TResult> valueTask)
+    {
+        if (valueTask.IsCompleted)
+            return valueTask.Result;
+
+        return valueTask.AsTask()
+            .GetAwaiter()
+            .GetResult();
+    }
 }

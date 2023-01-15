@@ -1,6 +1,4 @@
-﻿using Segres.Contracts;
-
-namespace Segres.Handlers;
+﻿namespace Segres;
 
 /// <inheritdoc />
 public interface IStreamRequestHandler<in TRequest, TResponse> : IRequestHandler<TRequest, IAsyncEnumerable<TResponse>>

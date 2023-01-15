@@ -12,11 +12,11 @@ public readonly record struct GetAllWeatherForecastsRequest : IHttpRequest<IAsyn
     public static RequestType RequestType => RequestType.Get;
 }
 
-public sealed class GetAllWeatherForecastsEndpoint : AbstractEndpoint<GetAllWeatherForecastsRequest, IAsyncEnumerable<WeatherForecast>>
+public sealed class GetAllEndpoint : AbstractEndpoint<GetAllWeatherForecastsRequest, IAsyncEnumerable<WeatherForecast>>
 {
     private readonly IMediator _mediator;
 
-    public GetAllWeatherForecastsEndpoint(IMediator mediator)
+    public GetAllEndpoint(IMediator mediator)
     {
         _mediator = mediator;
     }

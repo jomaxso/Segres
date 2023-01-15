@@ -1,6 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Segres.Contracts;
-using Segres.Handlers;
 
 namespace Segres;
 

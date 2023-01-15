@@ -1,5 +1,4 @@
-﻿using Segres.Handlers;
-using Segres.UnitTest.Event.Objects;
+﻿using Segres.UnitTest.Event.Objects;
 using Xunit.Sdk;
 
 namespace Segres.UnitTest.Event.Handlers;
