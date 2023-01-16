@@ -1,5 +1,4 @@
-﻿using DispatchR.Benchmarks.Contracts;
-using MediatR;
+﻿using MediatR;
 
 namespace DispatchR.Benchmarks.Handlers.MediatR;
 

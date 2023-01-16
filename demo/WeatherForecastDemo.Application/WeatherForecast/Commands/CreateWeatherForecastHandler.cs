@@ -1,13 +1,12 @@
 ﻿using Segres;
-using Segres.Contracts;
-using Segres.Handlers;
+using WeatherForecastDemo.Api.Endpoints.Notifications;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : ICommand<Domain.Entities.WeatherForecast>;
+public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest<Guid>;
 
-internal class CreateWeatherForecastHandler : ICommandHandler<CreateWeatherForecastCommand, Domain.Entities.WeatherForecast>
+internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Guid>
 {
     private readonly IPublisher _publisher;
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;
@@ -18,25 +17,23 @@ internal class CreateWeatherForecastHandler : ICommandHandler<CreateWeatherForec
         _weatherForecastRepository = weatherForecastRepository;
     }
 
-    public async Task<Domain.Entities.WeatherForecast> HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Guid> HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        var entity = new Domain.Entities.WeatherForecast()
+        var entity = new Domain.Entities.WeatherForecast
         {
+            Id = Guid.NewGuid(),
             Date = DateTime.Now,
             TemperatureC = command.TemperatureC,
             Summary = command.Summary
         };
 
+        Console.WriteLine(entity.Date);
+
         var result = _weatherForecastRepository.Add(entity);
-
-        var message = new WeatherForecastCreated(entity);
         
-        await _publisher.PublishAsync(message, cancellationToken);
+        await _publisher.PublishAsync( new WeatherForecastCreated(result), cancellationToken);
 
-        return result;
+        return result.Id;
     }
 }
 
-internal record struct WeatherForecastCreated(Domain.Entities.WeatherForecast WeatherForecast) : IMessage;

@@ -1,20 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Segres.Extensions.DependencyInjection.Microsoft" Version="1.0.1-preview" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="FluentValidation" Version="11.4.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WeatherForecastDemo.Application\WeatherForecastDemo.Application.csproj" />
-      <ProjectReference Include="..\WeatherForecastDemo.Infrastructure\WeatherForecastDemo.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\src\Segres.AspNetCore\Segres.AspNetCore.csproj" />
+        <ProjectReference Include="..\WeatherForecastDemo.Application\WeatherForecastDemo.Application.csproj" />
+        <ProjectReference Include="..\WeatherForecastDemo.Infrastructure\WeatherForecastDemo.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

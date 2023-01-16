@@ -1,10 +1,8 @@
-﻿using DispatchR.Benchmarks.Contracts;
-using Segres;
-using Segres.Handlers;
+﻿using Segres;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRCommandHandler : ICommandHandler<CreateUser>
+public class DispatchRCommandHandler : IRequestHandler<CreateUser>
 {
     private readonly BenchmarkService _benchmarkService;
 
@@ -13,9 +11,8 @@ public class DispatchRCommandHandler : ICommandHandler<CreateUser>
         _benchmarkService = benchmarkService;
     }
 
-    public async Task HandleAsync(CreateUser request, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(CreateUser request, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
-

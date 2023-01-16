@@ -1,5 +1,4 @@
-﻿using DispatchR.Benchmarks.Contracts;
-using MediatR;
+﻿using MediatR;
 
 namespace DispatchR.Benchmarks.Handlers.MediatR;
 
@@ -123,7 +122,6 @@ public class MediatRMessageHandler8 : INotificationHandler<UserCreated>
     }
 }
 
-
 public class MediatRMessageHandler9 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
@@ -138,7 +136,6 @@ public class MediatRMessageHandler9 : INotificationHandler<UserCreated>
         await _benchmarkService.RunAsync();
     }
 }
-
 
 public class MediatRMessageHandler10 : INotificationHandler<UserCreated>
 {

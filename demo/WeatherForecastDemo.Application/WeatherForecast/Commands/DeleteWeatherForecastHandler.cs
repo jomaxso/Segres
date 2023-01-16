@@ -1,15 +1,17 @@
-﻿using Segres.Contracts;
-using Segres.Handlers;
+﻿using Segres;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public sealed record DeleteWeatherForecastCommand(Guid Id) : ICommand<Domain.Entities.WeatherForecast?>;
-
-internal sealed class DeleteWeatherForecastHandler : ICommandHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
+public sealed record DeleteWeatherForecastCommand : IRequest<Domain.Entities.WeatherForecast?>
 {
-    private readonly IWriteOnlyWeatherForecastRepository _writeOnlyWeatherForecastRepository;
+    public required Guid Id { get; init; }
+}
+
+internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
+{
     private readonly IReadOnlyWeatherForecastRepository _readOnlyWeatherForecastRepository;
+    private readonly IWriteOnlyWeatherForecastRepository _writeOnlyWeatherForecastRepository;
 
 
     public DeleteWeatherForecastHandler(IWriteOnlyWeatherForecastRepository writeOnlyWeatherForecastRepository, IReadOnlyWeatherForecastRepository readOnlyWeatherForecastRepository)
@@ -18,14 +20,14 @@ internal sealed class DeleteWeatherForecastHandler : ICommandHandler<DeleteWeath
         _readOnlyWeatherForecastRepository = readOnlyWeatherForecastRepository;
     }
 
-    public async Task<Domain.Entities.WeatherForecast?> HandleAsync(DeleteWeatherForecastCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Domain.Entities.WeatherForecast?> HandleAsync(DeleteWeatherForecastCommand command, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
-       var weatherForecast = await _readOnlyWeatherForecastRepository.GetByIdAsync(command.Id);
+        var weatherForecast = await _readOnlyWeatherForecastRepository.GetByIdAsync(command.Id);
 
-       if (weatherForecast is not null)
-           _writeOnlyWeatherForecastRepository.Delete(weatherForecast);
-       
-       return weatherForecast;
+        if (weatherForecast is not null)
+            _writeOnlyWeatherForecastRepository.Delete(weatherForecast);
+
+        return weatherForecast;
     }
 }

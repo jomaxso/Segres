@@ -1,12 +1,11 @@
-﻿using Segres.Contracts;
-using Segres.Handlers;
+﻿using Segres;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Queries;
 
-public sealed record GetAllWeatherForecastQuery() : IQuery<IEnumerable<Domain.Entities.WeatherForecast>>;
+public sealed record GetAllWeatherForecastQuery(int? Number = null) : IStreamRequest<Domain.Entities.WeatherForecast>;
 
-internal sealed class GetAllWeatherForecastHandler : IQueryHandler<GetAllWeatherForecastQuery, IEnumerable<Domain.Entities.WeatherForecast>>
+internal sealed class GetAllWeatherForecastHandler : IStreamRequestHandler<GetAllWeatherForecastQuery, Domain.Entities.WeatherForecast>
 {
     private readonly IReadOnlyWeatherForecastRepository _weatherForecastRepository;
 
@@ -15,8 +14,6 @@ internal sealed class GetAllWeatherForecastHandler : IQueryHandler<GetAllWeather
         _weatherForecastRepository = weatherForecastRepository;
     }
 
-    public async Task<IEnumerable<Domain.Entities.WeatherForecast>> HandleAsync(GetAllWeatherForecastQuery query, CancellationToken cancellationToken = default)
-    {
-        return await _weatherForecastRepository.GetAsync(cancellationToken: cancellationToken);
-    }
+    public IAsyncEnumerable<Domain.Entities.WeatherForecast> HandleAsync(GetAllWeatherForecastQuery request, CancellationToken cancellationToken)
+        => _weatherForecastRepository.Get();
 }

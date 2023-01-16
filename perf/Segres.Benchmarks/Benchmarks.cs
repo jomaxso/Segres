@@ -1,99 +1,95 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using DispatchR.Benchmarks.Contracts;
+using DispatchR.Benchmarks;
 using DispatchR.Benchmarks.Handlers;
-using DispatchR.Benchmarks.Handlers.DispatchR;
-using Segres.Extensions.DependencyInjection.Microsoft;
-using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
 using MediatR;
-using Segres;
-using Segres.Handlers;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DispatchR.Benchmarks;
+namespace Segres.Benchmarks;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 public class Benchmarks
 {
-    private Segres.IServiceBroker _serviceBroker = default!;
-    private MediatR.IMediator _mediator = default!;
+    private static readonly GetUsers GetUsers = new();
+
+    private static readonly CreateUser CreateUser = new();
+    private static readonly CreateUserWithResult CreateUserWithResult = new(1);
+    private static readonly CreateUserWithResultSync CreateUserWithResultSync = new(1);
+    private static readonly UserCreated UserCreated = new();
+    private static readonly UserStreamRequest UserStreamRequest = new();
+
+    private MediatR.IMediator _mediatorMediatR = default!;
+    private IMediator _mediatorSegres = default!;
     private IServiceProvider _serviceProvider = default!;
 
-    private static readonly GetUsers GetUsers = new();
-    private static readonly CreateUser CreateUser = new();
-    private static readonly CreateUserWithResult CreateUserWithResult = new();
-    private static readonly UserCreated UserCreated = new();
-    private static readonly UserStream UserStream = new();
-
+    // [Params(1, 10, 100)]
+    public int RunNumber { get; set; }
+    
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _ = BenchmarkService.ListOfNumbers;
-        this._serviceProvider = new ServiceCollection()
-            .AddSingleton<BenchmarkService>()
-            .AddSegres<Benchmarks>(x => x.AsSingleton())
-            .AddMediatR(x => x.AsSingleton(), typeof(Benchmarks))
-            .BuildServiceProvider();
+        var _ = BenchmarkService.ListOfNumbers;
+        _serviceProvider = CreateServiceProvider();
 
-        this._serviceBroker = _serviceProvider.GetRequiredService<Segres.IServiceBroker>();
-        this._mediator = _serviceProvider.GetRequiredService<MediatR.IMediator>();
+        _mediatorSegres = _serviceProvider.GetRequiredService<Segres.IMediator>();
+        _mediatorMediatR = _serviceProvider.GetRequiredService<MediatR.IMediator>();
     }
 
+    private static IServiceProvider CreateServiceProvider()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<BenchmarkService>();
+        services.AddSegres(x =>
+        {
+            x.UseLifetime(ServiceLifetime.Singleton);
+            x.UseReferencedAssemblies(typeof(Benchmarks));
+        });
+
+        services.AddMediatR(x => x.AsSingleton(), typeof(Benchmarks));
+        return services.BuildServiceProvider();
+    }
+
+
     // [Benchmark]
-    // public async Task CommandAsync_WithoutResponse_DispatchR() => await _serviceBroker.SendAsync(CreateUser, CancellationToken.None);
-    //
-    // [Benchmark]
-    // public async Task<int> CommandAsync_WithResponse_DispatchR() => await _serviceBroker.SendAsync(CreateUserWithResult, CancellationToken.None);
+    // public async ValueTask<WeatherForecast?> SendHttpAsync() => await _sender.SendAsync(t, CancellationToken.Void);
+
 
     [Benchmark]
-    public async Task PublishAsync_DispatchR() => await _serviceBroker.PublishAsync(UserCreated, CancellationToken.None);
+    public async Task PublishAsync_Segres() => await _mediatorSegres.PublishAsync(UserCreated, CancellationToken.None);
 
     [Benchmark]
-    public async Task PublishAsync_DispatchR_All() => await _serviceBroker.PublishAsync(UserCreated, Strategy.WhenAll, CancellationToken.None);
+    public async ValueTask<int> SendAsync_Segres() => await _mediatorSegres.SendAsync(GetUsers, CancellationToken.None);
+    
+
 
     [Benchmark]
-    public async Task PublishAsync_DispatchR_Sequential() => await _serviceBroker.PublishAsync(UserCreated, Segres.Strategy.Sequential, CancellationToken.None);
+    public async ValueTask CreateStreamAsync_Segres()
+    {
+        var streamRequest = await _mediatorSegres.SendAsync(UserStreamRequest, CancellationToken.None);
+    
+        await foreach (var i in streamRequest)
+        {
+            await ValueTask.CompletedTask;
+        }
+    }
+    
+    
+    [Benchmark]
+    public async Task PublishAsync_MediatR() => await _mediatorMediatR.Publish(UserCreated, CancellationToken.None);
+    
+    [Benchmark]
+    public async ValueTask SendAsync_MediatR() => await _mediatorMediatR.Send(GetUsers, CancellationToken.None);
 
     [Benchmark]
-    public async Task PublishAsync_DispatchR_Any() => await _serviceBroker.PublishAsync(UserCreated, Segres.Strategy.WhenAny, CancellationToken.None);
-
-    // [Benchmark]
-    // public async Task PublishAsync_DispatchR_Any() => await _serviceBroker.PublishAsync(UserCreated, Segres.Strategy.WhenAny, CancellationToken.None);
-
-    // [Benchmark]
-    // public Task<int> Querysync_WithResponse_DispatchR() => _serviceBroker.SendAsync(GetUsers, CancellationToken.None);
-
-    // [Benchmark]
-    // public async ValueTask CreateStreamAsync_WithResponse_DispatchR()
-    // {
-    //     var stream = _serviceBroker.CreateStreamAsync(UserStream, CancellationToken.None);
-    //
-    //     await foreach (var i in stream)
-    //     {
-    //         await ValueTask.CompletedTask;
-    //     }
-    // }
-
-    // [Benchmark]
-    // public async Task CommandAsync_WithoutResponse_MediatR() => await _mediator.Send(CreateUser, CancellationToken.None);
-    //
-    // [Benchmark]
-    // public async Task<int> CommandAsync_WithResponse_MediatR() => await _mediator.Send(CreateUserWithResult, CancellationToken.None);
-
-    [Benchmark]
-    public async Task PublishAsync_MediatR() => await _mediator.Publish(UserCreated, CancellationToken.None);
-
-    // [Benchmark]
-    // public Task<int> QueryAsync_WithResponse_MediatR() => _mediator.Send(GetUsers, CancellationToken.None);
-
-    // [Benchmark]
-    // public async ValueTask CreateStreamAsync_WithResponse_MediatR()
-    // {
-    //     var stream = _mediator.CreateStream(UserStream, CancellationToken.None);
-    //
-    //     await foreach (var i in stream)
-    //     {
-    //         await ValueTask.CompletedTask;
-    //     }
-    // }
+    public async ValueTask CreateStreamAsync_MediatR()
+    {
+        var streamRequest = _mediatorMediatR.CreateStream(UserStreamRequest, CancellationToken.None);
+    
+        await foreach (var i in streamRequest)
+        {
+            await ValueTask.CompletedTask;
+        }
+    }
 }

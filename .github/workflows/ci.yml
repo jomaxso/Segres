@@ -10,8 +10,8 @@ on:
       
 env:
   SEGRES: src/Segres/Segres.csproj
-  SEGRES_ABSTRACTIONS: src/Segres/Segres.csproj
-  SEGRES_ASPNETCORE: src/Segres/Segres.csproj
+  SEGRES_ABSTRACTIONS: src/Segres.Abstractions/Segres.Abstractions.csproj
+  SEGRES_ASPNETCORE: src/Segres.AspNetCore/Segres.AspNetCore.csproj
       
 jobs:
   build:
@@ -21,29 +21,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup .NET 7.0.x
+      - name: Setup .NET 7.x
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '7.0.x'
       
-      - name: Restore - Segres.Abstractions
-        run: dotnet restore ${{ env.SEGRES_ABSTRACTIONS }}
-      
-      - name: Build - Segres.Abstractions
-        run: dotnet build ${{ env.SEGRES_ABSTRACTIONS }} --configuration Release --no-restore
-        
-      - name: Restore - Segres
+      - name: Restore
         run: dotnet restore ${{ env.SEGRES }}
       
-      - name: Build - Segres
+      - name: Build
         run: dotnet build ${{ env.SEGRES }} --configuration Release --no-restore
-       
-      - name: Test - Segres
-        run: dotnet test ${{ env.SEGRES }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=10
         
-      - name: Restore - Segres.AspNetCore
+      - name: Test
+        run: dotnet test ${{ env.SEGRES }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65
+
+      - name: Restore
+        run: dotnet restore ${{ env.SEGRES_ABSTRACTIONS }}
+
+      - name: Build
+        run: dotnet build ${{ env.SEGRES_ABSTRACTIONS }} --configuration Release --no-restore
+
+#      - name: Test
+#        run: dotnet test ${{ env.SEGRES_ABSTRACTIONS }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65
+
+      - name: Restore
         run: dotnet restore ${{ env.SEGRES_ASPNETCORE }}
-      
-      - name: Build - Segres.AspNetCore
+
+      - name: Build
         run: dotnet build ${{ env.SEGRES_ASPNETCORE }} --configuration Release --no-restore
 
+#      - name: Test
+#        run: dotnet test ${{ env.SEGRES_ABSTRACTIONS }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65

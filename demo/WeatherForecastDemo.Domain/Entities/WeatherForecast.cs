@@ -1,8 +1,8 @@
 ﻿namespace WeatherForecastDemo.Domain.Entities;
 
-public class WeatherForecast
+public record class WeatherForecast
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     public DateTime Date { get; set; }
 
     public int TemperatureC { get; set; }

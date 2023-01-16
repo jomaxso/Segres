@@ -12,4 +12,10 @@ public interface IReadOnlyRepository<TEntity, in TId>
         bool trackable = true);
 
     ValueTask<TEntity?> GetByIdAsync(TId id);
+    
+    IAsyncEnumerable<TEntity> Get(
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        string includeProperties = "",
+        bool trackable = true);
 }

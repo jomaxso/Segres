@@ -1,13 +1,15 @@
-﻿using Segres.Contracts;
-using MediatR;
+﻿using Segres;
+using INotification = Segres.INotification;
 
-namespace DispatchR.Benchmarks.Contracts;
+namespace DispatchR.Benchmarks;
 
-public record GetUsers : IQuery<int>, IRequest<int>;
+public record GetUsers : IRequest<int>, MediatR.IRequest<int>;
 
-public record CreateUser : ICommand, IRequest;
-public record UserStream : IStream<int?>, IStreamRequest<int?>;
+public record CreateUser : IRequest, MediatR.IRequest;
 
-public record CreateUserWithResult : ICommand<int>, IRequest<int>;
+public record UserStreamRequest : IStreamRequest<int?>, MediatR.IStreamRequest<int?>;
 
-public record UserCreated : IMessage, INotification;
+public record CreateUserWithResult(int Number) : IRequest<int>, MediatR.IRequest<int>;
+public record CreateUserWithResultSync(int Number) : IRequest<int>;
+
+public record UserCreated : Segres.INotification, MediatR.INotification;

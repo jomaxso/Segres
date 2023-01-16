@@ -1,154 +1,152 @@
-﻿using DispatchR.Benchmarks.Contracts;
-using Segres;
-using Segres.Handlers;
+﻿using Segres;
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRMessageHandler1 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler1(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler1(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler2 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler2(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler2(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler3 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler3(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler3(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler4 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler4(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler4(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler5 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler5(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler5(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler6 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler6(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler6(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler7 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler7(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler7(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler8 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler8(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler8(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler9 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler9(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler9(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }
 }
 
-public class DispatchRMessageHandler10 : IMessageHandler<UserCreated>
+public class DispatchRNotificationHandler10 : INotificationHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRMessageHandler10(BenchmarkService benchmarkService)
+    public DispatchRNotificationHandler10(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
 
-    public async ValueTask HandleAsync(UserCreated message, CancellationToken cancellationToken)
+    public async ValueTask HandleAsync(UserCreated notification, CancellationToken cancellationToken)
     {
         await _benchmarkService.RunAsync();
     }

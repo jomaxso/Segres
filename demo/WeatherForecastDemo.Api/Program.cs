@@ -1,15 +1,22 @@
+using FluentValidation;
 using Segres;
-using Segres.Extensions.DependencyInjection.Microsoft;
-using WeatherForecastDemo.Api.Endpoints.WeatherForecast;
-using WeatherForecastDemo.Application.WeatherForecast.Commands;
-using WeatherForecastDemo.Domain.Entities;
-using WeatherForecastDemo.Infrastructure;
+using Segres.AspNetCore;
+using WeatherForecastDemo.Api.Endpoints.Randoms;
+using WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
+using WeatherForecastDemo.Application.Abstractions.Repositories;
+using WeatherForecastDemo.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    // Add services to the container.
-    builder.Services.AddInfrastructure();
-    builder.Services.AddSegres(typeof(Program), typeof(CreateWeatherForecastCommand));
+    builder.Services.AddSegres();
+    
+    builder.Services.AddSingleton<IReadOnlyWeatherForecastRepository, WeatherForecastRepository>();
+    builder.Services.AddSingleton<IWriteOnlyWeatherForecastRepository, WeatherForecastRepository>();
+    builder.Services.AddHostedService<NotificationWorker>();
+    builder.Services.AddSingleton<IConsoleLogger, ConsoleLogger>();
+    builder.Services.AddSingleton<RandomService>();
+    builder.Services.AddValidatorsFromAssemblies(new[]{typeof(Program).Assembly, typeof(IReadOnlyRepository<,>).Assembly}, includeInternalTypes: true);
+
     builder.Services.AddAuthorization();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,20 +36,7 @@ var app = builder.Build();
     app.UseHttpsRedirection();
     app.UseAuthorization();
 
-    app.MapGet("p/{id:guid}", (ISender sender, Guid id, CancellationToken cancellationToken)
-        => sender.SendAsync(new GetByIdRequest(id), cancellationToken));
-
-    app.MapGet("p", (ISender sender, CancellationToken cancellationToken)
-        => sender.SendAsync(new GetAllRequest(), cancellationToken));
-
-    app.MapPost("p", (ISender sender, CreateRequest request, CancellationToken cancellationToken)
-        => sender.SendAsync(request, cancellationToken));
-
-    app.MapPut("p/{id:guid}", (ISender sender, Guid id, WeatherForecast weatherForecast, CancellationToken cancellationToken)
-        => sender.SendAsync(new UpdateRequest(id, weatherForecast), cancellationToken));
-
-    app.MapDelete("p/{id}", (ISender sender, Guid id, CancellationToken cancellationToken)
-        => sender.SendAsync(new DeleteRequest(id), cancellationToken));
+    app.UseSegres();
 }
 
 app.Run();
