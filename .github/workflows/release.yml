@@ -11,7 +11,7 @@ env:
   SEGRES: src/Segres/Segres.csproj
   SEGRES_ABSTRACTIONS: src/Segres.Abstractions/Segres.Abstractions.csproj
   SEGRES_ASPNETCORE: src/Segres.AspNetCore/Segres.AspNetCore.csproj
-  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  PACKAGE_OUTPUT_DIRECTORY: /output
   NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
 
 jobs:
