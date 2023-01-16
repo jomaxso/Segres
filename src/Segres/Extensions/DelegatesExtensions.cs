@@ -11,12 +11,4 @@ internal static class DelegatesExtensions
         var method = selfType.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
         return (Delegate) method!.MakeGenericMethod(methodParameter).Invoke(null, Array.Empty<object>())!;
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static object? GetService(this Func<Type, object?> serviceResolver, Type type) 
-        => serviceResolver.Invoke(type);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T? GetServiceAs<T>(this Func<Type, object?> serviceResolver, Type type) where T : class 
-        => serviceResolver.Invoke(type) as T;
 }

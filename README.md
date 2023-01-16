@@ -59,8 +59,8 @@ dotnet add package Segres
 
 ## Example
 
-
-### Register all dependencies
+### Segres
+#### Register all dependencies
 
 ```csharp
 // Program.cs
@@ -81,7 +81,8 @@ builder.Services.AddSegres(options =>
 });
 ```
 
-### Create a handler
+### Segres.Abstractions
+#### Create a handler
 
 ```csharp
 // CreateCustomerRequestHandler.cs
@@ -100,7 +101,7 @@ public sealed class CreateCustomerRequestHandler : IRequestHandler<CreateCustome
 } 
 ```
 
-### Send a request
+#### Send a request
 
 ```csharp
 // SomeService.cs
@@ -118,7 +119,7 @@ public class SomeService
     
     ...
     
-    public async ValueTask<Guid> SomeService(CancellationToken cancellationToken)
+    public async ValueTask<Guid> SomeMethodAsync(CancellationToken cancellationToken)
     {
         var request = new CreateCustomerRequest("Peter", "Parker");
         Guid id = await _mediator.SendAsync(request, cancellationToken);
@@ -128,7 +129,34 @@ public class SomeService
 
 ```
 
+### Segres.AspNetCore
 
+#### Create a Request
+
+```csharp
+// CreateUserRequest.cs
+
+public record CreateUserRequest() : IHttpRequest<int>
+{
+    public static string EndpointRoute => "/create";
+    public static RequestType RequestType => RequestType.Post;
+}
+```
+
+#### Create a Endpoint for a request
+
+```csharp
+// CreateUserEndpoint.cs
+
+public sealed class CreateUserEndpoint : AbstractEndpoint<CreateUserRequest, int>
+{
+    public override async ValueTask<HttpResult<int>> ResolveAsync(CreateUserRequest request, CancellationToken cancellationToken)
+    {
+        int result = await ...
+        return Ok(result)
+    }
+}
+```
 _For more examples, please refer to the [Documentation](#)_
 
 
@@ -136,4 +164,4 @@ _For more examples, please refer to the [Documentation](#)_
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE.md` for more information.
