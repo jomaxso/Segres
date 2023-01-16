@@ -9,7 +9,7 @@ namespace Segres;
 /// - Scans for any <see cref="IRequestHandler{TRequest}"/> interface implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
 /// - Scans for any <see cref="IRequestBehavior{TRequest,TResult}"/> implementations as well as the open generic implementations and registers them as <see cref="ServiceLifetime.Scoped"/>.
 /// Registers <see cref="ISender"/> as <see cref="ServiceLifetime.Singleton"/>.
-/// Registers <see cref="IConsumer"/> as <see cref="ServiceLifetime.Singleton"/>.
+/// Registers <see cref="PublisherContext"/> with specified the lifetime.
 /// Registers <see cref="IPublisher"/> as <see cref="ServiceLifetime.Singleton"/>.
 /// </summary>
 public static class ServiceRegistration
