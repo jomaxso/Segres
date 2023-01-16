@@ -1,9 +1,11 @@
 ﻿name: Release
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
 
 env:
   SEGRES: src/Segres/Segres.csproj
@@ -31,11 +33,8 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Set VERSION variable from tag
-        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-
       - name: Pack
-        run: dotnet pack ${{env.SEGRES}} --configuration Release --no-restore --no-build --include-symbols /p:Version=${{env.VERSION}} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        run: dotnet pack ${{env.SEGRES}} --configuration Release --no-restore --no-build --include-symbols /p:Version=${{ inputs.VERSION }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
       
       - name: Pack
         run: dotnet pack ${{env.SEGRES_ABSTRACTIONS}} --configuration Release --no-restore --no-build --include-symbols /p:Version=${{env.VERSION}} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
