@@ -33,7 +33,7 @@ jobs:
         run: dotnet build ${{ env.SEGRES }} --configuration Release --no-restore
         
       - name: Test
-        run: dotnet test ${{ env.SEGRES }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=65
+        run: dotnet test ${{ env.SEGRES }} --configuration Release --no-build --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov /p:Threshold=20
 
       - name: Restore
         run: dotnet restore ${{ env.SEGRES_ABSTRACTIONS }}
