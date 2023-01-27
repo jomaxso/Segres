@@ -1,6 +1,6 @@
 ﻿
 
-namespace WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
+namespace WeatherForecastDemo.Api.Services;
 
 public class ConsoleLogger : IConsoleLogger
 {

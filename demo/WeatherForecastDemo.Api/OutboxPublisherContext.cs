@@ -2,18 +2,18 @@
 
 public class OutboxPublisherContext : PublisherContext
 {
-    private static Queue<INotification> Database { get; } = new();
+    private static Queue<IEvent> Database { get; } = new();
 
-    public Queue<INotification> Db => Database;
+    public Queue<IEvent> Db => Database;
 
     public OutboxPublisherContext(IServiceProvider serviceProvider) 
         : base(serviceProvider)
     {
     }
     
-    public override ValueTask OnPublishAsync(INotification notification, CancellationToken cancellationToken)
+    public override ValueTask OnPublishAsync(IEvent @event, CancellationToken cancellationToken)
     {
-        Database.Enqueue(notification);
+        Database.Enqueue(@event);
         return ValueTask.CompletedTask;
     }
 }

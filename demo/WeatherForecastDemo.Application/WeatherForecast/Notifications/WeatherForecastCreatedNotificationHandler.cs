@@ -2,22 +2,22 @@
 
 namespace WeatherForecastDemo.Api.Endpoints.Notifications;
 
-internal record struct WeatherForecastCreated(Domain.Entities.WeatherForecast WeatherForecast) : INotification;
+internal record struct WeatherForecastCreated(Domain.Entities.WeatherForecast WeatherForecast) : IEvent;
 
-internal class WeatherForecastCreatedErrorLogNotificationHandler : INotificationHandler<WeatherForecastCreated>
+internal class WeatherForecastCreatedErrorLogEventHandler : IEventHandler<WeatherForecastCreated>
 {
     public async ValueTask HandleAsync(WeatherForecastCreated notification, CancellationToken cancellationToken)
     {
         await Task.Delay(1000, cancellationToken);
-        Console.WriteLine(nameof(WeatherForecastCreatedErrorLogNotificationHandler));
+        Console.WriteLine(nameof(WeatherForecastCreatedErrorLogEventHandler));
     }
 }
 
-internal class WeatherForecastCreatedInformationLogNotificationHandler : INotificationHandler<WeatherForecastCreated>
+internal class WeatherForecastCreatedInformationLogEventHandler : IEventHandler<WeatherForecastCreated>
 {
     public async ValueTask HandleAsync(WeatherForecastCreated notification, CancellationToken cancellationToken)
     {
         await Task.Delay(1000, cancellationToken);
-        Console.WriteLine(nameof(WeatherForecastCreatedInformationLogNotificationHandler));
+        Console.WriteLine(nameof(WeatherForecastCreatedInformationLogEventHandler));
     }
 }

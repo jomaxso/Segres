@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Segres;
 using Segres.AspNetCore;
+using WeatherForecastDemo.Api.Services;
 
 namespace WeatherForecastDemo.Api.Endpoints.Randoms;
 

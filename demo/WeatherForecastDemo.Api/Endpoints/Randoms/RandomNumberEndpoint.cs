@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Segres.AspNetCore;
+using WeatherForecastDemo.Api.Services;
 
 namespace WeatherForecastDemo.Api.Endpoints.Randoms;
 

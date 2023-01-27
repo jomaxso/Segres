@@ -1,4 +1,4 @@
-﻿namespace WeatherForecastDemo.Api.Endpoints.Randoms;
+﻿namespace WeatherForecastDemo.Api.Services;
 
 public class RandomService
 {
