@@ -1,4 +1,5 @@
-﻿using Segres;
+﻿using FluentValidation;
+using Segres;
 using Segres.AspNetCore;
 using WeatherForecastDemo.Application.WeatherForecast.Commands;
 using WeatherForecastDemo.Domain.Entities;
@@ -22,12 +23,14 @@ public sealed class DeleteAbstractRequestEndpoint : AbstractEndpoint<DeleteReque
 
     public override async ValueTask<HttpResult<WeatherForecast>> ResolveAsync(DeleteRequest request, CancellationToken cancellationToken)
     {
-        var command = new DeleteWeatherForecastCommand
-        {
-            Id = request.Id
-        };
-        
+        var command = new DeleteWeatherForecastCommand(request.Id);
         var result = await _mediator.SendAsync(command, cancellationToken);
-        return result is null ? NotFound<WeatherForecast>("Item not found") : Ok(result);
+
+        return result
+            .Ensure(x => x?.TemperatureC > 0, 
+                new ValidationException($"the validation for {nameof(WeatherForecast.TemperatureC)} failed."))
+            .Ensure(x => string.IsNullOrWhiteSpace(x?.Summary) is false, 
+                new ArgumentException(nameof(WeatherForecast.Summary)))
+            .Match(Ok, NotFound<WeatherForecast>);
     }
 }

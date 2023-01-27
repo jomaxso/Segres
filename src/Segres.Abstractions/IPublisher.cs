@@ -3,26 +3,26 @@
 namespace Segres;
 
 /// <summary>
-/// Publish a notification or event to be handled by multiple handlers.
+/// Publish a event to be handled by multiple handlers.
 /// </summary>
 public interface IPublisher
 {
     /// <summary>
-    /// Asynchronously send a notification to multiple subscribers.
+    /// Asynchronously send a event to multiple subscribers.
     /// </summary>
-    /// <param name="notification">The notification object.</param>
+    /// <param name="message">The event object.</param>
     /// <param name="cancellationToken">An optional cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A task that represents the publish operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
-        where TNotification : INotification;
+    ValueTask PublishAsync<TEvent>(TEvent message, CancellationToken cancellationToken = default)
+        where TEvent : IEvent;
 
     /// <summary>
-    /// Synchronously send a notification to multiple subscribers.
+    /// Synchronously send a event to multiple subscribers.
     /// </summary>
-    /// <param name="notification">The notification object</param>
+    /// <param name="message">The event object</param>
     /// <returns>A task that represents the publish operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Publish<TNotification>(TNotification notification)
-        where TNotification : INotification;
+    public void Publish<TEvent>(TEvent message)
+        where TEvent : IEvent;
 }

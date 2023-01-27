@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TSelf">The actual result.</typeparam>
 /// <typeparam name="T">The value to be wrapped in a result.</typeparam>
-public interface IResult<out TSelf, T>
+public interface IHttpResult<out TSelf, T>
 {
     /// <summary>
     /// Creates a new result instance.

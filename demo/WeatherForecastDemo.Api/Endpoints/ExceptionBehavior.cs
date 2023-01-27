@@ -4,7 +4,7 @@ using Segres.AspNetCore;
 namespace WeatherForecastDemo.Api.Endpoints.WeatherForecasts;
 
 public class ExceptionBehavior<TRequest, TResponse> : AbstractEndpointBehavior<TRequest, TResponse> 
-    where TResponse : IResult<TResponse, IResult>
+    where TResponse : IHttpResult<TResponse, IResult>
     where TRequest : IRequest<TResponse>
 {
     private readonly ILogger<ExceptionBehavior<TRequest, TResponse>> _logger;

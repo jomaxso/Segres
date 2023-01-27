@@ -1,12 +1,13 @@
 ﻿using Segres;
 using WeatherForecastDemo.Api.Endpoints.Notifications;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
+using WeatherForecastDemo.Application.Commons;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : IRequest<Guid>;
+public record struct CreateWeatherForecastCommand(int TemperatureC, string? Summary) : ICommand<Guid>;
 
-internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Guid>
+internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForecastCommand, Result<Guid>>
 {
     private readonly IPublisher _publisher;
     private readonly IWriteOnlyWeatherForecastRepository _weatherForecastRepository;
@@ -17,7 +18,7 @@ internal class CreateWeatherForecastHandler : IRequestHandler<CreateWeatherForec
         _weatherForecastRepository = weatherForecastRepository;
     }
 
-    public async ValueTask<Guid> HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Result<Guid>> HandleAsync(CreateWeatherForecastCommand command, CancellationToken cancellationToken = default)
     {
         var entity = new Domain.Entities.WeatherForecast
         {

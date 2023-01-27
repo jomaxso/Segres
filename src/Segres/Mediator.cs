@@ -7,13 +7,11 @@ namespace Segres;
 internal sealed class Mediator : IMediator
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly PublisherContext _publisherContext;
     private readonly ConcurrentDictionary<Type, object> _requestHandlerCache;
 
     public Mediator(IServiceProvider serviceProvider, IEnumerable<KeyValuePair<Type, object>> requestHandlers)
     {
         _serviceProvider = serviceProvider;
-        _publisherContext = serviceProvider.GetRequiredService<PublisherContext>();
         _requestHandlerCache = new ConcurrentDictionary<Type, object>(requestHandlers);
     }
 
@@ -67,13 +65,13 @@ internal sealed class Mediator : IMediator
 
     /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default) 
-        where TNotification : INotification
-        => _publisherContext.OnPublishAsync(notification, cancellationToken);
+    public ValueTask PublishAsync<TEvent>(TEvent message, CancellationToken cancellationToken = default) 
+        where TEvent : IEvent
+        => _serviceProvider.GetRequiredService<PublisherContext>().OnPublishAsync(message, cancellationToken);
 
-    public void Publish<TNotification>(TNotification notification) where TNotification : INotification
+    public void Publish<TEvent>(TEvent message) where TEvent : IEvent
     {
-        var valueTask = PublishAsync(notification, CancellationToken.None);
+        var valueTask = PublishAsync(message, CancellationToken.None);
         Await(valueTask);
     }
     

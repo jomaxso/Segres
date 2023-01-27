@@ -1,5 +1,4 @@
 ﻿using Segres;
-using INotification = Segres.INotification;
 
 namespace DispatchR.Benchmarks;
 
@@ -12,4 +11,4 @@ public record UserStreamRequest : IStreamRequest<int?>, MediatR.IStreamRequest<i
 public record CreateUserWithResult(int Number) : IRequest<int>, MediatR.IRequest<int>;
 public record CreateUserWithResultSync(int Number) : IRequest<int>;
 
-public record UserCreated : Segres.INotification, MediatR.INotification;
+public record UserCreated : Segres.IEvent, MediatR.INotification;

@@ -1,11 +1,13 @@
 ﻿using Segres;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
+using WeatherForecastDemo.Application.Commons;
+using WeatherForecastDemo.Application.WeatherForecast.Commands;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Queries;
 
-public sealed record GetLastWeatherForecastQuery : IRequest<Domain.Entities.WeatherForecast>;
+public sealed record GetLastWeatherForecastQuery : IQuery<Domain.Entities.WeatherForecast>;
 
-public sealed class GetLastWeatherForecastHandler : IRequestHandler<GetLastWeatherForecastQuery, Domain.Entities.WeatherForecast>
+public sealed class GetLastWeatherForecastHandler : QueryHandler<GetLastWeatherForecastQuery, Domain.Entities.WeatherForecast>
 {
     private readonly IReadOnlyWeatherForecastRepository _forecastRepository;
 
@@ -14,8 +16,8 @@ public sealed class GetLastWeatherForecastHandler : IRequestHandler<GetLastWeath
         _forecastRepository = forecastRepository;
     }
 
-    public ValueTask<Domain.Entities.WeatherForecast> HandleAsync(GetLastWeatherForecastQuery request, CancellationToken cancellationToken)
+    public override async ValueTask<Result<Domain.Entities.WeatherForecast>> HandleAsync(GetLastWeatherForecastQuery request, CancellationToken cancellationToken)
     {
-        return ValueTask.FromResult(_forecastRepository.GetLast());
+        return await ValueTask.FromResult(_forecastRepository.GetLast());
     }
 }

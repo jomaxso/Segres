@@ -41,11 +41,7 @@ public class Benchmarks
     {
         var services = new ServiceCollection();
         services.AddSingleton<BenchmarkService>();
-        services.AddSegres(x =>
-        {
-            x.UseLifetime(ServiceLifetime.Singleton);
-            x.UseReferencedAssemblies(typeof(Benchmarks));
-        });
+        services.AddSegres(ServiceLifetime.Singleton);
 
         services.AddMediatR(x => x.AsSingleton(), typeof(Benchmarks));
         return services.BuildServiceProvider();

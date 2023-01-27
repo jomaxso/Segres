@@ -10,8 +10,7 @@
 <h2 align="center">SEGRES</h2>
 
   <p align="center">
-    The simple way to segerate your responsibilities
-.
+    The simple way to segerate your responsibilities.
 <br />
 <br />
     <a href="#"><strong>Explore the docs »</strong></a>
@@ -71,14 +70,8 @@ using Segres
 
 builder.Services.AddSegres(); 
 
-// or
+...
 
-builder.Services.AddSegres(options =>
-{
-    options.UseReferencedAssemblies(typeof(Program));
-    options.UseLifetime(ServiceLifetime.Scoped);
-    ...
-});
 ```
 
 ### Segres.Abstractions
@@ -131,7 +124,22 @@ public class SomeService
 
 ### Segres.AspNetCore
 
-#### Create a Request
+#### Register all endpoints
+
+```csharp
+// Program.cs
+
+using Segres
+
+...
+
+app.UseSegres(); 
+
+...
+
+```
+
+#### Create a request
 
 ```csharp
 // CreateUserRequest.cs
@@ -143,7 +151,7 @@ public record CreateUserRequest() : IHttpRequest<int>
 }
 ```
 
-#### Create a Endpoint for a request
+#### Create an endpoint for a request
 
 ```csharp
 // CreateUserEndpoint.cs

@@ -25,12 +25,7 @@ public class Benchmarks
     private static IServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
-        services.AddSegres(x =>
-            {
-                x.UseReferencedAssemblies(typeof(Benchmarks));
-                x.UseLifetime(ServiceLifetime.Singleton);
-            }
-        );
+        services.AddSegres(ServiceLifetime.Singleton);
         return services.BuildServiceProvider();
     }
 

@@ -1,14 +1,12 @@
 ﻿using Segres;
 using WeatherForecastDemo.Application.Abstractions.Repositories;
+using WeatherForecastDemo.Application.Commons;
 
 namespace WeatherForecastDemo.Application.WeatherForecast.Commands;
 
-public sealed record DeleteWeatherForecastCommand : IRequest<Domain.Entities.WeatherForecast?>
-{
-    public required Guid Id { get; init; }
-}
+public sealed record DeleteWeatherForecastCommand(Guid Id) : ICommand<Domain.Entities.WeatherForecast?>;
 
-internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeatherForecastCommand, Domain.Entities.WeatherForecast?>
+internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeatherForecastCommand, Result<Domain.Entities.WeatherForecast?>>
 {
     private readonly IReadOnlyWeatherForecastRepository _readOnlyWeatherForecastRepository;
     private readonly IWriteOnlyWeatherForecastRepository _writeOnlyWeatherForecastRepository;
@@ -20,7 +18,7 @@ internal sealed class DeleteWeatherForecastHandler : IRequestHandler<DeleteWeath
         _readOnlyWeatherForecastRepository = readOnlyWeatherForecastRepository;
     }
 
-    public async ValueTask<Domain.Entities.WeatherForecast?> HandleAsync(DeleteWeatherForecastCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Result<Domain.Entities.WeatherForecast?>> HandleAsync(DeleteWeatherForecastCommand command, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
         var weatherForecast = await _readOnlyWeatherForecastRepository.GetByIdAsync(command.Id);

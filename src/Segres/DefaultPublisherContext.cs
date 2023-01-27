@@ -6,6 +6,6 @@ internal sealed class DefaultPublisherContext : PublisherContext
     {
     }
 
-    public override ValueTask OnPublishAsync(INotification notification, CancellationToken cancellationToken)
-        => ConsumeAsync(notification, cancellationToken);
+    public override ValueTask OnPublishAsync(IEvent @event, CancellationToken cancellationToken)
+        => ConsumeAsync(@event, cancellationToken);
 }

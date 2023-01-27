@@ -7,7 +7,7 @@ using PlayGround.DependencyInjection;
 using Segres;
 
 var col = new ServiceCollection();
-col.AddSegres(x => x.UseReferencedAssemblies(typeof(Obj)));
+col.AddSegres();
 ServiceProvider _provider = col.BuildServiceProvider();
 
 

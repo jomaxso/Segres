@@ -2,11 +2,11 @@
 
 namespace DispatchR.Benchmarks.Handlers.DispatchR;
 
-public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
+public class DispatchREventHandler1 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler1(BenchmarkService benchmarkService)
+    public DispatchREventHandler1(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -17,11 +17,11 @@ public class DispatchRNotificationHandler1 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
+public class DispatchREventHandler2 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler2(BenchmarkService benchmarkService)
+    public DispatchREventHandler2(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -32,11 +32,11 @@ public class DispatchRNotificationHandler2 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
+public class DispatchREventHandler3 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler3(BenchmarkService benchmarkService)
+    public DispatchREventHandler3(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -47,11 +47,11 @@ public class DispatchRNotificationHandler3 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
+public class DispatchREventHandler4 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler4(BenchmarkService benchmarkService)
+    public DispatchREventHandler4(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -62,11 +62,11 @@ public class DispatchRNotificationHandler4 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
+public class DispatchREventHandler5 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler5(BenchmarkService benchmarkService)
+    public DispatchREventHandler5(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -77,11 +77,11 @@ public class DispatchRNotificationHandler5 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
+public class DispatchREventHandler6 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler6(BenchmarkService benchmarkService)
+    public DispatchREventHandler6(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -92,11 +92,11 @@ public class DispatchRNotificationHandler6 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
+public class DispatchREventHandler7 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler7(BenchmarkService benchmarkService)
+    public DispatchREventHandler7(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -107,11 +107,11 @@ public class DispatchRNotificationHandler7 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
+public class DispatchREventHandler8 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler8(BenchmarkService benchmarkService)
+    public DispatchREventHandler8(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -122,11 +122,11 @@ public class DispatchRNotificationHandler8 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
+public class DispatchREventHandler9 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler9(BenchmarkService benchmarkService)
+    public DispatchREventHandler9(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
@@ -137,11 +137,11 @@ public class DispatchRNotificationHandler9 : INotificationHandler<UserCreated>
     }
 }
 
-public class DispatchRNotificationHandler10 : INotificationHandler<UserCreated>
+public class DispatchREventHandler10 : IEventHandler<UserCreated>
 {
     private readonly BenchmarkService _benchmarkService;
 
-    public DispatchRNotificationHandler10(BenchmarkService benchmarkService)
+    public DispatchREventHandler10(BenchmarkService benchmarkService)
     {
         _benchmarkService = benchmarkService;
     }
